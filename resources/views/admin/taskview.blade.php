@@ -3,7 +3,7 @@
 <div class="container">
     <h2>Tasks</h2>
 
-    <a href="{{ route('admin.tasks_create') }}" class="btn btn-success mb-3">
+    <a href="{{ route('admin_panel.tasks.create') }}" class="btn btn-success mb-3">
         Create Task
     </a>
 
@@ -23,12 +23,11 @@
                     <td>{{ $task->id }}</td>
                     <td>{{ $task->title }}</td>
                     <td>{{ number_format($task->total_budget, 2) }}</td>
-                   
+
                     <td>{{ $task->created_at->format('d M Y') }}</td>
                     <td>
-                        <a href="{{ route('admin.tasks.subtasks.profile', $task->id) }}">View Sub-tasks</a>
+                        <a href="{{ route('admin_panel.tasks.subtasks.profile', $task->id) }}">View Sub-tasks</a>
                     </td>
-                    
                 </tr>
             @endforeach
         </tbody>

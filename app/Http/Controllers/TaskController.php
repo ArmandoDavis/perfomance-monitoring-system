@@ -10,25 +10,19 @@ use App\Models\TaskBudget;
 
 class TaskController extends Controller
 {
-    //
     public function index()
     {
         // $tasks = Task::with('department')->latest()->get();
          // return view('admin.taskview', compact('tasks')); // ✅ FIXED
-        if (Auth::user()->role !== 'admin') {
-            abort(403);
-        }
         $tasks = Task::with(['department', 'budgets'])->latest()->get();
          return view('admin.taskview', compact('tasks')); // ✅ FIXED
     }
 
     public function create()
     {
-        if (Auth::user()->role !== 'admin') {
-            abort(403);
-        }
+       logger("reached");
          $departments = Department::all();
-         return view('admin.createtask', compact('departments'));
+         return view('admin.task.create', compact('departments'));
     }
 
     public function store(Request $request)
@@ -66,7 +60,7 @@ public function storeBudget(Request $request, Task $task)
     ]);
     return redirect()->route('admin.tasks.index')
         ->with('success', 'Budget allocated successfully');
-    } 
+    }
     // Show form to edit budget
     public function editBudget(Task $task, TaskBudget $budget)
     {
@@ -103,7 +97,7 @@ public function storeBudget(Request $request, Task $task)
 //         $subTasks = $task->budgets; // already defined relation in Task model
 //         return view('admin.subtasks', compact('task', 'subTasks'));
 //     }
-    
+
 // // Show form to create sub-task
 //     public function createSubTask(Task $task)
 //     {

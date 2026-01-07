@@ -1,6 +1,6 @@
 <!DOCTYPE html>
 <html>
-  <head> 
+  <head>
     <meta charset="utf-8">
     <meta http-equiv="X-UA-Compatible" content="IE=edge">
     <title>Perfomance Monitoring System </title>
@@ -26,9 +26,9 @@
         <script src="https://oss.maxcdn.com/respond/1.4.2/respond.min.js"></script><![endif]-->
   </head>
   <body>
-    
 
-    <header class="header">   
+
+    <header class="header">
       <nav class="navbar navbar-expand-lg">
         <div class="search-panel">
           <div class="search-inner d-flex align-items-center justify-content-center">
@@ -49,7 +49,7 @@
             <!-- Sidebar Toggle Btn-->
             <button class="sidebar-toggle"><i class="fa fa-long-arrow-left"></i></button>
           </div>
-          <div class="right-menu list-inline no-margin-bottom">    
+          <div class="right-menu list-inline no-margin-bottom">
             <div class="list-inline-item"><a href="#" class="search-open nav-link"><i class="icon-magnifying-glass-browser"></i></a></div>
             <div class="list-inline-item dropdown"><a id="navbarDropdownMenuLink1" href="http://example.com" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false" class="nav-link messages-toggle"><i class="icon-email"></i><span class="badge dashbg-1">5</span></a>
               <div aria-labelledby="navbarDropdownMenuLink1" class="dropdown-menu messages"><a href="#" class="dropdown-item message d-flex align-items-center">
@@ -97,12 +97,12 @@
             </div>
             <!-- Tasks end-->
             <!-- Megamenu-->
-           
+
             <!-- Megamenu end     -->
             <!-- Languages dropdown    -->
-            
+
             <!-- Log out               -->
-            <div class="list-inline-item logout">   
+            <div class="list-inline-item logout">
               <form method="POST" action="{{ route('logout') }}">
                             @csrf
 
@@ -111,8 +111,8 @@
                                                 this.closest('form').submit();">
                                 {{ __('Log Out') }}
                             </x-dropdown-link>
-                        </form>              
-                   
+                        </form>
+
           </div>
         </div>
       </nav>
@@ -133,9 +133,9 @@
                 <li class="active"><a href="{{ route('dashboard') }}"> <i class="icon-home"></i>Home </a></li>
                 <li><a href="#exampledropdownDropdown" aria-expanded="false" data-toggle="collapse"> <i class="icon-windows"></i>Tasks </a>
                   <ul id="exampledropdownDropdown" class="collapse list-unstyled ">
-                    <li><a href="{{ route('admin.tasks_create') }}">Create</a></li>
-                    <li><a href="{{ route('admin.tasks.index') }}">View</a></li>
-                    
+                    <li><a href="{{ route('admin_panel.tasks.create') }}">Create Task</a></li>
+                    <li><a href="{{ route('admin_panel.tasks.index') }}">View</a></li>
+
                   </ul>
                 </li>
                 <li><a href="charts.html"> <i class="fa fa-bar-chart"></i>Charts </a></li>
@@ -149,13 +149,13 @@
                 </li>
                 <li><a href="login.html"> <i class="icon-logout"></i>Login page </a></li>
         </ul><span class="heading">Extras</span>
-       
+
       </nav>
       <!-- Sidebar Navigation end-->
       <div class="page-content">
         @yield('content')
-     
-    
+
+
         </div>
     </div>
     <!-- JavaScript files-->
