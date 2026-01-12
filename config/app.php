@@ -15,7 +15,10 @@ return [
     |
     */
 
-    'name' => env('APP_NAME', 'Laravel'),
+    'name' => env('APP_NAME', 'HR Performance Management System'),
+    'app_full_name' => 'HR Performance Management System',
+    'version' => '1.0.0',
+    'developer' => 'Teganas ICT Solution',
 
     /*
     |--------------------------------------------------------------------------
@@ -134,6 +137,7 @@ return [
          * Application Service Providers...
          */
         App\Providers\AppServiceProvider::class,
+        App\Providers\AuthServiceProvider::class,
         App\Providers\RouteServiceProvider::class,
         Illuminate\Bus\BusServiceProvider::class,
         Illuminate\Cache\CacheServiceProvider::class,

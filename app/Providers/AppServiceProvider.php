@@ -2,6 +2,12 @@
 
 namespace App\Providers;
 
+use App\Models\Expense;
+use App\Models\Task\Task;
+use App\Models\Task\TaskAssignment;
+use App\Observers\ExpenseObserver;
+use App\Observers\TaskAssignmentObserver;
+use App\Observers\TaskObserver;
 use Illuminate\Support\ServiceProvider;
 
 class AppServiceProvider extends ServiceProvider
@@ -17,8 +23,10 @@ class AppServiceProvider extends ServiceProvider
     /**
      * Bootstrap any application services.
      */
-    public function boot(): void
+    public function boot()
     {
-        //
+        Task::observe(TaskObserver::class);
+        Expense::observe(ExpenseObserver::class);
+        TaskAssignment::observe(TaskAssignmentObserver::class);
     }
 }

@@ -2,14 +2,18 @@
 
 namespace App\Models;
 
-use Illuminate\Database\Eloquent\Model;
+use App\Models\Access\User;
+use App\Models\BaseModel\BaseModel;
+use App\Models\Task\Task;
 
-class Department extends Model
+class Department extends BaseModel
 {
-    //
-     protected $fillable = ['name'];
+    public function users()
+    {
+        return $this->hasMany(User::class);
+    }
 
-     public function tasks()
+    public function tasks()
     {
         return $this->hasMany(Task::class);
     }
