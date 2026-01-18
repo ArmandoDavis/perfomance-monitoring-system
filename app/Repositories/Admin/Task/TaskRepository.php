@@ -1,6 +1,7 @@
 <?php
 namespace App\Repositories\Admin\Task;
 
+use App\Models\System\CodeValue;
 use App\Models\Task\Task;
 use App\Repositories\BaseRepository;
 use Illuminate\Database\Eloquent\Model;
@@ -31,12 +32,12 @@ class TaskRepository extends BaseRepository
                 'department_id' => $input['department_id'],
                 'created_by' => user_id(),
                 'allocated_budget' => $input['allocated_budget'],
-                'spent_amount' => $input['spent_amount'],
-                'remaining_budget' => $input['remaining_budget'],
+                'spent_amount' => $input['spent_amount'] ?? 0,
+                'remaining_budget' => $input['remaining_budget'] ?? 0,
                 'status_cv_id' => $input['status_cv_id'],
                 'start_date' => $input['start_date'],
                 'end_date' => $input['end_date'],
-                'is_active' => $input['is_active'],
+                'is_active' => isset($input['is_active']),
             ]);
         });
     }
@@ -61,10 +62,13 @@ class TaskRepository extends BaseRepository
     public function changeTaskStatus(Model $task, array $input)
     {
         return DB::transaction(function () use($task, $input) {
+            $complete = CodeValue::getCodeValueByReference('SCS005');
+
             return match ($input['action']) {
                 'activate'   => $this->changeStatus($task, true),
                 'deactivate' => $this->changeStatus($task, false),
-                default      => throw new \Exception(__('alert.invalid_action')),
+                'complete' => $task->update(['status_cv_id' => $complete->id]),
+                default      => throw new \Exception(__('Invalid action')),
             };
         });
     }

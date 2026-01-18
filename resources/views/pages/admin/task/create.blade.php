@@ -1,6 +1,10 @@
 @extends('layouts.admin.app')
 @section('title', __('Create Task'))
 @include('includes.assets.validate_assets')
+@include('includes.assets.ckeditor5_assets')
+@include('includes.assets.select2_assets')
+@include('includes.assets.maskmoney_assets')
+@include('includes.assets.datetimepicker')
 
 @section('content')
     <div class="col-lg-8">
@@ -10,7 +14,7 @@
             </div>
 
             <div class="card-body">
-                <form method="POST" action="{{ route('admin_panel.task.store') }}" name="create">
+                <form method="POST" action="{{ route('admin_panel.tasks.store') }}" name="create">
                     @csrf
                     <input type="hidden" name="action_type" value="1">
 
@@ -26,7 +30,7 @@
                     {{-- Description --}}
                     <div class="mb-3">
                         <label for="description" class="form-label">{{ __('Description') }}</label>
-                        <textarea name="description" id="description" rows="4" class="form-control @error('description') is-invalid @enderror">{{ old('description') }}</textarea>
+                        <textarea name="description" id="description" rows="4" class="form-control ckeditor @error('description') is-invalid @enderror">{{ old('description') }}</textarea>
                         @error('description')
                             <div class="invalid-feedback">{{ $message }}</div>
                         @enderror
@@ -37,7 +41,7 @@
                         <label for="department_id" class="form-label">
                             {{ __('Department') }} <span class="text-danger">*</span>
                         </label>
-                        <select name="department_id" id="department_id" class="form-select @error('department_id') is-invalid @enderror" required>
+                        <select name="department_id" id="department_id" class="form-select select2 @error('department_id') is-invalid @enderror" required>
                             <option value="">{{ __('Select Department') }}</option>
                             @foreach($departments as $department)
                                 <option value="{{ $department->id }}"
@@ -56,7 +60,7 @@
                         <label for="allocated_budget" class="form-label">
                             {{ __('Allocated Budget') }}
                         </label>
-                        <input type="number" step="0.01" name="allocated_budget" id="allocated_budget" value="{{ old('allocated_budget', 0) }}" class="form-control @error('allocated_budget') is-invalid @enderror">
+                        <input type="text" name="allocated_budget" id="allocated_budget" value="{{ old('allocated_budget') }}" class="form-control money @error('allocated_budget') is-invalid @enderror">
                         @error('allocated_budget')
                             <div class="invalid-feedback">{{ $message }}</div>
                         @enderror
@@ -65,7 +69,7 @@
                     {{-- Status --}}
                     <div class="mb-3">
                         <label for="status_cv_id" class="form-label">{{ __('Status') }} <span class="text-danger">*</span></label>
-                        <select name="status_cv_id" id="status_cv_id" class="form-select @error('status_cv_id') is-invalid @enderror" required>
+                        <select name="status_cv_id" id="status_cv_id" class="form-select select2 @error('status_cv_id') is-invalid @enderror" required>
                             <option value="">{{ __('Select Status') }}</option>
                             @foreach($statuses as $status)
                                 <option value="{{ $status->id }}"
@@ -83,7 +87,7 @@
                     <div class="row">
                         <div class="col-md-6 mb-3">
                             <label for="start_date" class="form-label">{{ __('Start Date') }}</label>
-                            <input type="date" name="start_date" id="start_date" value="{{ old('start_date') }}" class="form-control @error('start_date') is-invalid @enderror">
+                            <input type="text" name="start_date" id="start_date" value="{{ old('start_date') }}" class="form-control datepicker2 @error('start_date') is-invalid @enderror">
                             @error('start_date')
                                 <div class="invalid-feedback">{{ $message }}</div>
                             @enderror
@@ -91,7 +95,7 @@
 
                         <div class="col-md-6 mb-3">
                             <label for="end_date" class="form-label">{{ __('End Date') }}</label>
-                            <input type="date" name="end_date" id="end_date" value="{{ old('end_date') }}" class="form-control @error('end_date') is-invalid @enderror">
+                            <input type="text" name="end_date" id="end_date" value="{{ old('end_date') }}" class="form-control datepicker_after_today @error('end_date') is-invalid @enderror">
                             @error('end_date')
                                 <div class="invalid-feedback">{{ $message }}</div>
                             @enderror
@@ -115,9 +119,9 @@
 
 @push('scripts')
     <script>
-        pleaseWaitSubmitButton("submit_btn", "submit_label", "{{ trans('Please wait') }}", 2);
+        $(".select2").select2();
 
-        // Prevent double-submit
+        pleaseWaitSubmitButton("submit_btn", "submit_label", "{{ trans('Please wait') }}", 2);
         $('body').on('submit', 'form[name=create]', function(e) {
             pleaseWaitSubmitButton("submit_btn","submit_label","{{ trans('Please wait') }}",1);
         });

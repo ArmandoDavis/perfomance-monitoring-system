@@ -1,11 +1,13 @@
 <?php
 
+use App\Http\Controllers\Admin\Department\DepartmentController;
+use App\Http\Controllers\Admin\Documents\DocumentController;
 use App\Http\Controllers\Admin\Task\CommentController;
 use App\Http\Controllers\Admin\Task\SubtaskController;
 use App\Http\Controllers\Admin\Task\TaskAssignmentController;
 use App\Http\Controllers\Admin\Task\TaskController;
+use App\Http\Controllers\Admin\Task\TaskExpenseController;
 use App\Http\Controllers\Admin\Task\TaskPerformanceController;
-use App\Http\Controllers\DepartmentController;
 use App\Http\Controllers\HomeController;
 use App\Http\Controllers\ManagerController;
 use App\Http\Controllers\ProfileController;
@@ -87,6 +89,13 @@ Route::middleware(['auth'])->group(function () {
                 Route::post('/store/{task}', [TaskPerformanceController::class, 'store'])->name('store');
             });
 
+            Route::prefix('expenses')->name('expenses.')->group(function () {
+                Route::post('/store/{task}', [TaskExpenseController::class, 'store'])->name('store');
+                Route::put('/approve/{expense}', [TaskExpenseController::class, 'approve'])->name('approve');
+            });
+
+
+
             //Subtasks
             Route::prefix('{task}/subtasks')->name('subtasks.')->group(function () {
                 Route::get('/', [SubtaskController::class, 'index'])->name('index');
@@ -118,11 +127,18 @@ Route::middleware(['auth'])->group(function () {
         Route::get('/dashboard', [ManagerController::class, 'index'])->name('dashboard');
     });
 
-    /** STAFF ROUTES    */
+    /** STAFF ROUTES */
     Route::middleware(['role:staff'])->prefix('staff')->name('staff.')->group(function () {
         Route::get('/dashboard', [StaffController::class, 'index'])->name('dashboard');
     });
 
+    /** attachments */
+    Route::prefix('attachments')->name('attachments.')->group(function () {
+        Route::get('/download/{attachment}', [DocumentController::class, 'download'])->name('download');
+        Route::patch('/profile/{attachment}', [DocumentController::class, 'profile'])->name('profile');
+        Route::patch('/update/{attachment}', [DocumentController::class, 'update'])->name('update');
+        Route::delete('/delete', [DocumentController::class, 'delete'])->name('delete');
+    });
 
     /** PROFILE */
     Route::prefix('profile')->name('profile.')->group(function () {

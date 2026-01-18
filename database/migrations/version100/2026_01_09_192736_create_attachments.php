@@ -6,29 +6,36 @@ use Illuminate\Support\Facades\Schema;
 
 return new class extends Migration
 {
-    /**
-     * Run the migrations.
-     */
     public function up(): void
     {
         Schema::create('attachments', function (Blueprint $table) {
             $table->id();
-            $table->foreignId('task_id');
-            $table->foreignId('user_id');
+            // Polymorphic relation (attach to ANY model)
+            $table->morphs('attachable');
+
             $table->string('name');
+            $table->string('original_name')->nullable();
             $table->string('path');
-            $table->string('thumb')->nullable();
-            $table->string('type');
-            $table->integer('size');
+            $table->string('thumbnail_path')->nullable();
+
+            $table->string('mime_type', 100);
+            $table->string('extension', 20);
+            $table->unsignedBigInteger('size');
+
+            $table->foreignId('uploaded_by')->nullable()->constrained('users')->nullOnDelete();
+            $table->boolean('is_public')->default(false);
+            $table->boolean('is_active')->default(true);
+
             $table->string('uuid');
+            $table->timestamp('archived_at')->nullable();
             $table->timestamps();
             $table->softDeletes();
+            $table->index(['attachable_id', 'attachable_type']);
+            $table->index('mime_type');
+            $table->index('uploaded_by');
         });
     }
 
-    /**
-     * Reverse the migrations.
-     */
     public function down(): void
     {
         Schema::dropIfExists('attachments');

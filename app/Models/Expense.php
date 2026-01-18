@@ -18,6 +18,11 @@ class Expense extends BaseModel
         return $this->belongsTo(User::class);
     }
 
+    public function receipt()
+    {
+        return $this->belongsTo(Attachment::class, 'receipt_path_id');
+    }
+
     public function approver()
     {
         return $this->belongsTo(User::class, 'approved_by');

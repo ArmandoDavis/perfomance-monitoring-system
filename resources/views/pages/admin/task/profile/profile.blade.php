@@ -21,6 +21,11 @@
                         {{ __('Document center') }}
                     </a>
                 </li>
+                <li class="nav-item" role="presentation">
+                    <a class="nav-link fw-medium" data-bs-toggle="tab" href="#expense_tab" role="tab">
+                        {{ __('Expenses') }}
+                    </a>
+                </li>
 
                 <li class="nav-item" role="presentation">
                     <a class="nav-link fw-medium" data-bs-toggle="tab" href="#assignment_tab" role="tab" aria-selected="false">
@@ -49,39 +54,55 @@
                             <div class="d-flex justify-content-end flex-wrap gap-2">
                                 @can('task.update')
                                     {{-- Edit --}}
-                                    <a href="{{ route('admin_panel.tasks.edit', $task->uuid) }}" class="btn btn-sm btn-primary mb-2 me-2">
-                                        <i class="material-icons-outlined">edit</i> {{ __('Edit') }}
-                                    </a>
+                                    @if($task->status->reference == "SCS002")
+                                        <a href="{{ route('admin_panel.tasks.edit', $task->uuid) }}" class="btn btn-sm btn-primary mb-2 me-2">
+                                            <i class="material-icons-outlined">edit</i> {{ __('Edit') }}
+                                        </a>
+
+                                        <form action="{{ route('admin_panel.tasks.change_status', $task->uuid) }}" method="POST" class="d-none" id="confirm-form-complete-{{ $task->uuid }}">
+                                            @csrf
+                                            @method('PUT')
+
+                                            <input type="hidden" name="action_type" value="6">
+                                            <input type="hidden" name="action" value="complete">
+                                        </form>
+
+                                        <a href="javascript:void(0)" class="btn btn-sm btn-warning text-white mb-2 me-2" onclick="formActionConfirmation('complete-{{ $task->uuid }}', '{{ __('complete') }}' )">
+                                            {{ __('complete') }}
+                                        </a>
+                                    @endif
 
                                     {{-- Change status --}}
-                                    @if($task->is_active)
-                                        {{-- Deactivate form --}}
-                                        <form action="{{ route('admin_panel.tasks.change_status', $task->uuid) }}" method="POST" class="d-none" id="confirm-form-deactivate-{{ $task->uuid }}">
-                                            @csrf
-                                            @method('PUT')
+                                    @if($task->status->reference == "SCS005" && $task->status->reference == "SCS006")
+                                        @if($task->is_active)
+                                            {{-- Deactivate form --}}
+                                            <form action="{{ route('admin_panel.tasks.change_status', $task->uuid) }}" method="POST" class="d-none" id="confirm-form-deactivate-{{ $task->uuid }}">
+                                                @csrf
+                                                @method('PUT')
 
-                                            <input type="hidden" name="action_type" value="6">
-                                            <input type="hidden" name="action" value="deactivate">
-                                        </form>
+                                                <input type="hidden" name="action_type" value="6">
+                                                <input type="hidden" name="action" value="deactivate">
+                                            </form>
 
-                                        <a href="javascript:void(0)" class="btn btn-sm btn-danger mb-2 me-2" onclick="formActionConfirmation('deactivate-{{ $task->uuid }}', '{{ __('Deactivate') }}' )">
-                                            <i class="material-icons-outlined">update</i>
-                                            {{ __('Deactivate') }}
-                                        </a>
-                                    @else
-                                        {{-- Activate form --}}
-                                        <form action="{{ route('admin_panel.tasks.change_status', $task->uuid) }}" method="POST" class="d-none" id="confirm-form-activate-{{ $task->uuid }}">
-                                            @csrf
-                                            @method('PUT')
+                                            <a href="javascript:void(0)" class="btn btn-sm btn-danger mb-2 me-2" onclick="formActionConfirmation('deactivate-{{ $task->uuid }}', '{{ __('Deactivate') }}' )">
+                                                <i class="material-icons-outlined">update</i>
+                                                {{ __('Deactivate') }}
+                                            </a>
+                                        @else
+                                            {{-- Activate form --}}
+                                            <form action="{{ route('admin_panel.tasks.change_status', $task->uuid) }}" method="POST" class="d-none" id="confirm-form-activate-{{ $task->uuid }}">
+                                                @csrf
+                                                @method('PUT')
 
-                                            <input type="hidden" name="action_type" value="6">
-                                            <input type="hidden" name="action" value="activate">
-                                        </form>
+                                                <input type="hidden" name="action_type" value="6">
+                                                <input type="hidden" name="action" value="activate">
+                                            </form>
 
-                                        <a href="javascript:void(0)" class="btn btn-sm btn-info mb-2 me-2" onclick="formActionConfirmation(  'activate-{{ $task->uuid }}', '{{ __('Activate') }}'  )">
-                                            <i class="material-icons-outlined">update</i>
-                                            {{ __('Activate') }}
-                                        </a>
+                                            <a href="javascript:void(0)" class="btn btn-sm btn-info mb-2 me-2" onclick="formActionConfirmation(  'activate-{{ $task->uuid }}', '{{ __('Activate') }}'  )">
+                                                <i class="material-icons-outlined">update</i>
+                                                {{ __('Activate') }}
+                                            </a>
+                                        @endif
                                     @endif
                                 @endcan
 
@@ -108,6 +129,43 @@
 
                     @include('pages.admin.task.profile.includes.general_info')
                 </div>
+
+                <div class="tab-pane fade" id="documents_tab" role="tabpanel">
+                    <div class="card mb-3">
+                        <div class="card-header d-flex justify-content-between align-items-center">
+                            <strong>{{ __('Task Documents') }}</strong>
+
+                            @can('task.update')
+                                <button class="btn btn-sm btn-outline-primary" data-bs-toggle="modal" data-bs-target="#uploadDocumentModal">
+                                    <i class="material-icons-outlined">upload</i>
+                                    {{ __('Upload Document') }}
+                                </button>
+                            @endcan
+                        </div>
+
+                        @include('pages.admin.task.profile.includes.task_documents')
+                    </div>
+                </div>
+
+
+                <div class="tab-pane fade" id="expense_tab" role="tabpanel">
+                    <div class="card mb-3">
+                        <div class="card-header d-flex justify-content-between align-items-center">
+                            <strong>{{ __('Task Expenses') }}</strong>
+
+                            @can('task.update')
+                                <button class="btn btn-sm btn-outline-primary" data-bs-toggle="modal" data-bs-target="#addExpenseModal">
+                                    <i class="material-icons-outlined">add</i>
+                                    {{ __('Add Expense') }}
+                                </button>
+                            @endcan
+                        </div>
+
+                        @include('pages.admin.task.profile.includes.task_expense')
+                    </div>
+                </div>
+                {{-- end of expense --}}
+
 
                 <div class="tab-pane fade" id="assignment_tab" role="tabpanel">
                     <div class="card mb-3">

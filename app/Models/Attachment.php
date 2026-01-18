@@ -18,4 +18,9 @@ class Attachment extends BaseModel
     {
         return $this->belongsTo(User::class);
     }
+
+    public function uploadedBy(): BelongsTo
+    {
+        return $this->belongsTo(User::class, 'user_id');
+    }
 }

@@ -17,4 +17,9 @@ class Report extends BaseModel
     {
         return $this->belongsTo(User::class);
     }
+
+    public function attachments()
+    {
+        return $this->morphMany(Attachment::class, 'attachable');
+    }
 }

@@ -8,6 +8,7 @@ use App\Models\Task\Task;
 use App\Repositories\Access\UserRepository;
 use App\Repositories\Admin\Department\DepartmentRepository;
 use App\Repositories\Admin\Task\TaskRepository;
+use App\Repositories\System\CodeRepository;
 use App\Repositories\System\CodeValueRepository;
 use Illuminate\Foundation\Auth\Access\AuthorizesRequests;
 use Illuminate\Http\Request;
@@ -16,7 +17,7 @@ use Yajra\DataTables\DataTables;
 class TaskController extends Controller
 {
     use AuthorizesRequests;
-    protected $depertmentRepository, $taskRepository, $userRepository, $codeValueRepository;
+    protected $depertmentRepository, $taskRepository, $userRepository, $codeValueRepository, $codeRepository;
 
     public function __construct()
     {
@@ -24,6 +25,7 @@ class TaskController extends Controller
         $this->taskRepository = new TaskRepository();
         $this->userRepository = new UserRepository();
         $this->codeValueRepository = new CodeValueRepository();
+        $this->codeRepository = new CodeRepository();
         $this->authorizeResource(Task::class, 'task');
     }
 
@@ -35,8 +37,10 @@ class TaskController extends Controller
 
     public function create()
     {
-         $departments = $this->depertmentRepository->getActiveDepartments();
-         return view('pages.admin.task.create', compact('departments'));
+         $codeId = $this->codeRepository->codeByName("Status")->id;
+         $data['departments'] = $this->depertmentRepository->getActiveDepartments();
+         $data['statuses'] = $this->codeValueRepository->getCodeValuesForSelect($codeId);
+         return view('pages.admin.task.create', $data);
     }
 
     public function store(TaskRequest $request)

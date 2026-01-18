@@ -2,6 +2,7 @@
 
 namespace App\Models\Access;
 
+use App\Models\Attachment;
 use App\Models\Department;
 use App\Models\Expense;
 use App\Models\Task\PerformanceScore;
@@ -74,5 +75,10 @@ class User extends Authenticatable implements AuditableContract, CanResetPasswor
     public function performanceScores()
     {
         return $this->hasMany(PerformanceScore::class);
+    }
+
+    public function attachments()
+    {
+        return $this->hasMany(Attachment::class);
     }
 }

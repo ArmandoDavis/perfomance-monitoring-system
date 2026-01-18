@@ -224,6 +224,43 @@
     </div>
 </div>
 
+{{-- addExpenseModal --}}
+<div class="modal fade" id="addExpenseModal" tabindex="-1">
+    <div class="modal-dialog">
+        <form action="{{ route('admin_panel.tasks.expenses.store', $task->uuid) }}" method="POST" enctype="multipart/form-data">
+            @csrf
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5>{{ __('Add Expense') }}</h5>
+                    <button class="btn-close" data-bs-dismiss="modal"></button>
+                </div>
+
+                <div class="modal-body">
+                    <div class="mb-3">
+                        <label>{{ __('Amount') }} <span class="text-danger">*</span></label>
+                        <input type="hidden" name="action_type" value="1">
+                        <input type="text" name="amount" class="form-control money" required>
+                    </div>
+
+                    <div class="mb-3">
+                        <label>{{ __('Description') }}</label>
+                        <textarea name="description" class="form-control ckeditor_basic" required></textarea>
+                    </div>
+
+                    <div class="mb-3">
+                        <label>{{ __('Receipt') }}</label>
+                        <input type="file" name="receipt" class="form-control">
+                    </div>
+                </div>
+
+                <div class="modal-footer">
+                    <button class="btn btn-light" data-bs-dismiss="modal">{{ __('Cancel') }}</button>
+                    <button class="btn btn-primary">{{ __('Save') }}</button>
+                </div>
+            </div>
+        </form>
+    </div>
+</div>
 
 @push('scripts')
     <script>
@@ -237,13 +274,9 @@
         });
 
         pleaseWaitSubmitButton("submit_btn", "submit_label", "{{ trans('Please wait') }}", 2);
-
-        // Prevent double-submit
         $('body').on('submit', 'form[name=submit_comment]', function(e) {
             pleaseWaitSubmitButton("submit_btn","submit_label","{{ trans('Please wait') }}",1);
         });
-
-        // Prevent double-submit
         $('body').on('submit', 'form[name=submit_assignment]', function(e) {
             pleaseWaitSubmitButton("submit_btn","submit_label","{{ trans('Please wait') }}",1);
         });

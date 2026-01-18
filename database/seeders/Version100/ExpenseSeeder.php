@@ -14,19 +14,20 @@ class ExpenseSeeder extends Seeder
     public function run(): void
     {
         $this->disableForeignKeys('expenses');
-
         $hod = User::role('Head of Department')->first();
-
-        $tasks = Task::with('assignees')->get();
+        $tasks = Task::with('assignments')->get();
 
         foreach ($tasks as $task) {
-            foreach ($task->assignees as $staff) {
+            foreach ($task->assignments as $staff) {
+                if (!$staff->pivot) {
+                    continue;
+                }
 
                 // Get assignment pivot
                 $assignment = $staff->pivot;
 
                 // Skip if no remaining budget
-                if ($assignment->remaining_budget <= 0) {
+                if (empty($assignment->remaining_budget) || $assignment->remaining_budget  <= 0) {
                     continue;
                 }
 

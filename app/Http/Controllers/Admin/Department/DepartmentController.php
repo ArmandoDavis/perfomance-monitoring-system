@@ -1,13 +1,14 @@
 <?php
 
-namespace App\Http\Controllers;
+namespace App\Http\Controllers\Admin\Department;
 
+use App\Http\Controllers\Controller;
 use App\Http\Requests\Admin\Department\DepartmentRequest;
 use App\Models\Department;
 use App\Repositories\Admin\Department\DepartmentRepository;
+use Illuminate\Foundation\Auth\Access\AuthorizesRequests;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Log;
-use Illuminate\Foundation\Auth\Access\AuthorizesRequests;
 use Yajra\DataTables\DataTables;
 
 class DepartmentController extends Controller
@@ -33,7 +34,7 @@ class DepartmentController extends Controller
     public function store(DepartmentRequest $request)
     {
         $this->depertmentRepository->store($request->all());
-        return redirect()->back()->with('success', "Department Created Successfully");
+        return redirect()->back()->with('flash_success', "Department Created Successfully");
     }
 
     public function edit(Department $department) {
@@ -43,13 +44,8 @@ class DepartmentController extends Controller
 
     public function update(DepartmentRequest $request, Department $department)
     {
-        try {
-            $this->depertmentRepository->update($department, $request->all());
-            return redirect()->back()->with('success', "Department Updated Successfully");
-        } catch (\Exception $exception) {
-            Log::error("Fail to update department: " . $exception->getMessage());
-            return redirect()->back()->with('error', "Fail to update department");
-        }
+        $this->depertmentRepository->update($department, $request->all());
+        return redirect()->back()->with('flash_success', "Department Updated Successfully");
     }
 
     public function profile(Department $department)
@@ -60,13 +56,13 @@ class DepartmentController extends Controller
     public function delete(Request $request, Department $department)
     {
         $this->depertmentRepository->delete($department);
-        return redirect()->route('admin_panel.department.index')->with('success', 'Department Deleted Successfully');
+        return redirect()->route('admin_panel.department.index')->with('flash_success', 'Department Deleted Successfully');
     }
 
     public function changeDepartmentStatus(DepartmentRequest $request, Department $department)
     {
        $message = $this->depertmentRepository->changeDepartmentStatus($department, $request->all());
-       return redirect()->back()->with('success', $message);
+       return redirect()->back()->with('flash_success', $message);
     }
 
     public function getActiveDepartments()

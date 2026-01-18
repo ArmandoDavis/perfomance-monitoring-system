@@ -27,12 +27,8 @@ class TaskAssignmentController extends Controller
 
     public function store(TaskAssignmentRequest $request, Task $task)
     {
-        try {
-            $this->taskAssignmentRepository->store($task, $request->all());
-            return redirect()->route('admin_panel.tasks.profile', compact('task'))->with('flash_success', __('Staff assigned to this task successfully'));
-        } catch (\Exception $e) {
-            return redirect()->back()->with('flash_danger', $e->getMessage());
-        }
+        $this->taskAssignmentRepository->store($task, $request->all());
+        return redirect()->route('admin_panel.tasks.profile', compact('task'))->with('flash_success', __('Staff assigned to this task successfully'));
     }
 
     public function profile(Task $task)
@@ -42,19 +38,13 @@ class TaskAssignmentController extends Controller
 
     public function update(TaskAssignmentRequest $request, TaskAssignment $assignment)
     {
-        logger("reached");
         $task = $assignment->task->uuid;
-        try {
-            $this->taskAssignmentRepository->update($assignment, $request->all());
-            return redirect()->route('admin_panel.tasks.profile', compact('task'))->with('flash_success', __('Staff assigned to this task updated successfully'));
-        } catch (\Exception $e) {
-            return redirect()->back()->with('flash_danger', $e->getMessage());
-        }
+        $this->taskAssignmentRepository->update($assignment, $request->all());
+        return redirect()->route('admin_panel.tasks.profile', compact('task'))->with('flash_success', __('Staff assigned to this task updated successfully'));
     }
 
     public function delete(TaskAssignment $assignment)
     {
-        logger("delete");
         $this->taskAssignmentRepository->delete($assignment);
         return redirect()->back()->with('flash_success', 'User removed from this task successfully');
     }

@@ -17,7 +17,7 @@ return new class extends Migration
             $table->foreignId('user_id')->constrained()->cascadeOnDelete();
 
             $table->decimal('amount', 15, 2);
-            $table->text('description');
+            $table->text('description')->nullable();
             $table->string('receipt_path')->nullable();
             $table->foreignId('receipt_path_id')->nullable()->constrained('attachments')->nullOnDelete();
 

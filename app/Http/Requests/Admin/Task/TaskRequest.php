@@ -76,5 +76,17 @@ class TaskRequest extends Request
         }
         return array_merge($basic, $optional);
     }
+
+    public function sanitize()
+    {
+        $input = $this->all();
+        $input['allocated_budget'] = isset($input['allocated_budget']) ? str_replace(",", "", $input['allocated_budget']) : null;
+        $input['remaining_budget'] = isset($input['remaining_budget']) ? str_replace(",", "", $input['remaining_budget']) : null;
+        $input['spent_amount'] = isset($input['spent_amount']) ? str_replace(",", "", $input['spent_amount']) : null;
+        $input['start_date'] = isset($input['start_date']) ? standard_date_format($input['start_date']) : null;
+        $input['end_date'] = isset($input['end_date']) ? standard_date_format($input['end_date']) : null;
+        $this->replace($input);
+        return $this->all();
+    }
 }
 

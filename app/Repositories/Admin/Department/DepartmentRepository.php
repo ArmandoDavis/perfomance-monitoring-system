@@ -17,7 +17,7 @@ class DepartmentRepository extends BaseRepository
 
     public function getActiveDepartments()
     {
-        return $this->queryIsActive();
+        return $this->queryIsActive()->get();
     }
 
     public function store(array $input) {

@@ -17,7 +17,7 @@
                         {{-- Description --}}
                         <tr>
                             <th>{{ __('Description') }}</th>
-                            <td>{{ $task->description ?? '-' }}</td>
+                            <td>{!! $task->description ?? '-' !!}</td>
                         </tr>
 
                         {{-- Department --}}

@@ -3,6 +3,7 @@
 namespace App\Models\Task;
 
 use App\Models\Access\User;
+use App\Models\Attachment;
 use App\Models\BaseModel\BaseModel;
 use App\Models\Comment;
 use App\Models\Department;
@@ -17,9 +18,8 @@ class Task extends BaseModel
 
     public function getCanBeDeletedAttribute(): bool
     {
-        // Assuming 'SCS002' is 'Todo'
         $todo = CodeValue::getCodeValueByReference('SCS002');
-        return $this->status_cv_id === $todo->id;
+        return $this->status_cv_id === $todo->id && !$this->expenses()->exists();
     }
 
     public function department()
@@ -34,6 +34,7 @@ class Task extends BaseModel
 
     public function assignments()
     {
+        /** act like pivot table task_user */
         return $this->hasMany(TaskAssignment::class);
     }
 
@@ -72,4 +73,19 @@ class Task extends BaseModel
         return $this->hasMany(Comment::class)->with('user');
     }
 
+    public function attachments()
+    {
+        return $this->morphMany(Attachment::class, 'attachable')->where('is_active', true);
+    }
+
+    public function documents()
+    {
+        return $this->hasManyThrough(Attachment::class,
+            Expense::class,
+            'task_id',           // FK on expenses table
+            'id',               // PK on attachments table
+            'id',               // PK on tasks table
+            'receipt_path_id'  // FK on expenses pointing to attachments
+        )->whereNull('attachments.deleted_at');
+    }
 }

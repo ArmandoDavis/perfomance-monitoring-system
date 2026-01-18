@@ -61,12 +61,9 @@ function pleaseWaitSubmitButton(submit_button_id,label_wait_id, please_wait_text
         $('#' + label_wait_id).text(please_wait_text).change();
     }else{
         /*show button*/
-
         $('#'+ submit_button_id).prop('hidden', false);
         $('#' + label_wait_id).text('').change();
-
     }
-
 }
 //action type i.e. 1 => hide button, 2 = reshow button
 function pleaseWaitSubmitButtonByClass(submit_button_class,label_wait_id, please_wait_text, action_type)

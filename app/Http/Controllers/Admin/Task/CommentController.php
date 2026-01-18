@@ -30,12 +30,12 @@ class CommentController extends Controller
     public function update(TaskRequest $request, Task $task)
     {
         $task = $this->taskRepository->update($task, $request->all());
-        return redirect()->route('admin_panel.tasks.profile', compact('task'))->with('success', 'Task updated successfully');
+        return redirect()->route('admin_panel.tasks.profile', compact('task'))->with('flash_success', 'Task updated successfully');
     }
 
     public function delete(Comment $comment)
     {
         $this->commentRepository->delete($comment);
-        return redirect()->back()->with('success', 'Comment Deleted successfully');
+        return redirect()->back()->with('flash_success', 'Comment Deleted successfully');
     }
 }
