@@ -9,6 +9,8 @@
 @section('content')
     <div class="card">
         <div class="card-body">
+            @include('pages.admin.task.profile.includes.stats')
+
             <ul class="nav nav-tabs mb-3" role="tablist">
                 <li class="nav-item" role="presentation">
                     <a class="nav-link fw-medium active" data-bs-toggle="tab" href="#general_tab" role="tab" aria-selected="true">
@@ -68,7 +70,7 @@
                                         </form>
 
                                         <a href="javascript:void(0)" class="btn btn-sm btn-warning text-white mb-2 me-2" onclick="formActionConfirmation('complete-{{ $task->uuid }}', '{{ __('complete') }}' )">
-                                            {{ __('complete') }}
+                                            {{ __('Complete') }}
                                         </a>
                                     @endif
 

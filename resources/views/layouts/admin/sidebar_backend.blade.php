@@ -31,9 +31,25 @@
                     <div class="menu-title">Task Management</div>
                 </a>
                 <ul>
-                    <li><a href="{{ route('admin_panel.tasks.index') }}"><i class="material-icons-outlined">arrow_right</i>Task</a>
+                    <li>
+                        <a href="{{ route('admin_panel.tasks.index') }}"><i class="material-icons-outlined">arrow_right</i>Task</a>
                     </li>
-                    <li><a href="{{ route('admin_panel.tasks.index') }}"><i class="material-icons-outlined">arrow_right</i>Subtask</a>
+                </ul>
+            </li>
+
+            <li class="menu-label">Pages</li>
+            <li>
+                <a href="javascript:void(0)" class="has-arrow">
+                    <div class="parent-icon"><i class="material-icons-outlined">task</i>
+                    </div>
+                    <div class="menu-title">Pages</div>
+                </a>
+                <ul>
+                    <li>
+                        <a href="{{ route('admin_panel.tasks.index') }}"><i class="material-icons-outlined">arrow_right</i>Expensed</a>
+                    </li>
+                    <li>
+                        <a href="{{ route('admin_panel.tasks.index') }}"><i class="material-icons-outlined">arrow_right</i>Users</a>
                     </li>
                 </ul>
             </li>

@@ -16,7 +16,7 @@
                     <tr>
                         <td>{{ $doc->original_name ?? $doc->name }}</td>
                         <td>{{ strtoupper($doc->extension) }}</td>
-                        <td>{{ number_format($doc->size / 1024, 2) }} KB</td>
+                        <td>{{ formatBytes($doc->size) }} </td>
                         <td>{{ optional($doc->uploadedBy)->name }}</td>
                         <td>{{ short_date_format_with_day($doc->created_at) }}</td>
                         <td class="text-end">
