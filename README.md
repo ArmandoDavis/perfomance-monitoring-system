@@ -1,11 +1,21 @@
 # HR Performance Management System (HRPMS)
 
 composer install
+
 php artisan migrate:fresh --path=database/migrations/version100 // run this command only once please oiiiii
+
 composer dump-autoload
+
 php artisan db:seed
+
 php artisan key:generate
+
 php artisan storage:link
+
+npm install
+
+npm run build
+
 php artisan serve
 
 username 
