@@ -46,7 +46,7 @@
                 </a>
                 <ul>
                     <li>
-                        <a href="{{ route('admin_panel.tasks.index') }}"><i class="material-icons-outlined">arrow_right</i>Expensed</a>
+                        <a href="{{ route('admin_panel.tasks.index') }}"><i class="material-icons-outlined">arrow_right</i>Expenses</a>
                     </li>
                     <li>
                         <a href="{{ route('admin_panel.tasks.index') }}"><i class="material-icons-outlined">arrow_right</i>Users</a>

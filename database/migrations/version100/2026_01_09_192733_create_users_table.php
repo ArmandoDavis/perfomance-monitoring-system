@@ -23,6 +23,9 @@ return new class extends Migration
             $table->string('avatar')->nullable();
             $table->string('google_id')->nullable();
             $table->string('uuid');
+
+            $table->timestamp('password_updated_at')->nullable();
+            $table->boolean('is_password_updated')->default(false);
             $table->rememberToken();
             $table->timestamps();
             $table->softDeletes();

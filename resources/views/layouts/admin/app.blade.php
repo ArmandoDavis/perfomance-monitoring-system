@@ -13,7 +13,7 @@
     @stack('styles')
 </head>
 <body>
-@include('layouts.topbar')
+@include('layouts.admin.topbar')
 @include('layouts.admin.sidebar_backend')
 
 <main class="main-wrapper">

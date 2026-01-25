@@ -24,6 +24,13 @@ class TaskRepository extends BaseRepository
         return $this->queryIsActive();
     }
 
+    public function getQueryUserTasks()
+    {
+        return $this->query()->whereHas('assignments', function ($q) {
+            $q->where('user_id', user_id());
+        });
+    }
+
     public function store(array $input) {
         return DB::transaction(function() use($input) {
             return $this->query()->create([

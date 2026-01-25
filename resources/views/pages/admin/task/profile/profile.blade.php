@@ -1,7 +1,7 @@
 @extends('layouts.admin.app')
 @section('title', __('Task profile'))
-@include('includes.assets.confirm_alert_assets')
 @include('includes.assets.sweetalert_assets')
+@include('includes.assets.confirm_alert_assets')
 @include('includes.assets.ckeditor5_assets')
 @include('includes.assets.select2_assets')
 @include('includes.assets.maskmoney_assets')

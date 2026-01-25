@@ -5,6 +5,7 @@ namespace App\Providers;
 use App\Models\Expense;
 use App\Models\Task\Task;
 use App\Models\Task\TaskAssignment;
+use App\Models\Task\TaskProgressLog;
 use App\Observers\ExpenseObserver;
 use App\Observers\TaskAssignmentObserver;
 use App\Observers\TaskObserver;

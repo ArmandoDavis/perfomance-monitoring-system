@@ -5,23 +5,29 @@ namespace App\Policies;
 use App\Models\Access\User;
 use App\Models\System\CodeValue;
 use App\Models\Task\Task;
+use Illuminate\Support\Facades\Log;
 
 class TaskPolicy
 {
     public function before(User $user, string $ability)
     {
-        logger()->info('TaskPolicy before hit', [
-            'user_id' => $user->id,
-            'ability' => $ability,
-        ]);
+//        logger()->info('TaskPolicy before hit', [
+//            'user_id' => $user->id,
+//            'ability' => $ability,
+//        ]);
 
         if ($user->hasRole('Admin')) {
             return true;
         }
+
+        return null;
     }
 
     public function viewAny(User $user): bool
     {
+//        Log::info('TaskPolicy viewAny hit', [
+//            'user_id' => $user->id
+//        ]);
         return $user->can('task.view_all') || $user->can('task.view_assigned');
     }
 

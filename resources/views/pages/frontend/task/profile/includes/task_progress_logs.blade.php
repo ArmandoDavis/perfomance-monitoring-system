@@ -1,0 +1,31 @@
+<div class="card-body p-0">
+    <table class="table table-bordered mb-0">
+        <thead class="table-light">
+            <tr>
+                <th>{{ __('User') }}</th>
+                <th>{{ __('Status') }}</th>
+                <th>{{ __('Comment') }}</th>
+                <th>{{ __('Logged At') }}</th>
+            </tr>
+        </thead>
+        <tbody>
+            @forelse($myProgressLogs as $log)
+                <tr>
+                    <td>{{ $log->user->name }}</td>
+                    <td>{!! getStatusLabelBadge($log->status) !!}</td>
+                    <td>{!! $log->comment ?? '-' !!}</td>
+                    <td>
+                        {{ short_date_format_with_day($log->logged_at) }},
+                        {{ time_date_format($log->logged_at) }}
+                    </td>
+                </tr>
+            @empty
+                <tr>
+                    <td colspan="4" class="text-center text-muted">
+                        {{ __('No progress logs found') }}
+                    </td>
+                </tr>
+            @endforelse
+        </tbody>
+    </table>
+</div>

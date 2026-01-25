@@ -26,4 +26,21 @@ class TaskPerformanceRepository extends BaseRepository
             ]);
         });
     }
+
+    public function recentUserPerformanceScores()
+    {
+        $userId = user_id();
+        return $this->query()->where('user_id', $userId)
+            ->latest()
+            ->take(5)
+            ->get()
+            ->map(function ($score) {
+                return [
+                    'type' => 'performance',
+                    'title' => 'Performance Evaluated',
+                    'description' => 'Score: ' . $score->total_score . '/100',
+                    'date' => $score->created_at,
+                ];
+            });
+    }
 }

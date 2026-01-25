@@ -16,6 +16,6 @@ class HomeController extends Controller
         if ($user->isAdmin()) {
             return redirect()->route('admin_panel.dashboard');
         }
-        return redirect()->route('frontend.dashboard.index');
+        return redirect()->route('frontend.dashboard');
     }
 }

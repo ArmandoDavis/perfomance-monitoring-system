@@ -43,7 +43,7 @@ class UserSeeder extends Seeder
             $staff = User::updateOrCreate(
                 ['email' => "swaumu.davis@teganas.co.tz"],
                 [
-                    'name' => "Swaumu Davis Makanshu",
+                    'name' => "Swaumu Makanshu",
                     'password' => $password,
                     'department_id' => $hr->id,
                     'uuid' => str_unique()

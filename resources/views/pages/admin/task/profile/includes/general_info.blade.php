@@ -123,7 +123,7 @@
                         <tbody>
                         @foreach($task->comments as $comment)
                             <tr>
-                                <td>{{ optional($comment->creator)->name ?? __('Deleted User') }}</td>
+                                <td>{{ $comment->user->name }}</td>
                                 <td>{!!  $comment->content  !!}</td>
                                 <td>{{ short_date_format_with_day($comment->created_at) }}, {{ time_date_format($comment->created_at) }}</td>
                             </tr>

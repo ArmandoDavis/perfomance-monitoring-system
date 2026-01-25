@@ -3,11 +3,11 @@
 use App\Http\Controllers\Admin\Department\DepartmentController;
 use App\Http\Controllers\Admin\Documents\DocumentController;
 use App\Http\Controllers\Admin\Task\CommentController;
-use App\Http\Controllers\Admin\Task\SubtaskController;
 use App\Http\Controllers\Admin\Task\TaskAssignmentController;
 use App\Http\Controllers\Admin\Task\TaskController;
 use App\Http\Controllers\Admin\Task\TaskExpenseController;
 use App\Http\Controllers\Admin\Task\TaskPerformanceController;
+use App\Http\Controllers\Frontend\MyTaskController;
 use App\Http\Controllers\HomeController;
 use App\Http\Controllers\ManagerController;
 use App\Http\Controllers\ProfileController;
@@ -120,7 +120,51 @@ Route::middleware(['auth'])->group(function () {
             Route::put('{budget}', [TaskController::class, 'updateBudget'])->name('update');
             Route::delete('{budget}', [TaskController::class, 'destroyBudget'])->name('destroy');
         });
+
+        Route::prefix('user_profile')->name('user_profile.')->group(function () {
+            Route::get('/my_profile', [App\Http\Controllers\Admin\ProfileController::class, 'index'])->name('my_profile');
+        });
     });
+
+
+    /** frontend routes */
+    Route::prefix('frontend')->name('frontend.')->group(function () {
+        Route::get('/dashboard', [DashboardController::class, 'staffDashboard'])->name('dashboard');
+
+        /** user tasks */
+        Route::prefix('tasks')->name('tasks.')->group(function () {
+            Route::get('/', [MyTaskController::class, 'index'])->name('index');
+            Route::get('/create', [MyTaskController::class, 'create'])->name('create');
+            Route::post('/store', [MyTaskController::class, 'store'])->name('store');
+            Route::get('/get_all_for_dt', [MyTaskController::class, 'getAllForDt'])->name('get_all_for_dt');
+
+            Route::get('/edit/{task}', [MyTaskController::class, 'edit'])->name('edit');
+            Route::put('/update/{task}', [MyTaskController::class, 'update'])->name('update');
+            Route::put('/update_status/{task}/{status}', [MyTaskController::class, 'updateStatus'])->name('update_status');
+            Route::get('/profile/{task}', [MyTaskController::class, 'profile'])->name('profile');
+            Route::delete('/delete/{task}', [MyTaskController::class, 'delete'])->name('delete');
+
+
+            Route::prefix('comment')->name('comment.')->group(function () {
+                Route::post('/store/{task}', [CommentController::class, 'store'])->name('store');
+            });
+
+            Route::prefix('expenses')->name('expenses.')->group(function () {
+                Route::post('/store/{task}', [TaskExpenseController::class, 'store'])->name('store');
+                Route::put('/approve/{expense}', [TaskExpenseController::class, 'approve'])->name('approve');
+            });
+        });
+        /** end of user tasks */
+        Route::prefix('user_profile')->name('user_profile.')->group(function () {
+            Route::get('/my_profile', [ProfileController::class, 'index'])->name('my_profile');
+            Route::put('/change_password', [ProfileController::class, 'changePassword'])->name('change_password');
+            Route::put('/update', [ProfileController::class, 'update'])->name('update');
+            Route::get('/security', [ProfileController::class, 'security'])->name('security');
+        });
+    });
+
+
+
 
     /** MANAGER ROUTES */
     Route::middleware(['role:manager'])->prefix('manager')->name('manager.')->group(function () {

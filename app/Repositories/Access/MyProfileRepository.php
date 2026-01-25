@@ -32,6 +32,7 @@
             $user->update([
                 'password' => $input['password'],
                 'is_password_updated' => true,
+                'password_updated_at' => now(),
             ]);
             return $user;
         }

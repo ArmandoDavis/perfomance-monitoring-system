@@ -20,6 +20,7 @@ return new class extends Migration
             $table->text('comment')->nullable();
             $table->timestamp('logged_at')->useCurrent();
             $table->string('uuid');
+            $table->timestamps();
             $table->softDeletes();
         });
     }

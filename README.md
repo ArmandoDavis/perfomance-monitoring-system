@@ -2,7 +2,7 @@
 
 composer install
 
-php artisan migrate:fresh --path=database/migrations/version100 // run this command only once please oiiiii
+php artisan migrate:fresh --path=database/migrations/version100
 
 composer dump-autoload
 
@@ -26,8 +26,7 @@ same password for all users === Password
 
 
 TODO
-
--> DOCUMENT TAB IN TASK PROFILE => PENDING
+-> expense approve in admin task profile
 
 -> user management
 
@@ -37,10 +36,12 @@ TODO
 
 -> breadcrumbs
 
--> complete user profile
+-> complete user profile only for admin
 
 -> improve dashboard
 
 -> search to the top bar
+
+-> logs
 
 if anything found miss add here

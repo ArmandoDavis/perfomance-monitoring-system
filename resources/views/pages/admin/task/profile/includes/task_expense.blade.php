@@ -17,7 +17,7 @@
                     <tr>
                         <td>{{ $expense->user->name }}</td>
                         <td>{{ number_2_format($expense->amount) }}</td>
-                        <td>{{ Str::limit($expense->description, 40) }}</td>
+                        <td>{!! Str::limit($expense->description, 40) !!}</td>
                         <td>
                             @if($expense->receipt)
                                 <a href="{{ route('attachments.download', $expense->receipt->uuid) }}" class="text-primary">

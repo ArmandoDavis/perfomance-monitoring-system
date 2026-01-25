@@ -45,4 +45,28 @@ class TaskExpenseRepository extends BaseRepository
             ]);
         });
     }
+
+    public function getTotalUserExpenses()
+    {
+        $userId = user_id();
+        return $this->query()->whereHas('task.assignments', function ($q) use ($userId) {
+            $q->where('user_id', $userId);
+        })->sum('amount');
+    }
+
+    public function getRecentExpenses()
+    {
+        $userId = user_id();
+        return $this->query()->whereHas('task.assignments', function ($q) use ($userId) {
+            $q->where('user_id', $userId);
+        })->latest()->take(5)->get()
+            ->map(function ($expense) {
+                return [
+                    'type' => 'expense',
+                    'title' => 'Expense Added',
+                    'description' => 'Amount: ' . number_format($expense->amount, 2) . ' TZS',
+                    'date' => $expense->created_at,
+                ];
+            });
+    }
 }

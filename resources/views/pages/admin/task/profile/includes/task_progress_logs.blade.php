@@ -11,12 +11,8 @@
         <tbody>
             @forelse($task->progressLogs as $log)
                 <tr>
-                    <td>{{ optional($log->user)->name }}</td>
-                    <td>
-                        <span class="badge bg-info">
-                            {{ getStatusLabelBadge($log->status->name) }}
-                        </span>
-                    </td>
+                    <td>{{ $log->user->name }}</td>
+                    <td>{!! getStatusLabelBadge($log->status) !!}</td>
                     <td>{!! $log->comment ?? '-' !!}</td>
                     <td>
                         {{ short_date_format_with_day($log->logged_at) }},

@@ -24,7 +24,6 @@ class TaskExpenseController extends Controller
 
     public function approve(Expense $expense)
     {
-        logger("point 1");
         if ($expense->approved_at) {
             return redirect()->back()->with('flash_warning', __('Expense already approved.'));
         }
