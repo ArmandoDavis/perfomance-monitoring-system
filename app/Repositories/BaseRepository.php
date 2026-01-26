@@ -405,9 +405,9 @@ class BaseRepository
 
     /**
      * @param $model
-     * change the status isactive of the model
+     * change the status is_active of the model
      */
-    public function changeStatus($model, $col = 'isactive')
+    public function changeStatus($model, $col = 'is_active')
     {
         $status = $model->$col;
         switch ($status)

@@ -38,7 +38,7 @@
 
                         @if(!$expense->approved_at)
                             <td>
-                                <form action="{{ route('admin_panel.tasks.expenses.approve', $expense->uuid) }}" method="POST" class="d-none" id="confirm-form-approve-{{ $expense->uuid }}">
+                                <form action="{{ route('admin_panel.tasks.expenses.approve', $expense->uuid) }}" method="POST" class="d-none confirm-form-approve-{{ $expense->uuid }}">
                                     @csrf
                                     @method('PUT')
                                 </form>

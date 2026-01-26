@@ -61,7 +61,7 @@
                                             <i class="material-icons-outlined">edit</i> {{ __('Edit') }}
                                         </a>
 
-                                        <form action="{{ route('admin_panel.tasks.change_status', $task->uuid) }}" method="POST" class="d-none" id="confirm-form-complete-{{ $task->uuid }}">
+                                        <form action="{{ route('admin_panel.tasks.change_status', $task->uuid) }}" method="POST" class="d-none confirm-form-complete-{{ $task->uuid }}">
                                             @csrf
                                             @method('PUT')
 
@@ -78,7 +78,7 @@
                                     @if($task->status->reference == "SCS005" && $task->status->reference == "SCS006")
                                         @if($task->is_active)
                                             {{-- Deactivate form --}}
-                                            <form action="{{ route('admin_panel.tasks.change_status', $task->uuid) }}" method="POST" class="d-none" id="confirm-form-deactivate-{{ $task->uuid }}">
+                                            <form action="{{ route('admin_panel.tasks.change_status', $task->uuid) }}" method="POST" class="d-none confirm-form-deactivate-{{ $task->uuid }}">
                                                 @csrf
                                                 @method('PUT')
 
@@ -92,7 +92,7 @@
                                             </a>
                                         @else
                                             {{-- Activate form --}}
-                                            <form action="{{ route('admin_panel.tasks.change_status', $task->uuid) }}" method="POST" class="d-none" id="confirm-form-activate-{{ $task->uuid }}">
+                                            <form action="{{ route('admin_panel.tasks.change_status', $task->uuid) }}" method="POST" class="d-none confirm-form-activate-{{ $task->uuid }}">
                                                 @csrf
                                                 @method('PUT')
 
@@ -100,7 +100,7 @@
                                                 <input type="hidden" name="action" value="activate">
                                             </form>
 
-                                            <a href="javascript:void(0)" class="btn btn-sm btn-info mb-2 me-2" onclick="formActionConfirmation(  'activate-{{ $task->uuid }}', '{{ __('Activate') }}'  )">
+                                            <a href="javascript:void(0)" class="btn btn-sm btn-info mb-2 me-2" onclick="formActionConfirmation('activate-{{ $task->uuid }}', '{{ __('Activate') }}'  )">
                                                 <i class="material-icons-outlined">update</i>
                                                 {{ __('Activate') }}
                                             </a>
@@ -112,7 +112,7 @@
                                 {{-- delete task --}}
                                 @can('task.delete')
                                     @if($task->can_be_deleted)
-                                        <form class="confirm-form-delete{{ $task->uuid }}" action="{{ route('admin_panel.tasks.delete', $task->uuid) }}" method="POST" style="display: none;">
+                                        <form class="confirm-form-delete-{{ $task->uuid }}" action="{{ route('admin_panel.tasks.delete', $task->uuid) }}" method="POST" style="display: none;">
                                             @csrf
                                             @method('DELETE')
                                         </form>

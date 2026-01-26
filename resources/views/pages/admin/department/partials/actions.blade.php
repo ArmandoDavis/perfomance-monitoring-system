@@ -8,7 +8,7 @@
     @can('update', $department)
         @if ($department->is_active)
             {{-- Deactivate Form --}}
-            <form method="POST" action="{{ route('admin_panel.departments.change_status', $department->uuid) }}" class="d-none" id="confirm-form-deactivate-{{ $department->uuid }}">
+            <form method="POST" action="{{ route('admin_panel.departments.change_status', $department->uuid) }}" class="d-none confirm-form-deactivate-{{ $department->uuid }}">
                 @csrf
                 @method('PUT')
 
@@ -22,7 +22,7 @@
 
         @else
             {{-- Activate Form --}}
-            <form method="POST" action="{{ route('admin_panel.departments.change_status', $department->uuid) }}" class="d-none" id="confirm-form-activate-{{ $department->uuid }}">
+            <form method="POST" action="{{ route('admin_panel.departments.change_status', $department->uuid) }}" class="d-none confirm-form-activate-{{ $department->uuid }}">
                 @csrf
                 @method('PUT')
 

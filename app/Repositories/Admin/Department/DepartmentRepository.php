@@ -44,9 +44,8 @@ class DepartmentRepository extends BaseRepository
     {
         return DB::transaction(function () use($department, $input) {
             return match ($input['action']) {
-                'activate'   => $this->changeStatus($department, true),
-                'deactivate' => $this->changeStatus($department, false),
-                default      => throw new \Exception(__('alert.invalid_action')),
+                'activate'   => $this->changeStatus($department),
+                'deactivate' => $this->changeStatus($department)
             };
         });
     }

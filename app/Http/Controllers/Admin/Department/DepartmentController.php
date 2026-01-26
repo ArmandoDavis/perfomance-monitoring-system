@@ -61,8 +61,8 @@ class DepartmentController extends Controller
 
     public function changeDepartmentStatus(DepartmentRequest $request, Department $department)
     {
-       $message = $this->depertmentRepository->changeDepartmentStatus($department, $request->all());
-       return redirect()->back()->with('flash_success', $message);
+       $this->depertmentRepository->changeDepartmentStatus($department, $request->all());
+       return redirect()->back()->with('flash_success', "Department status updated successfully ");
     }
 
     public function getActiveDepartments()

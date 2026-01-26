@@ -11,10 +11,10 @@ class TaskPolicy
 {
     public function before(User $user, string $ability)
     {
-//        logger()->info('TaskPolicy before hit', [
-//            'user_id' => $user->id,
-//            'ability' => $ability,
-//        ]);
+        logger()->info('TaskPolicy before hit', [
+            'user_id' => $user->id,
+            'ability' => $ability,
+        ]);
 
         if ($user->hasRole('Admin')) {
             return true;
@@ -43,6 +43,11 @@ class TaskPolicy
     public function create(User $user): bool
     {
         return $user->can('task.create');
+    }
+
+    public function edit(User $user): bool
+    {
+        return $user->can('task.update');
     }
 
     public function assign(User $user, Task $task): bool

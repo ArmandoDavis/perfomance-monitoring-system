@@ -74,7 +74,7 @@ class TaskRepository extends BaseRepository
             return match ($input['action']) {
                 'activate'   => $this->changeStatus($task, true),
                 'deactivate' => $this->changeStatus($task, false),
-                'complete' => $task->update(['status_cv_id' => $complete->id]),
+                'complete' => $task->update(['status_cv_id' => $complete->id, 'completed_at' => now()]),
                 default      => throw new \Exception(__('Invalid action')),
             };
         });
@@ -109,7 +109,6 @@ class TaskRepository extends BaseRepository
     public function delete(Model $task): ?bool
     {
         return DB::transaction(function () use($task) {
-            $this->renamingSoftDelete($task, 'name');
             return $task->delete();
         });
     }

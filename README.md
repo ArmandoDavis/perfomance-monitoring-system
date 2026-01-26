@@ -44,4 +44,16 @@ TODO
 
 -> logs
 
+-> system notifications
+
 if anything found miss add here
+
+
+TESTING OBSERVATIONS
+1. Edit task button haifany kazi(Inaleta error)
+2. Close button and Delete button ya Task hairespond => Done
+3. Approve button haifanyi kazi => Done
+4. Assign user button inafungua fresh kiwidget ila ukisubmit inaleta mysql error => hii pia nadhan haujarun command ya php artisan migrate:fresh --path=database/migrations/version100
+5. Activate and diactivate button departments arent working too => Done
+6. User's Tasks arent retrieved yet inaleta mysql query instead of data  => confirm hiyo command hapo juuu
+7. search bar not connected yet => hii n kweli bado maana niliona ni ziada
