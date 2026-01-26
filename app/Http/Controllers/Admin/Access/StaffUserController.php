@@ -7,6 +7,7 @@ use App\Models\Access\User;
 use App\Repositories\Access\RoleRepository;
 use App\Repositories\Access\UserRepository;
 use Illuminate\Http\Request;
+use OwenIt\Auditing\Models\Audit;
 use Yajra\DataTables\DataTables;
 
 class StaffUserController extends Controller
@@ -26,26 +27,26 @@ class StaffUserController extends Controller
 
     public function create()
     {
-        $roles = $this->roleRepo->getActiveRoles();
+        $roles = $this->roleRepo->forSelect();
         return view('pages.admin.user.staff.create', compact('roles'));
     }
 
     public function edit(User $user)
     {
-        $roles = $this->roleRepo->getActiveRoles();
+        $roles = $this->roleRepo->forSelect();
         return view('pages.admin.user.staff.edit', compact('user', 'roles'));
     }
 
     public function store(UserRequest $request)
     {
         $user = $this->userRepo->store($request->all());
-        return redirect()->route('admin.users.staff.profile', $user->uid)->with('success', __('New staff created successfully'));
+        return redirect()->route('admin_panel.users.profile', $user->uuid)->with('flash_success', __('New staff created successfully'));
     }
 
     public function update(UserRequest $request, User $user)
     {
         $this->userRepo->update($user, $request->all());
-        return  redirect()->route('admin.users.staff.profile', $user->uid)->with('success', __('Staff details updated successfully'));
+        return  redirect()->route('admin_panel.users.profile', $user->uuid)->with('flash_success', __('Staff details updated successfully'));
     }
 
     public function profile(User $user)
@@ -56,17 +57,17 @@ class StaffUserController extends Controller
     public function delete(Request $request, User $user)
     {
         if ($user->id === user_id()) {
-            return redirect()->back()->with('error', __('You can delete your own account'));
+            return redirect()->back()->with('flash_danger', __('You can delete your own account'));
         }
 
         $this->userRepo->delete($user);
-        return  redirect()->route('admin_panel.users.index')->with('success', __('Staff user deleted successfully'));
+        return  redirect()->route('admin_panel.users.index')->with('flash_success', __('Staff user deleted successfully'));
     }
 
     public function resendPassowrd(Request $request)
     {
         $this->userRepo->resendPassword($request->all());
-        return redirect()->back()->with('success', __('messages.new_password_sent'));
+        return redirect()->back()->with('flash_success', __('New password resent'));
     }
 
     public function toggleStatus(Request $request)
@@ -79,7 +80,7 @@ class StaffUserController extends Controller
         if (auth()->id() == $request->user_id && !$request->is_active) {
             return response()->json([
                 'success' => false,
-                'message' => __('messages.cannot_disable_self')
+                'message' => __('You can not disable your own account')
             ], 403);
         }
 
@@ -102,50 +103,58 @@ class StaffUserController extends Controller
 
     public function getCausedActivityForDt(User $user)
     {
-        $activities = Activity::where('causer_id', $user->id)
-            ->with(['subject'])
-            ->select('activity_log.*');
-
-        return DataTables::of($activities)
-            ->addColumn('description', function ($activity) {
+        $audits = Audit::where('user_id', $user->id)->select('audits.*')->latest();
+        return DataTables::of($audits)
+            ->addColumn('description', function ($audit) {
                 $badgeClass = [
                     'created' => 'success',
                     'updated' => 'info',
-                    'deleted' => 'danger'
-                ][$activity->event] ?? 'secondary';
+                    'deleted' => 'danger',
+                ][$audit->event] ?? 'secondary';
 
                 return sprintf(
                     '<span class="badge badge-%s">%s</span> %s',
                     $badgeClass,
-                    ucfirst($activity->event),
-                    $activity->description
+                    ucfirst($audit->event),
+                    class_basename($audit->auditable_type)
                 );
             })
-            ->addColumn('subject', function ($activity) {
-                return $activity->subject
-                    ? class_basename($activity->subject) . ' #' . $activity->subject->id
-                    : '<span class="text-muted">N/A</span>';
+
+            ->addColumn('subject', function ($audit) {
+                if ($audit->auditable_type && $audit->auditable_id) {
+                    return class_basename($audit->auditable_type) . ' #' . $audit->auditable_id;
+                }
+
+                return '<span class="text-muted">N/A</span>';
             })
-            ->addColumn('changes', function ($activity) {
-                if ($activity->properties && count($activity->properties['attributes'] ?? [])) {
+
+            ->addColumn('changes', function ($audit) {
+                if (!empty($audit->new_values)) {
                     return sprintf(
-                        '<button class="btn btn-sm btn-outline-primary view-changes" data-properties="%s">%s</button>',
-                        htmlspecialchars(json_encode($activity->properties), ENT_QUOTES, 'UTF-8'),
-                        __('label.view_changes')
+                        '<button class="btn btn-sm btn-outline-primary view-changes"
+                        data-properties="%s">%s</button>',
+                        htmlspecialchars(json_encode([
+                            'old' => $audit->old_values,
+                            'new' => $audit->new_values,
+                        ]), ENT_QUOTES, 'UTF-8'),
+                        __('View changes')
                     );
                 }
-                return '<span class="text-muted">'.__('label.no_changes').'</span>';
+
+                return '<span class="text-muted">' . __('no changes') . '</span>';
             })
-            ->addColumn('date', function ($activity) {
+
+            ->addColumn('date', function ($audit) {
                 return sprintf(
                     '%s<div class="text-muted small">%s</div>',
-                    $activity->created_at->format('M d, Y h:i A'),
-                    $activity->created_at->diffForHumans()
+                    $audit->created_at->format('M d, Y h:i A'),
+                    $audit->created_at->diffForHumans()
                 );
             })
-            ->rawColumns(['description', 'subject', 'changes', 'date'])->make(true);
-    }
 
+            ->rawColumns(['description', 'subject', 'changes', 'date'])
+            ->make(true);
+    }
 
     public function getAllForDt()
     {
@@ -153,11 +162,11 @@ class StaffUserController extends Controller
             ->addColumn('created_at', function($user) {
                 return $user->created_at->diffForHumans();
             })
-            ->addColumn('admin_badge', function($user) {
-                return getBooleanBadge($user->is_super_admin);
+            ->addColumn('user_type', function($user) {
+                return $user->user_type;
             })
             ->addColumn('status_badge', function($user) {
                 return getStatusBadge($user->is_active);
-            })->rawColumns(['admin_badge', 'status_badge'])->make(true);
+            })->rawColumns(['user_type', 'status_badge'])->make(true);
     }
 }

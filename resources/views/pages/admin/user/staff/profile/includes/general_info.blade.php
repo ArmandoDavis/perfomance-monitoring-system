@@ -23,6 +23,10 @@
                             <th>@lang('Username')</th>
                             <td>{{ $user->email ?? '' }}</td>
                         </tr>
+                        <tr>
+                            <th>@lang('User type')</th>
+                            <td>{{ $user->userType->name ?? '' }}</td>
+                        </tr>
                     </tbody>
                 </table>
             </div>

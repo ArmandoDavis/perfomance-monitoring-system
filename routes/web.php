@@ -137,7 +137,11 @@ Route::middleware(['auth'])->group(function () {
             Route::get('/create', [StaffUserController::class, 'create'])->name('create');
             Route::get('/get_staff_user_for_dt', [StaffUserController::class, 'getAllForDt'])->name('get_staff_user_for_dt');
             Route::get('/profile/{user}', [StaffUserController::class, 'profile'])->name('profile');
+
             Route::get('/edit/{user}', [StaffUserController::class, 'edit'])->name('edit');
+            Route::put('/update/{user}', [StaffUserController::class, 'update'])->name('update');
+            Route::post('/store', [StaffUserController::class, 'store'])->name('store');
+
             Route::post('/resend_resend_temp_password/{user}', [StaffUserController::class, 'resendPassowrd'])->name('resend_resend_temp_password');
             Route::delete('/delete/{user}', [StaffUserController::class, 'delete'])->name('delete');
         });

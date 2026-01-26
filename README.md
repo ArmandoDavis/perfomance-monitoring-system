@@ -2,7 +2,7 @@
 
 composer install;
 
-php artisan migrate:fresh --path=database/migrations/version100;
+php artisan migrate --path=database/migrations/version100;
 
 composer dump-autoload;
 

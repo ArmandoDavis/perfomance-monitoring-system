@@ -1,108 +1,181 @@
-@extends('layouts.backend.app')
-@section('title', __('label.user.add_staff'))
+@extends('layouts.admin.app')
+@section('title', 'Edit staff')
+
 @include('includes.assets.select2_assets')
 
 @section('content')
-    {!! Html::formOpen(['route' => 'backend.users.staff.store', 'autocomplete' => 'off','method' => 'post', 'name' => 'create', 'class' => 'needs-validation' ,'novalidate', 'enctype'=>"multipart/form-data"]) !!}
-    {{ Html::hidden('action_type', 1, []) }}
-    {{ Html::hidden('today', getTodayDate(), []) }}
+    <form action="{{ route('admin_panel.users.store') }}"
+          method="POST"
+          enctype="multipart/form-data"
+          name="create"
+          class="needs-validation"
+          novalidate
+          autocomplete="off">
 
-    <div class="row">
-        <div class="col-lg-12">
-            <div class="card">
-                <div class="card-body">
+        @csrf
+        <input type="hidden" name="action_type" value="1">
 
-                    <div class="form-group row mb-2">
-                        <div class="col-xxl-3 col-md-6">
-                            <div>
-                                {{ Html::labels('name', __('label.name'), ['class' =>'required_asterik form-label']) }}
-                                {{ Html::texts('name', null, ['class'=>'form-control form-control-sm required', 'id' => 'name', 'placeholder' => '', 'autocomplete' => 'off']) }}
-                                {!! $errors->first('name', '<span class="badge rounded-pill bg-danger text-white">:message</span>') !!}
-                            </div>
-                        </div>
-                        <!--end col-->
-                        <div class="col-xxl-3 col-md-6">
-                            <div class="form-group">
-                                {{ Html::labels('phone', __('label.phone'), ['class' =>'required_asterik form-label']) }}
-                                {{ Html::texts('phone', null, ['class'=>'form-control form-control-sm required', 'id' => 'phone', 'placeholder' => '', 'autocomplete' => 'off']) }}
-                                {!! $errors->first('phone', '<span class="badge rounded-pill bg-danger text-white">:message</span>') !!}
-                            </div>
-                        </div>
-                    </div>
-                    <div class="form-group row mb-2">
-                        <div class="col-xxl-3 col-md-6">
-                            <div>
-                                {{ Html::labels('email', __('label.email'), ['class' =>'required_asterik form-label']) }}
-                                {{ Html::texts('email', null, ['class'=>'form-control form-control-sm required', 'id' => 'email', 'placeholder' => '', 'autocomplete' => 'off']) }}
-                                {!! $errors->first('email', '<span class="badge rounded-pill bg-danger text-white">:message</span>') !!}
-                            </div>
-                        </div>
-                        <!--end col-->
-                        <div class="col-xxl-3 col-md-6">
-                            <div class="form-group">
-                                {{ Html::labels('username', __('label.user.username'), ['class' =>'form-label']) }}
-                                {{ Html::texts('username', null, ['class'=>'form-control form-control-sm', 'id' => 'username', 'placeholder' => '', 'autocomplete' => 'off']) }}
-                                {!! $errors->first('username', '<span class="badge rounded-pill bg-danger text-white">:message</span>') !!}
-                            </div>
-                        </div>
-                    </div>
+        <div class="container-fluid">
+            <div class="row">
+                <div class="col-12">
+                    <div class="card shadow-sm">
+                        <div class="card-body">
 
-                    <div class="form-group row mb-2">
-                        <div class="col-xxl-3 col-md-6">
-                            <div class="form-group">
-                                {{ Html::labels('role', __('label.role'), ['class' =>'required_asterik form-label']) }}
-                                {{ Html::selectMultiple('roles', $roles->pluck('display_name', 'id'), [], [
-                                    'class' => 'select2 form-control required',
-                                    'id' => 'roles',
-                                    'placeholder' => __('label.roles.select_roles'),
-                                    'autocomplete' => 'off'
-                                ]) }}
-                                {!! $errors->first('role', '<span class="badge rounded-pill bg-danger text-white">:message</span>') !!}
-                            </div>
-                        </div>
-                    </div>
+                            <!-- Name & Phone -->
+                            <div class="row g-3 mb-2">
+                                <div class="col-xxl-3 col-md-6">
+                                    <label for="name" class="form-label required_asterik">
+                                        Name
+                                    </label>
+                                    <input type="text"
+                                           name="name"
+                                           id="name"
+                                           value="{{ old('name') }}"
+                                           class="form-control form-control-sm @error('name') is-invalid @enderror"
+                                           autocomplete="off">
 
-                    <!-- Status -->
-                    <div class="row mb-3">
-                        <div class="col-md-6">
-                            <div class="form-check mt-4">
-                                {{ Html::checkbox('is_active', 1, true, ['class' => 'form-check-input', 'id' => 'is_active']) }}
-                                {{ Html::labels('is_active', __('label.is_active'), ['class' => 'form-check-label']) }}
-                                {!! $errors->first('is_active', '<span class="text-danger small text-white">:message</span>') !!}
-                            </div>
-                        </div>
-                    </div>
+                                    @error('name')
+                                    <div class="invalid-feedback">{{ $message }}</div>
+                                    @enderror
+                                </div>
 
-                    <!-- Submit Buttons -->
-                    <div class="row">
-                        <div class="col-md-12">
-                            <div class="element-form">
-                                <div class="form-group d-flex justify-content-end gap-2">
-                                    {{ link_to_route('backend.users.staff.index',trans('buttons.general.cancel'),[],['id'=> 'cancel', 'class' => 'btn btn-dark cancel_button', ]) }}
-                                    {{ Html::submits(trans('buttons.general.submit'), ['class' => 'btn btn-primary', 'type'=>'submit', 'style' => 'border-radius: 5px;',  'id' => 'submit_btn']) }}
-                                    <label id="submit_label"></label>
+                                <div class="col-xxl-3 col-md-6">
+                                    <label for="phone" class="form-label required_asterik">
+                                        Phone
+                                    </label>
+                                    <input type="text"
+                                           name="phone"
+                                           id="phone"
+                                           value="{{ old('phone') }}"
+                                           class="form-control form-control-sm @error('phone') is-invalid @enderror"
+                                           autocomplete="off">
+
+                                    @error('phone')
+                                    <div class="invalid-feedback">{{ $message }}</div>
+                                    @enderror
                                 </div>
                             </div>
+
+                            <!-- Email & Username -->
+                            <div class="row g-3 mb-2">
+                                <div class="col-xxl-3 col-md-6">
+                                    <label for="email" class="form-label required_asterik">
+                                        Email
+                                    </label>
+                                    <input type="email"
+                                           name="email"
+                                           id="email"
+                                           value="{{ old('email') }}"
+                                           class="form-control form-control-sm @error('email') is-invalid @enderror"
+                                           autocomplete="off">
+
+                                    @error('email')
+                                    <div class="invalid-feedback">{{ $message }}</div>
+                                    @enderror
+                                </div>
+
+                                <div class="col-xxl-3 col-md-6">
+                                    <label for="username" class="form-label">
+                                        Username
+                                    </label>
+                                    <input type="text"
+                                           name="username"
+                                           id="username"
+                                           value="{{ old('username') }}"
+                                           class="form-control form-control-sm @error('username') is-invalid @enderror"
+                                           autocomplete="off">
+
+                                    @error('username')
+                                    <div class="invalid-feedback">{{ $message }}</div>
+                                    @enderror
+                                </div>
+                            </div>
+
+                            <!-- Roles -->
+                            <div class="row g-3 mb-3">
+                                <div class="col-xxl-3 col-md-6">
+                                    <label for="roles" class="form-label required_asterik">
+                                        Role
+                                    </label>
+
+                                    <select name="roles[]"
+                                            id="roles"
+                                            class="select2 form-control @error('roles') is-invalid @enderror"
+                                            multiple>
+                                        @foreach($roles as $role)
+                                            <option value="{{ $role->id }}"
+                                                {{ in_array($role->id, old('roles', [])) ? 'selected' : '' }}>
+                                                {{ $role->name }}
+                                            </option>
+                                        @endforeach
+                                    </select>
+
+                                    @error('roles')
+                                    <div class="invalid-feedback d-block">{{ $message }}</div>
+                                    @enderror
+                                </div>
+                            </div>
+
+                            <!-- Status -->
+                            <div class="row mb-4">
+                                <div class="col-md-6">
+                                    <div class="form-check form-switch mt-2">
+                                        <input class="form-check-input"
+                                               type="checkbox"
+                                               id="is_active"
+                                               name="is_active"
+                                               value="1"
+                                            {{ old('is_active', 1) ? 'checked' : '' }}>
+
+                                        <label class="form-check-label" for="is_active">
+                                            Active
+                                        </label>
+                                    </div>
+                                </div>
+                            </div>
+
+                            <!-- Buttons -->
+                            <div class="row">
+                                <div class="col-12">
+                                    <div class="d-flex justify-content-end gap-2">
+                                        <a href="{{ route('admin_panel.users.index') }}"
+                                           id="cancel"
+                                           class="btn btn-outline-secondary">
+                                            Cancel
+                                        </a>
+
+                                        <button type="submit"
+                                                id="submit_btn"
+                                                class="btn btn-primary">
+                                            Submit
+                                        </button>
+
+                                        <span id="submit_label" class="ms-2 small text-muted"></span>
+                                    </div>
+                                </div>
+                            </div>
+
                         </div>
                     </div>
                 </div>
             </div>
         </div>
-    </div>
-
-    {!!  Html::formClose()  !!}
+    </form>
 @endsection
 
 @push('scripts')
     <script>
-        pleaseWaitSubmitButton("submit_btn","submit_label","{{ trans('label.please_wait') }}",2);
+        pleaseWaitSubmitButton("submit_btn", "submit_label", "Please wait...", 2);
+
         $('body').on('submit', 'form[name=create]', function(e) {
             e.preventDefault();
-            /*Codes Here*/
-            pleaseWaitSubmitButton("submit_btn","submit_label","{{ trans('label.please_wait') }}",1);
+            pleaseWaitSubmitButton("submit_btn", "submit_label", "Please wait...", 1);
             this.submit();
         });
 
-        $(".select2").select2();
+        $(".select2").select2({
+            width: '100%',
+            placeholder: "Select roles"
+        });
     </script>
 @endpush

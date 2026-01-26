@@ -27,7 +27,6 @@ class UserRequest extends Request
                     'name' => 'required|string|max:255',
                     'email' => 'required|email|unique:users,email',
                     'phone' => 'required|string|max:20|unique:users,phone',
-                    'username' => 'nullable|string|max:100|unique:users,username',
 
                 ];
                 $optional = [
@@ -50,8 +49,6 @@ class UserRequest extends Request
                         ->where(function ($query) use($resource_id) { $query->where('id','<>',$resource_id); })],
                 ];
                 $optional = [
-                    'username' =>  ['nullable','max:100', Rule::unique('users')
-                        ->where(function ($query) use($resource_id) { $query->where('id','<>',$resource_id); })],
                     'is_active' => 'nullable|boolean',
                     'is_super_admin' => 'nullable|boolean',
                 ];
@@ -71,8 +68,6 @@ class UserRequest extends Request
                         ->where(function ($query) use($resource_id) { $query->where('id','<>',$resource_id); })],
                 ];
                 $optional = [
-                    'username' =>  ['nullable','max:100', Rule::unique('users')
-                        ->where(function ($query) use($resource_id) { $query->where('id','<>',$resource_id); })],
                     'is_active' => 'nullable|boolean',
                     'is_super_admin' => 'nullable|boolean',
                 ];
@@ -83,7 +78,6 @@ class UserRequest extends Request
                     'name' => 'required|string|max:255',
                     'email' => 'required|email|unique:users,email',
                     'phone' => 'required|string|max:15|unique:users,phone',
-                    'username' => 'nullable|string|max:100|unique:users,username',
 
                 ];
                 $optional = [

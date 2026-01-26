@@ -15,8 +15,8 @@ class UserRepository extends BaseRepository
     public function store(array $input)
     {
         return DB::transaction(function() use($input) {
-            $rawPassword = $this->generatePassword();
-            $userType = CodeValue::getCodeValueByReference('USER003');
+            //$rawPassword = $this->generatePassword();
+            $userType = CodeValue::getCodeValueByReference('USER002');
 
             $emailVerifiedAt = null;
             if (isset($input['user_type_id'])) {
@@ -26,20 +26,20 @@ class UserRepository extends BaseRepository
             $user = $this->createMassAssign('users', [
                 'name' => $input['name'],
                 'email' => $input['email'],
-                'username' => $input['username'],
-                'password' => $input['password'] ?? $rawPassword,
+                'password' => $input['password'] ?? 12345678,
                 'phone' => $input['phone'],
                 'is_active' => filled($input['is_active']),
                 'is_super_admin' => $input['is_super_admin'] ?? false,
                 'user_type_id' => $input['user_type_id'] ?? $userType->id,
                 'email_verified_at' =>  $emailVerifiedAt,
+                'uuid' => str_unique()
             ]);
 
             if (isset($input['roles']) && empty($input['password'])) {
                 $this->assignRolesAndPermissions($user, $input['roles']);
-                $this->sendEmailWithPassword($user, $rawPassword);
+                //$this->sendEmailWithPassword($user, $rawPassword);
             } else {
-                $this->sendConfirmationCode($user);
+                //$this->sendConfirmationCode($user);
             }
             return $user;
         });
@@ -51,7 +51,6 @@ class UserRepository extends BaseRepository
             $this->updateMassAssign('users', $user->id, [
                 'name' => $input['name'],
                 'email' => $input['email'],
-                'username' => $input['username'],
                 'phone' => $input['phone'],
                 'is_active' => $input['is_active'],
             ]);
@@ -77,7 +76,6 @@ class UserRepository extends BaseRepository
     {
         return DB::transaction(function () use ($user) {
             $this->renamingSoftDelete($user, 'email');
-            $this->renamingSoftDelete($user, 'username');
             $this->renamingSoftDelete($user, 'phone');
             return $user->delete();
         });
@@ -111,7 +109,10 @@ class UserRepository extends BaseRepository
     {
         $staffType = CodeValue::getCodeValueByReference('USER002');
         $adminType = CodeValue::getCodeValueByReference('USER001');
-        return $this->query()->where('user_type_id', $staffType->id)->orWhere('user_type_id', $adminType->id)->get();
+//        return $this->query()->where('user_type_id', $staffType->id)->orWhere('user_type_id', $adminType->id)->get();
+        return $this->query()
+            ->select(['users.*', 'code_values.name as user_type'])
+            ->leftJoin('code_values', 'code_values.id', '=', 'users.user_type_id');
     }
 
     public function findByUid($uuid)

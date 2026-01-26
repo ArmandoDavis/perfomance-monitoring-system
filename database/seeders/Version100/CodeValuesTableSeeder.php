@@ -28,9 +28,7 @@ class CodeValuesTableSeeder extends Seeder
             ],
             'Auth User Type' => [
                 ['reference' => 'USER001', 'name' => 'Super Admin'],
-                ['reference' => 'USER002', 'name' => 'Staff'],
-                ['reference' => 'USER003', 'name' => 'Client'],
-                ['reference' => 'USER004', 'name' => 'Reseller'],
+                ['reference' => 'USER002', 'name' => 'Staff']
             ],
             'Gender' => [
                 ['reference' => 'GENDER01', 'name' => 'Male', 'is_system_defined' => 0],

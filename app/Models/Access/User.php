@@ -5,6 +5,7 @@ namespace App\Models\Access;
 use App\Models\Attachment;
 use App\Models\Department;
 use App\Models\Expense;
+use App\Models\System\CodeValue;
 use App\Models\Task\PerformanceScore;
 use App\Models\Task\Task;
 use Illuminate\Auth\Passwords\CanResetPassword;
@@ -80,5 +81,10 @@ class User extends Authenticatable implements AuditableContract, CanResetPasswor
     public function attachments()
     {
         return $this->hasMany(Attachment::class);
+    }
+
+    public function userType()
+    {
+        return $this->belongsTo(CodeValue::class);
     }
 }

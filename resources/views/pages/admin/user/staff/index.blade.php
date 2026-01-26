@@ -1,33 +1,29 @@
 @extends('layouts.admin.app')
-@section('title', __('Add staff'))
+@section('title', __('Staff List'))
 @include('includes.assets.datatable_assets')
 
-@section('breadcrumb-action')
-    <a href="{{ route('admin_panel.users.create') }}" class="btn btn-primary d-flex align-items-center">
-        <i class="ti ti-circle-plus me-2"></i> {{__('Add staff')}}
-    </a>
-@endsection
-
 @section('content')
-    <div class="row">
-        <div class="col-sm-12">
-            <div class="card">
-                <div class="card-body p-0">
-                    <div class="custom-datatable-filter table-responsive">
-                        <table class="table" id="staff_user_table">
-                            <thead class="thead-light">
-                                <tr>
-                                    <th>{{__('Full name')}}</th>
-                                    <th>{{__('Email')}}</th>
-                                    <th>{{__('Phone')}}</th>
-                                    <th>{{__('Is admin')}}</th>
-                                    <th>{{__('status')}}</th>
-                                    <th>{{__('Date registed')}}</th>
-                                </tr>
-                            </thead>
-                        </table>
-                    </div>
-                </div>
+    <div class="d-sm-flex align-items-center justify-content-end mb-4">
+        <a href="{{ route('admin_panel.users.create') }}" class="d-none d-sm-inline-block btn btn-xl btn-primary shadow-sm">
+            <i class="bi bi-plus-circle text-white-50"></i>  Add Staff
+        </a>
+    </div>
+
+    <div class="card">
+        <div class="card-body">
+            <div class="table-responsive">
+                <table class="table table-striped table-bordered" id="staff_user_table" width="100%" cellspacing="0">
+                    <thead>
+                        <tr>
+                            <th>{{ __('Full name') }}</th>
+                            <th>{{ __('Phone') }}</th>
+                            <th>{{ __('Email') }}</th>
+                            <th>{{ __('User type') }}</th>
+                            <th>{{ __('Status') }}</th>
+                            <th>{{ __('Date registered') }}</th>
+                        </tr>
+                    </thead>
+                </table>
             </div>
         </div>
     </div>
@@ -35,9 +31,9 @@
 
 @push('scripts')
     <script>
-        var url = "{{ url('/') }}";
+        const url = "{{ url('/') }}";
 
-        $(document).ready(function() {
+        $(document).ready(function () {
             $('#staff_user_table').DataTable({
                 processing: true,
                 serverSide: true,
@@ -49,35 +45,38 @@
                     { data: 'name', name: 'name', orderable: true, searchable: true },
                     { data: 'phone', name: 'phone', orderable: true, searchable: true },
                     { data: 'email', name: 'email', orderable: true, searchable: true },
-                    { data: 'admin_badge', name: 'is_super_admin', orderable: false, searchable: false },
+                    { data: 'user_type', name: 'user_type', orderable: true, searchable: true },
                     { data: 'status_badge', name: 'is_active', orderable: false, searchable: false },
                     { data: 'created_at', name: 'created_at' },
                 ],
                 language: {
-                    dom: "<'dt--top-section'<'row'<'col-12 col-sm-6 d-flex justify-content-sm-start justify-content-center'l><'col-12 col-sm-6 d-flex justify-content-sm-end justify-content-center mt-sm-0 mt-3'f>>>" +
+                    dom:
+                        "<'dt--top-section row mb-2'<'col-12 col-md-6 d-flex justify-content-center justify-content-md-start'l>" +
+                        "<'col-12 col-md-6 d-flex justify-content-center justify-content-md-end mt-2 mt-md-0'f>>" +
                         "<'table-responsive'tr>" +
-                        "<'dt--bottom-section d-sm-flex justify-content-sm-between text-center'<'dt--pages-count mb-sm-0 mb-3'i><'dt--pagination'p>>",
+                        "<'dt--bottom-section row mt-2'<'col-12 col-md-6 d-flex justify-content-center justify-content-md-start'i>" +
+                        "<'col-12 col-md-6 d-flex justify-content-center justify-content-md-end'p>>",
 
                     paginate: {
-                        previous: '<svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="feather feather-arrow-left"><line x1="19" y1="12" x2="5" y2="12"></line><polyline points="12 19 5 12 12 5"></polyline></svg>',
-                        next: '<svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="feather feather-arrow-right"><line x1="5" y1="12" x2="19" y2="12"></line><polyline points="12 5 19 12 12 19"></polyline></svg>'
+                        previous: '&laquo;',
+                        next: '&raquo;'
                     },
 
-                    info: "{{ trans('pagination.showing_page') }}",
-                    search: '<svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="feather feather-search"><circle cx="11" cy="11" r="8"></circle><line x1="21" y1="21" x2="16.65" y2="16.65"></line></svg>',
-                    searchPlaceholder: "{{ trans('label.search') }}",
+                    info: "{{ trans('Showing pages') }}",
+                    searchPlaceholder: "{{ trans('Search') }}",
                     lengthMenu: "{{ trans('Result') }} : _MENU_"
                 },
                 lengthMenu: [10, 20, 50, 100],
                 pageLength: 10,
-                "fnRowCallback": function(nRow, aData) {
-                    $(nRow).off('click').on('click', function(e) {
+
+                fnRowCallback: function (nRow, aData) {
+                    $(nRow).off('click').on('click', function (e) {
                         if (!$(e.target).closest('button, a, input').length) {
-                            document.location.href = url + "/admin_panel/users/profile/" + aData['uid'];
+                            window.location.href = url + "/admin_panel/users/profile/" + aData['uuid'];
                         }
                     }).hover(
-                        function() { $(this).css('cursor', 'pointer'); },
-                        function() { $(this).css('cursor', 'auto'); }
+                        function () { $(this).css('cursor', 'pointer'); },
+                        function () { $(this).css('cursor', 'auto'); }
                     );
                 }
             });

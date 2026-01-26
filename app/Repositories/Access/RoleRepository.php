@@ -15,25 +15,11 @@ class RoleRepository extends BaseRepository
         return $this->query()->where('id', $id)->first();
     }
 
-    public function  getActiveRoles(){
-        return $this->query()->where('isactive', true)->get();
-    }
-
     public function forSelect()
     {
-        return $this->query()->where('isactive', 1)->pluck('name', 'id');
+        return $this->query()->select('name', 'id')->get();
     }
 
-    public function getNonAdministrativeRolesForSelect()
-    {
-        return $this->query()->select(['id', 'name'])->where("isadmin", 0)->orderBy("id", "asc")->get()->pluck("name", "id");;
-    }
-
-    /*Get Administrative roles for select*/
-    public function getAdministrativeRolesForSelect()
-    {
-        return $this->query()->select(['id', 'name'])->where("isadmin", 1)->orderBy("id", "asc")->get()->pluck("name", "id");;
-    }
 
     public function getAllForDt()
     {
@@ -43,14 +29,9 @@ class RoleRepository extends BaseRepository
     public function store(array $input)
     {
         return DB::transaction(function () use ($input) {
-            $role = $this->query()->create([
+            return $this->query()->create([
                 'name' => $input['name'],
-                'display_name' => $input['display_name'],
-                'description' => $input['description'],
-                'isadmin' => isset($input['isadmin']) && $input['isadmin'] === 'on' ? 1 : 0,
-                'isactive' => isset($input['isactive']) && $input['isactive'] === 'on' ? 1 : 0,
             ]);
-            return $role;
         });
     }
 
@@ -59,26 +40,10 @@ class RoleRepository extends BaseRepository
     public function update(array $input, Model $role)
     {
         return  DB :: transaction(function() use ($input, $role){
-            $this->updateRole($input, $role);
             $this->updateRolePermissions($input, $role);
             return $role;
         });
     }
-
-    /*Update role info to Role table*/
-    protected function updateRole(array $input, Model $role)
-    {
-        return  DB :: transaction(function() use ($input, $role){
-            $role->update([
-                'display_name' => $input['display_name'],
-                'description' => $input['description'],
-                'isadmin' => $input['isadmin'] ?? 0,
-                'isactive' => $input['isactive'] ?? 0,
-            ]);
-            return $role;
-        });
-    }
-
 
     /*Update sync permissions with role*/
     protected function updateRolePermissions(array $input, Model $role)
