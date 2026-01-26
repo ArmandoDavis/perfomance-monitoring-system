@@ -106,6 +106,20 @@
                                             </a>
                                         @endif
                                     @endif
+
+                                    @if($task->status->reference == "SCS004")
+                                        <form action="{{ route('admin_panel.tasks.change_status', $task->uuid) }}" method="POST" class="d-none confirm-form-complete-{{ $task->uuid }}">
+                                            @csrf
+                                            @method('PUT')
+
+                                            <input type="hidden" name="action_type" value="6">
+                                            <input type="hidden" name="action" value="complete">
+                                        </form>
+
+                                        <a href="javascript:void(0)" class="btn btn-sm btn-warning text-white mb-2 me-2" onclick="formActionConfirmation('complete-{{ $task->uuid }}', '{{ __('complete') }}' )">
+                                            {{ __('Complete') }}
+                                        </a>
+                                    @endif
                                 @endcan
 
 

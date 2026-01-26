@@ -36,16 +36,18 @@ class TaskObserver
         $this->logForAllAssignees($task, $statusName, "Status changed to {$statusName}");
     }
 
+
     protected function logForAllAssignees(Task $task, string $status, ?string $comment = null)
     {
-        foreach ($task->assignments as $user) {
+        foreach ($task->assignments as $assignment) {
             TaskProgressLog::create([
-                'task_id' => $task->id,
-                'user_id' => $user->id,
-                'status'  => $status,
+                'task_id'  => $task->id,
+                'user_id'  => $assignment->user_id,
+                'status'   => $status,
                 'comment' => $comment,
                 'logged_at' => now()
             ]);
         }
     }
+
 }

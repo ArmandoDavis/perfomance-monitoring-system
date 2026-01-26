@@ -1,16 +1,16 @@
 # HR Performance Management System (HRPMS)
 
-composer install
+composer install;
 
-php artisan migrate:fresh --path=database/migrations/version100
+php artisan migrate:fresh --path=database/migrations/version100;
 
-composer dump-autoload
+composer dump-autoload;
 
-php artisan db:seed
+php artisan db:seed;
 
-php artisan key:generate
+php artisan key:generate;
 
-php artisan storage:link
+php artisan storage:link;
 
 npm install
 
