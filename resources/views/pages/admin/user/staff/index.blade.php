@@ -1,13 +1,11 @@
-@extends('layouts.backend.app')
-@section('title', __('label.create'))
+@extends('layouts.admin.app')
+@section('title', __('Add staff'))
 @include('includes.assets.datatable_assets')
 
 @section('breadcrumb-action')
-    @if(access()->allow('manage_staff'))
-        <a href="{{ route('backend.users.staff.create') }}" class="btn btn-primary d-flex align-items-center">
-            <i class="ti ti-circle-plus me-2"></i> {{__('buttons.general.crud.create')}}
-        </a>
-    @endif
+    <a href="{{ route('admin_panel.users.create') }}" class="btn btn-primary d-flex align-items-center">
+        <i class="ti ti-circle-plus me-2"></i> {{__('Add staff')}}
+    </a>
 @endsection
 
 @section('content')
@@ -19,12 +17,12 @@
                         <table class="table" id="staff_user_table">
                             <thead class="thead-light">
                                 <tr>
-                                    <th>{{__('label.name')}}</th>
-                                    <th>{{__('label.email')}}</th>
-                                    <th>{{__('label.phone')}}</th>
-                                    <th>{{__('label.is_admin')}}</th>
-                                    <th>{{__('label.status')}}</th>
-                                    <th>{{__('label.created_at')}}</th>
+                                    <th>{{__('Full name')}}</th>
+                                    <th>{{__('Email')}}</th>
+                                    <th>{{__('Phone')}}</th>
+                                    <th>{{__('Is admin')}}</th>
+                                    <th>{{__('status')}}</th>
+                                    <th>{{__('Date registed')}}</th>
                                 </tr>
                             </thead>
                         </table>
@@ -44,7 +42,7 @@
                 processing: true,
                 serverSide: true,
                 ajax: {
-                    url: "{{ route('backend.users.staff.get_staff_user_for_dt') }}",
+                    url: "{{ route('admin_panel.users.get_staff_user_for_dt') }}",
                     type: 'GET'
                 },
                 columns: [
@@ -68,14 +66,14 @@
                     info: "{{ trans('pagination.showing_page') }}",
                     search: '<svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="feather feather-search"><circle cx="11" cy="11" r="8"></circle><line x1="21" y1="21" x2="16.65" y2="16.65"></line></svg>',
                     searchPlaceholder: "{{ trans('label.search') }}",
-                    lengthMenu: "{{ trans('pagination.results') }} : _MENU_"
+                    lengthMenu: "{{ trans('Result') }} : _MENU_"
                 },
                 lengthMenu: [10, 20, 50, 100],
                 pageLength: 10,
                 "fnRowCallback": function(nRow, aData) {
                     $(nRow).off('click').on('click', function(e) {
                         if (!$(e.target).closest('button, a, input').length) {
-                            document.location.href = url + "/backend/users/staff/profile/" + aData['uid'];
+                            document.location.href = url + "/admin_panel/users/profile/" + aData['uid'];
                         }
                     }).hover(
                         function() { $(this).css('cursor', 'pointer'); },

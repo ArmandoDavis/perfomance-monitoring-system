@@ -133,7 +133,9 @@ Route::middleware(['auth'])->group(function () {
 
 
         Route::prefix('users')->name('users.')->group(function () {
-            Route::get('/', [StaffController::class, 'index'])->name('index');
+            Route::get('/', [StaffUserController::class, 'index'])->name('index');
+            Route::get('/create', [StaffUserController::class, 'create'])->name('create');
+            Route::get('/get_staff_user_for_dt', [StaffUserController::class, 'getAllForDt'])->name('get_staff_user_for_dt');
             Route::get('/profile/{user}', [StaffUserController::class, 'profile'])->name('profile');
             Route::get('/edit/{user}', [StaffUserController::class, 'edit'])->name('edit');
             Route::post('/resend_resend_temp_password/{user}', [StaffUserController::class, 'resendPassowrd'])->name('resend_resend_temp_password');
