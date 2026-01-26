@@ -113,9 +113,9 @@ if (!function_exists('getBooleanBadge')) {
     function getBooleanBadge(bool $isActive): string
     {
         if ($isActive) {
-            return '<span class="badge bg-primary text-white">'.__('label.yes').'</span>';
+            return '<span class="badge bg-primary text-white">'.__('Yes').'</span>';
         }
-        return '<span class="badge bg-danger text-white">'.__('label.no').'</span>';
+        return '<span class="badge bg-danger text-white">'.__('No').'</span>';
     }
 }
 

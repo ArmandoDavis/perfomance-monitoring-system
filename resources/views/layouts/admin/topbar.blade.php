@@ -6,7 +6,7 @@
         </div>
         <div class="search-bar flex-grow-1">
             <div class="position-relative">
-                <input class="form-control rounded-5 px-5 search-control d-lg-block d-none" type="text" placeholder="Search">
+                <input id="global-search-input" class="form-control rounded-5 px-5 search-control d-lg-block d-none" type="text" placeholder="Search tasks, users, departments...">
                 <span class="material-icons-outlined position-absolute d-lg-block d-none ms-3 translate-middle-y start-0 top-50">search</span>
                 <span class="material-icons-outlined position-absolute me-3 translate-middle-y end-0 top-50 search-close">close</span>
                 <div class="search-popup p-3">
@@ -18,89 +18,16 @@
                                 <span class="material-icons-outlined position-absolute me-3 translate-middle-y end-0 top-50 mobile-search-close">close</span>
                             </div>
                         </div>
+
                         <div class="card-body search-content">
-                            <p class="search-title">Recent Searches</p>
-                            <div class="d-flex align-items-start flex-wrap gap-2 kewords-wrapper">
-                                <a href="javascript:;" class="kewords"><span>Angular Template</span><i
-                                        class="material-icons-outlined fs-6">search</i></a>
-                                <a href="javascript:;" class="kewords"><span>Dashboard</span><i
-                                        class="material-icons-outlined fs-6">search</i></a>
-                                <a href="javascript:;" class="kewords"><span>Admin Template</span><i
-                                        class="material-icons-outlined fs-6">search</i></a>
-                                <a href="javascript:;" class="kewords"><span>Bootstrap 5 Admin</span><i
-                                        class="material-icons-outlined fs-6">search</i></a>
-                                <a href="javascript:;" class="kewords"><span>Html eCommerce</span><i
-                                        class="material-icons-outlined fs-6">search</i></a>
-                                <a href="javascript:;" class="kewords"><span>Sass</span><i
-                                        class="material-icons-outlined fs-6">search</i></a>
-                                <a href="javascript:;" class="kewords"><span>laravel 9</span><i
-                                        class="material-icons-outlined fs-6">search</i></a>
-                            </div>
-                            <hr>
-                            <p class="search-title">Tutorials</p>
-                            <div class="search-list d-flex flex-column gap-2">
-                                <div class="search-list-item d-flex align-items-center gap-3">
-                                    <div class="list-icon">
-                                        <i class="material-icons-outlined fs-5">play_circle</i>
-                                    </div>
-                                    <div class="">
-                                        <h5 class="mb-0 search-list-title ">Wordpress Tutorials</h5>
-                                    </div>
-                                </div>
-                                <div class="search-list-item d-flex align-items-center gap-3">
-                                    <div class="list-icon">
-                                        <i class="material-icons-outlined fs-5">shopping_basket</i>
-                                    </div>
-                                    <div class="">
-                                        <h5 class="mb-0 search-list-title">eCommerce Website Tutorials</h5>
-                                    </div>
-                                </div>
-
-                                <div class="search-list-item d-flex align-items-center gap-3">
-                                    <div class="list-icon">
-                                        <i class="material-icons-outlined fs-5">laptop</i>
-                                    </div>
-                                    <div class="">
-                                        <h5 class="mb-0 search-list-title">Responsive Design</h5>
-                                    </div>
-                                </div>
-                            </div>
-
-                            <hr>
-                            <p class="search-title">Members</p>
-
-                            <div class="search-list d-flex flex-column gap-2">
-                                <div class="search-list-item d-flex align-items-center gap-3">
-                                    <div class="memmber-img">
-                                        <img src="{{ asset('/assets/images/avatars/user-dummy.jpg')}}" width="32" height="32" class="rounded-circle" alt="">
-                                    </div>
-                                    <div class="">
-                                        <h5 class="mb-0 search-list-title ">Andrew Stark</h5>
-                                    </div>
-                                </div>
-
-                                <div class="search-list-item d-flex align-items-center gap-3">
-                                    <div class="memmber-img">
-                                        <img src="{{ asset('/assets/images/avatars/user-dummy.jpg')}}" width="32" height="32" class="rounded-circle" alt="">
-                                    </div>
-                                    <div class="">
-                                        <h5 class="mb-0 search-list-title ">Snetro Jhonia</h5>
-                                    </div>
-                                </div>
-
-                                <div class="search-list-item d-flex align-items-center gap-3">
-                                    <div class="memmber-img">
-                                        <img src="{{ asset('/assets/images/avatars/user-dummy.jpg')}}" width="32" height="32" class="rounded-circle" alt="">
-                                    </div>
-                                    <div class="">
-                                        <h5 class="mb-0 search-list-title">Michle Clark</h5>
-                                    </div>
-                                </div>
-
+                            <p class="search-title">Search Results</p>
+                            <div id="global-search-results" class="search-list d-flex flex-column gap-2">
+                                <div class="text-muted small">Type to search tasks, users or departments...</div>
                             </div>
                         </div>
+
                         <div class="card-footer text-center bg-transparent">
-                            <a href="javascript:;" class="btn w-100">See All Search Results</a>
+                            <a href="javascript:void(0);" class="btn w-100">See All Search Results</a>
                         </div>
                     </div>
                 </div>

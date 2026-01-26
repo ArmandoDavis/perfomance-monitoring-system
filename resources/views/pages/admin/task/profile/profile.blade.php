@@ -75,7 +75,7 @@
                                     @endif
 
                                     {{-- Change status --}}
-                                    @if($task->status->reference == "SCS005" && $task->status->reference == "SCS006")
+                                    @if($task->status->reference == "SCS005" && $task->status->reference == "SCS006" || $task->status->reference == "SCS002")
                                         @if($task->is_active)
                                             {{-- Deactivate form --}}
                                             <form action="{{ route('admin_panel.tasks.change_status', $task->uuid) }}" method="POST" class="d-none confirm-form-deactivate-{{ $task->uuid }}">

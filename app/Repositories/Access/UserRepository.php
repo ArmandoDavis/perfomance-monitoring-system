@@ -130,10 +130,4 @@ class UserRepository extends BaseRepository
         $userType = CodeValue::getCodeValueByReference('USER001');
         return $this->query()->where('user_type_id', $userType->id)->orderBy('created_at', 'desc')->get();
     }
-
-    public function getClientsUsers()
-    {
-        $userType = CodeValue::getCodeValueByReference('USER003');
-        return $this->query()->where('user_type_id', $userType->id)->orderBy('created_at', 'desc')->get();
-    }
 }

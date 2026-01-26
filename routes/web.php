@@ -1,5 +1,6 @@
 <?php
 
+use App\Http\Controllers\Admin\Access\StaffUserController;
 use App\Http\Controllers\Admin\Department\DepartmentController;
 use App\Http\Controllers\Admin\Documents\DocumentController;
 use App\Http\Controllers\Admin\Task\CommentController;
@@ -124,7 +125,22 @@ Route::middleware(['auth'])->group(function () {
         Route::prefix('user_profile')->name('user_profile.')->group(function () {
             Route::get('/my_profile', [App\Http\Controllers\Admin\ProfileController::class, 'index'])->name('my_profile');
         });
+
+
+        Route::prefix('global')->name('global.')->group(function () {
+            Route::get('/search', [\App\Http\Controllers\Admin\GlobalSearchController::class, 'search'])->name('search');
+        });
+
+
+        Route::prefix('users')->name('users.')->group(function () {
+            Route::get('/', [StaffController::class, 'index'])->name('index');
+            Route::get('/profile/{user}', [StaffUserController::class, 'profile'])->name('profile');
+            Route::get('/edit/{user}', [StaffUserController::class, 'edit'])->name('edit');
+            Route::post('/resend_resend_temp_password/{user}', [StaffUserController::class, 'resendPassowrd'])->name('resend_resend_temp_password');
+            Route::delete('/delete/{user}', [StaffUserController::class, 'delete'])->name('delete');
+        });
     });
+
 
 
     /** frontend routes */

@@ -1,6 +1,7 @@
 <?php
 namespace App\Providers;
 
+use App\Models\Access\User;
 use Illuminate\Cache\RateLimiting\Limit;
 use Illuminate\Foundation\Support\Providers\RouteServiceProvider as ServiceProvider;
 use Illuminate\Http\Request;
@@ -13,6 +14,10 @@ class RouteServiceProvider extends ServiceProvider {
     protected $namespace = 'App\Http\Controllers';
 
     public function boot(): void {
+        Route::bind('user', function ($value) {
+            return User::where('uuid', $value)->firstOrFail();
+        });
+
         RateLimiter::for('api', function (Request $request) {
             return Limit::perMinute(60)->by($request->user()?->id ?: $request->ip());
         });

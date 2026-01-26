@@ -6,50 +6,66 @@
     <script src="{{ URL::asset('/assets/teganas/plugins/toastr-notify/toastr.min.js') }}"></script>
 
     <script>
-        // search task
-        $(document).ready(function () {
-            let $input = $('#taskSearchInput');
-            let $results = $('#taskSearchResults');
+        let searchTimeout = null;
 
-            function searchUsers(query) {
-                if (query.length < 2) {
-                    $results.addClass('d-none').empty();
-                    return;
+        function doGlobalSearch(query) {
+            fetch(`{{ route('admin_panel.global.search') }}?q=` + encodeURIComponent(query))
+                .then(res => res.json())
+                .then(data => {
+                    const container = document.getElementById('global-search-results');
+                    container.innerHTML = '';
+
+                    if (!data.length) {
+                        container.innerHTML = `<div class="text-muted small">No results found</div>`;
+                        return;
+                    }
+
+                    data.forEach(item => {
+                        const div = document.createElement('div');
+                        div.className = 'search-list-item d-flex align-items-center gap-3 cursor-pointer';
+                        div.innerHTML = `
+                            <div class="list-icon">
+                                <i class="material-icons-outlined fs-5">
+                                    ${item.type === 'task' ? 'task' : item.type === 'user' ? 'person' : 'apartment'}
+                                </i>
+                            </div>
+                            <div>
+                                <h5 class="mb-0 search-list-title">${item.title}</h5>
+                                <small class="text-muted">${item.type}</small>
+                            </div>
+                        `;
+
+                        div.onclick = () => {
+                            window.location.href = item.url;
+                        };
+
+                        container.appendChild(div);
+                    });
+                });
+        }
+
+        // Desktop
+        document.getElementById('global-search-input').addEventListener('keyup', function () {
+            clearTimeout(searchTimeout);
+            const q = this.value.trim();
+
+            searchTimeout = setTimeout(() => {
+                if (q.length >= 2) {
+                    doGlobalSearch(q);
                 }
+            }, 300);
+        });
 
-                {{--$.get("{{ route('admin_panel.task.search_task') }}", { q: query }, function (data) {--}}
-                {{--    $results.empty();--}}
-                {{--    if (data.length === 0) {--}}
-                {{--        $results.append('<div class="list-group-item text-muted">{{__('No result found')}}</div>');--}}
-                {{--    } else {--}}
-                {{--        data.forEach(task => {--}}
-                {{--            $results.append(--}}
-                {{--                `<a href="/admin_panel/task/profile/${task.uid}" class="list-group-item list-group-item-action">--}}
-                {{--                ${task.title}--}}
-                {{--            </a>`--}}
-                {{--            );--}}
-                {{--        });--}}
-                {{--    }--}}
-                {{--    $results.removeClass('d-none');--}}
-                {{--});--}}
-            }
+        // Mobile
+        document.getElementById('global-search-input-mobile').addEventListener('keyup', function () {
+            clearTimeout(searchTimeout);
+            const q = this.value.trim();
 
-            // search on typing
-            $input.on('keyup', function () {
-                searchUsers($(this).val());
-            });
-
-            // search on button click
-            $('#taskSearchBtn').on('click', function () {
-                searchUsers($input.val());
-            });
-
-            // hide results when clicking outside
-            $(document).on('click', function (e) {
-                if (!$(e.target).closest('#taskSearchForm').length) {
-                    $results.addClass('d-none');
+            searchTimeout = setTimeout(() => {
+                if (q.length >= 2) {
+                    doGlobalSearch(q);
                 }
-            });
+            }, 300);
         });
     </script>
 @endpush
