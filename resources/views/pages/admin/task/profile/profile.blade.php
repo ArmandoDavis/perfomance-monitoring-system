@@ -152,7 +152,7 @@
                             <strong>{{ __('Task Documents') }}</strong>
 
                             @can('task.update')
-                                @if($task->status->reference == "SCS004")
+                                @if($task->status->reference == "SCS002")
                                     <button class="btn btn-sm btn-outline-primary" data-bs-toggle="modal" data-bs-target="#uploadDocumentModal">
                                         <i class="material-icons-outlined">upload</i>
                                         {{ __('Upload Document') }}
@@ -172,7 +172,7 @@
                             <strong>{{ __('Task Expenses') }}</strong>
 
                             @can('task.update')
-                                @if($task->status->reference == "SCS004")
+                                @if($task->status->reference == "SCS002")
                                     <button class="btn btn-sm btn-outline-primary" data-bs-toggle="modal" data-bs-target="#addExpenseModal">
                                         <i class="material-icons-outlined">add</i>
                                         {{ __('Add Expense') }}
@@ -192,7 +192,7 @@
                         <div class="card-header d-flex justify-content-between align-items-center">
                             <strong>{{ __('Task Assignments') }}</strong>
                             @can('task.assign')
-                                @if($task->status->reference == "SCS004")
+                                @if($task->status->reference == "SCS002")
                                     <button class="btn btn-sm btn-outline-primary" data-bs-toggle="modal" data-bs-target="#addAssignmentModal">
                                         <i class="material-icons-outlined">add</i> {{ __('Assign User') }}
                                     </button>

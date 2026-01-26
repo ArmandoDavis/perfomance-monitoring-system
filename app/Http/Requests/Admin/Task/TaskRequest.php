@@ -26,7 +26,6 @@ class TaskRequest extends Request
                     'title' => 'required|string|max:255',
                     'description' => 'required|string',
                     'department_id' => 'required|exists:departments,id',
-                    'status_cv_id' => 'required|exists:code_values,id',
                 ];
                 $optional = [
                     'allocated_budget' => 'nullable',
@@ -34,7 +33,10 @@ class TaskRequest extends Request
                     'remaining_budget' => 'nullable',
                     'start_date' => 'nullable',
                     'end_date' => 'nullable',
-                    'is_active' => 'nullable|boolean'
+                    'is_active' => 'nullable|boolean',
+                    'status_cv_id' => 'nullable|exists:code_values,id',
+                    'user_ids' => ['nullable', 'array', 'min:1'],
+                    'user_ids.*' => ['exists:users,id'],
                 ];
                 break;
             case 2:
@@ -44,7 +46,6 @@ class TaskRequest extends Request
                     'title' => 'required|string|max:255',
                     'description' => 'required|string',
                     'department_id' => 'required|exists:departments,id',
-                    'status_cv_id' => 'required|exists:code_values,id',
                 ];
                 $optional = [
                     'allocated_budget' => 'nullable',
@@ -52,6 +53,7 @@ class TaskRequest extends Request
                     'remaining_budget' => 'nullable',
                     'start_date' => 'nullable',
                     'end_date' => 'nullable',
+                    'status_cv_id' => 'nullable|exists:code_values,id',
                     'is_active' => 'nullable|boolean'
                 ];
                 break;

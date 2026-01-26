@@ -39,7 +39,8 @@ class TaskController extends Controller
     {
          $codeId = $this->codeRepository->codeByName("Status")->id;
          $data['departments'] = $this->depertmentRepository->getActiveDepartments();
-         $data['statuses'] = $this->codeValueRepository->getCodeValuesForSelect($codeId);
+        $data['statuses'] = $this->codeValueRepository->getCodeValuesForSelect($codeId);
+        $data['users'] = $this->userRepository->getActiveStaffs();
          return view('pages.admin.task.create', $data);
     }
 
@@ -51,8 +52,12 @@ class TaskController extends Controller
 
     public function edit(Task $task)
     {
-        $departments = $this->depertmentRepository->getActiveDepartments();
-        return view('pages.admin.task.create', compact('departments', 'task'));
+        $codeId = $this->codeRepository->codeByName("Status")->id;
+        $data['task'] = $task;
+        $data['departments'] = $this->depertmentRepository->getActiveDepartments();
+        $data['statuses'] = $this->codeValueRepository->getCodeValuesForSelect($codeId);
+        $data['users'] = $this->userRepository->getActiveStaffs();
+        return view('pages.admin.task.edit', $data);
     }
 
     public function profile(Task $task)
@@ -65,7 +70,7 @@ class TaskController extends Controller
 
     public function update(TaskRequest $request, Task $task)
     {
-        $task = $this->taskRepository->update($task, $request->all());
+        $this->taskRepository->update($task, $request->all());
         return redirect()->route('admin_panel.tasks.profile', compact('task'))->with('flash_success', 'Task updated successfully');
     }
 

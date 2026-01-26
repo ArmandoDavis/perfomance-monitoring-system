@@ -26,11 +26,11 @@ same password for all users === Password
 
 
 TODO
--> expense approve in admin task profile
+-> expense approve in admin task profile => Done
 
 -> user management
 
--> edit task 
+-> edit task  => Done
 
 -> Expenses management
 
@@ -45,6 +45,8 @@ TODO
 -> logs
 
 -> system notifications
+
+-> to fix user assigned budget can not exceed total task budget
 
 if anything found miss add here
 

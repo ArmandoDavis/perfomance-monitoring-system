@@ -45,7 +45,7 @@ class TaskPolicy
         return $user->can('task.create');
     }
 
-    public function edit(User $user): bool
+    public function update(User $user, Task $task): bool
     {
         return $user->can('task.update');
     }

@@ -42,7 +42,7 @@ class TaskAssignmentRepository extends BaseRepository
                     'user_id' => $userId,
                     'assigned_budget'  => $input['assigned_budget'] ?? 0,
                     'remaining_budget' => $input['assigned_budget'] ?? 0,
-                    'is_active'  => $input['is_active'],
+                    'is_active'  => $input['is_active'] ?? true,
                 ]);
             }
         });

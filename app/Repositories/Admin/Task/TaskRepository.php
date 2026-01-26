@@ -10,6 +10,12 @@ use Illuminate\Support\Facades\DB;
 class TaskRepository extends BaseRepository
 {
     const MODEL = Task::class;
+    protected $taskAssignmentRepository;
+
+    public function __construct()
+    {
+        $this->taskAssignmentRepository = new TaskAssignmentRepository();
+    }
 
     public function getAllForDt()
     {
@@ -32,8 +38,9 @@ class TaskRepository extends BaseRepository
     }
 
     public function store(array $input) {
-        return DB::transaction(function() use($input) {
-            return $this->query()->create([
+        $status = CodeValue::getCodeValueByReference('SCS002');
+        return DB::transaction(function() use($input, $status) {
+            $task = $this->query()->create([
                 'title' => $input['title'],
                 'description' => $input['description'],
                 'department_id' => $input['department_id'],
@@ -41,28 +48,39 @@ class TaskRepository extends BaseRepository
                 'allocated_budget' => $input['allocated_budget'],
                 'spent_amount' => $input['spent_amount'] ?? 0,
                 'remaining_budget' => $input['remaining_budget'] ?? 0,
-                'status_cv_id' => $input['status_cv_id'],
+                'status_cv_id' => $input['status_cv_id'] ?? $status->id,
                 'start_date' => $input['start_date'],
                 'end_date' => $input['end_date'],
                 'is_active' => isset($input['is_active']),
             ]);
+
+            /** assign task to users */
+            if (isset($input['user_ids'])) {
+                $this->taskAssignmentRepository->store($task, $input);
+            }
+
+            return $task;
         });
     }
 
     public function update(Model $task, array $input) {
         return DB::transaction(function() use($task, $input) {
-            return $task->update([
+            $task->update([
                 'title' => $input['title'],
                 'description' => $input['description'],
                 'department_id' => $input['department_id'],
                 'allocated_budget' => $input['allocated_budget'],
-                'spent_amount' => $input['spent_amount'],
-                'remaining_budget' => $input['remaining_budget'],
+                'spent_amount' => $input['spent_amount'] ?? $task->spent_amount,
+                'remaining_budget' => $input['remaining_budget'] ?? $task->remaining_budget,
                 'status_cv_id' => $input['status_cv_id'],
                 'start_date' => $input['start_date'],
                 'end_date' => $input['end_date'],
-                'is_active' => $input['is_active'],
             ]);
+
+            /** assign task to users */
+            if (isset($input['user_ids'])) {
+                $this->taskAssignmentRepository->store($task, $input);
+            }
         });
     }
 

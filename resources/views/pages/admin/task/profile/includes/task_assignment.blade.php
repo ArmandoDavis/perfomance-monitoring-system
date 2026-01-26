@@ -7,7 +7,7 @@
                 <th>{{ __('Spent Amount') }}</th>
                 <th>{{ __('Remaining Budget') }}</th>
                 <th>{{ __('Active?') }}</th>
-                @if($task->status->reference == "SCS004")
+                @if($task->status->reference == "SCS002")
                     <th>{{ __('Actions') }}</th>
                 @endif
             </tr>
@@ -26,7 +26,7 @@
                             <span class="badge bg-danger">{{ __('No') }}</span>
                         @endif
                     </td>
-                    @if($task->status->reference == "SCS004")
+                    @if($task->status->reference == "SCS002")
                         <td class="text-nowrap">
                             @can('task.update')
                                 <button type="button" class="btn btn-sm btn-primary" data-bs-toggle="modal" data-bs-target="#editAssignmentModal-{{ $assignment->id }}">
