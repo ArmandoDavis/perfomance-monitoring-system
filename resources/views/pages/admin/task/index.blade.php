@@ -8,7 +8,7 @@
     <div class="d-sm-flex align-items-center justify-content-end mb-4">
         @can('department.manage')
             <a href="{{ route('admin_panel.tasks.create') }}" class="d-none d-sm-inline-block btn btn-xl btn-primary shadow-sm">
-                <i class="bi bi-plus-circle text-white-50"></i>  Add Department
+                <i class="bi bi-plus-circle text-white-50"></i>  Add Task
             </a>
         @endcan
     </div>
