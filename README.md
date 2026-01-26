@@ -49,7 +49,7 @@ TODO
 if anything found miss add here
 
 
-TESTING OBSERVATIONS
+## TESTING OBSERVATIONS
 1. Edit task button haifany kazi(Inaleta error)
 2. Close button and Delete button ya Task hairespond => Done
 3. Approve button haifanyi kazi => Done
@@ -57,3 +57,11 @@ TESTING OBSERVATIONS
 5. Activate and diactivate button departments arent working too => Done
 6. User's Tasks arent retrieved yet inaleta mysql query instead of data  => confirm hiyo command hapo juuu
 7. search bar not connected yet => hii n kweli bado maana niliona ni ziada
+
+
+
+
+
+## Important
+1. if task status is equal to done or complete admin user can not add expense, document or assign new user, can not delete or update task
+2. 

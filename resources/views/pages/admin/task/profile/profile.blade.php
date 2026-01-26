@@ -152,10 +152,12 @@
                             <strong>{{ __('Task Documents') }}</strong>
 
                             @can('task.update')
-                                <button class="btn btn-sm btn-outline-primary" data-bs-toggle="modal" data-bs-target="#uploadDocumentModal">
-                                    <i class="material-icons-outlined">upload</i>
-                                    {{ __('Upload Document') }}
-                                </button>
+                                @if($task->status->reference == "SCS004")
+                                    <button class="btn btn-sm btn-outline-primary" data-bs-toggle="modal" data-bs-target="#uploadDocumentModal">
+                                        <i class="material-icons-outlined">upload</i>
+                                        {{ __('Upload Document') }}
+                                    </button>
+                                @endif
                             @endcan
                         </div>
 
@@ -170,10 +172,12 @@
                             <strong>{{ __('Task Expenses') }}</strong>
 
                             @can('task.update')
-                                <button class="btn btn-sm btn-outline-primary" data-bs-toggle="modal" data-bs-target="#addExpenseModal">
-                                    <i class="material-icons-outlined">add</i>
-                                    {{ __('Add Expense') }}
-                                </button>
+                                @if($task->status->reference == "SCS004")
+                                    <button class="btn btn-sm btn-outline-primary" data-bs-toggle="modal" data-bs-target="#addExpenseModal">
+                                        <i class="material-icons-outlined">add</i>
+                                        {{ __('Add Expense') }}
+                                    </button>
+                                @endif
                             @endcan
                         </div>
 
@@ -188,9 +192,11 @@
                         <div class="card-header d-flex justify-content-between align-items-center">
                             <strong>{{ __('Task Assignments') }}</strong>
                             @can('task.assign')
-                                <button class="btn btn-sm btn-outline-primary" data-bs-toggle="modal" data-bs-target="#addAssignmentModal">
-                                    <i class="material-icons-outlined">add</i> {{ __('Assign User') }}
-                                </button>
+                                @if($task->status->reference == "SCS004")
+                                    <button class="btn btn-sm btn-outline-primary" data-bs-toggle="modal" data-bs-target="#addAssignmentModal">
+                                        <i class="material-icons-outlined">add</i> {{ __('Assign User') }}
+                                    </button>
+                                @endif
                             @endcan
                         </div>
                     </div>

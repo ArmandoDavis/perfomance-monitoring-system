@@ -7,7 +7,9 @@
                 <th>{{ __('Spent Amount') }}</th>
                 <th>{{ __('Remaining Budget') }}</th>
                 <th>{{ __('Active?') }}</th>
-                <th>{{ __('Actions') }}</th>
+                @if($task->status->reference == "SCS004")
+                    <th>{{ __('Actions') }}</th>
+                @endif
             </tr>
         </thead>
         <tbody>
@@ -24,26 +26,28 @@
                             <span class="badge bg-danger">{{ __('No') }}</span>
                         @endif
                     </td>
-                    <td class="text-nowrap">
-                        @can('task.update')
-                            <button type="button" class="btn btn-sm btn-primary" data-bs-toggle="modal" data-bs-target="#editAssignmentModal-{{ $assignment->id }}">
-                                {{ __('Edit') }}
-                            </button>
-                        @endcan
+                    @if($task->status->reference == "SCS004")
+                        <td class="text-nowrap">
+                            @can('task.update')
+                                <button type="button" class="btn btn-sm btn-primary" data-bs-toggle="modal" data-bs-target="#editAssignmentModal-{{ $assignment->id }}">
+                                    {{ __('Edit') }}
+                                </button>
+                            @endcan
 
-                        @can('task.assign')
-                                @if($assignment->is_archived)
-                                    <form action="{{ route('admin_panel.tasks.assignment.delete', $assignment->uuid) }}" method="POST" class="d-none confirm-form-remove-{{ $assignment->uuid }}">
-                                        @csrf
-                                        @method('DELETE')
-                                    </form>
+                            @can('task.assign')
+                                    @if($assignment->is_archived)
+                                        <form action="{{ route('admin_panel.tasks.assignment.delete', $assignment->uuid) }}" method="POST" class="d-none confirm-form-remove-{{ $assignment->uuid }}">
+                                            @csrf
+                                            @method('DELETE')
+                                        </form>
 
-                                    <a href="javascript:void(0)" class="btn btn-sm btn-danger mb-2 me-2" onclick="formActionConfirmation('remove-{{ $assignment->uuid }}', '{{ __('Remove assignment') }}' )">
-                                        <i class="material-icons-outlined">delete</i>
-                                        {{ __('Remove') }}
-                                    </a>
-                                @endif
-                        @endcan
+                                        <a href="javascript:void(0)" class="btn btn-sm btn-danger mb-2 me-2" onclick="formActionConfirmation('remove-{{ $assignment->uuid }}', '{{ __('Remove assignment') }}' )">
+                                            <i class="material-icons-outlined">delete</i>
+                                            {{ __('Remove') }}
+                                        </a>
+                                    @endif
+                            @endcan
+                    @endif
                     </td>
                 </tr>
 
