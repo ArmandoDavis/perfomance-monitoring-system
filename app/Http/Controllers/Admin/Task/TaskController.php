@@ -63,15 +63,17 @@ class TaskController extends Controller
     public function profile(Task $task)
     {
         $codeId = Code::query()->where('name', 'Status')->value('id');
-        $users = $this->userRepository->getActiveStaffs();
-        $statuses = $this->codeValueRepository->getCodeValuesForSelect($codeId);
-        return view('pages.admin.task.profile.profile', compact('task', 'users', 'statuses'));
+        $data['task'] = $task;
+        $data['users'] = $this->userRepository->getActiveStaffs();
+        $data['userAssigned'] = $this->userRepository->getNonEvaluatedUserForThisTask($task->id);
+        $data['statuses'] = $this->codeValueRepository->getCodeValuesForSelect($codeId);
+        return view('pages.admin.task.profile.profile', $data);
     }
 
     public function update(TaskRequest $request, Task $task)
     {
         $this->taskRepository->update($task, $request->all());
-        return redirect()->route('admin_panel.tasks.profile', compact('task'))->with('flash_success', 'Task updated successfully');
+        return redirect()->back()->with('flash_success', 'Task updated successfully');
     }
 
     public function delete(Task $task)
@@ -88,8 +90,8 @@ class TaskController extends Controller
 
     public function changeTaskStatus(TaskRequest $request, Task $task)
     {
-        $message = $this->taskRepository->changeTaskStatus($task, $request->all());
-        return redirect()->back()->with('flash_success', $message);
+        $this->taskRepository->changeTaskStatus($task, $request->all());
+        return redirect()->back()->with('flash_success', "Task status has been updated successfully");
     }
 
     public function getAllForDt(Request $request)

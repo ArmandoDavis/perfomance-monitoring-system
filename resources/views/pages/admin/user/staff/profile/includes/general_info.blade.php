@@ -27,6 +27,10 @@
                             <th>@lang('User type')</th>
                             <td>{{ $user->userType->name ?? '' }}</td>
                         </tr>
+                        <tr>
+                            <th>@lang('Status')</th>
+                            <td>{!! getStatusBadge($user->is_active) !!}</td>
+                        </tr>
                     </tbody>
                 </table>
             </div>
@@ -72,40 +76,18 @@
         <!-- Roles -->
         <div class="card">
             <div class="card-header text-muted">
-                <strong>@lang('Roles')</strong>
+                <strong>Roles</strong>
             </div>
-            <div class="card-body p-0">
-                <table class="table table-bordered mb-0">
-                    <tbody>
-                        <tr>
-                            <td>
-                                @if($user->roles->isNotEmpty())
-                                    @foreach($user->roles as $role)
-                                        {{ $role->display_name }}@if (!$loop->last), @endif
-                                    @endforeach
-                                @else
-                                    {{ __('No roles assigned') }}
-                                @endif
-                            </td>
-                        </tr>
-
-                        <tr>
-                            <td>
-                                <div class="custom-control custom-switch">
-                                    <input
-                                        type="checkbox"
-                                        class="custom-control-input user-status-toggle"
-                                        id="userStatusSwitch"
-                                        data-id="{{ $user->id }}"
-                                        {{ $user->is_active == 1 ? 'checked' : '' }}>
-                                    <label class="custom-control-label" for="userStatusSwitch">
-                                        {{ $user->is_active ? 'Enabled' : 'Disabled' }}
-                                    </label>
-                                </div>
-                            </td>
-                        </tr>
-                    </tbody>
-                </table>
+            <div class="card-body">
+                @if($user->roles->isNotEmpty())
+                    @foreach($user->roles as $role)
+                        <span class="badge bg-primary me-1">
+                            {{ ucfirst(str_replace('_', ' ', $role->name)) }}
+                        </span>
+                    @endforeach
+                @else
+                    <span class="text-muted">No roles assigned</span>
+                @endif
             </div>
         </div>
     </div>

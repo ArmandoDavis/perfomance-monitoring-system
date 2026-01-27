@@ -2,10 +2,12 @@
 
 namespace App\Repositories\Access;
 
+use App\Models\Access\Permission;
 use App\Models\Access\Role;
 use App\Models\Access\User;
 use App\Models\System\CodeValue;
 use App\Repositories\BaseRepository;
+use Illuminate\Database\Eloquent\Model;
 use Illuminate\Support\Facades\DB;
 
 class UserRepository extends BaseRepository
@@ -15,7 +17,6 @@ class UserRepository extends BaseRepository
     public function store(array $input)
     {
         return DB::transaction(function() use($input) {
-            //$rawPassword = $this->generatePassword();
             $userType = CodeValue::getCodeValueByReference('USER002');
 
             $emailVerifiedAt = null;
@@ -47,13 +48,24 @@ class UserRepository extends BaseRepository
 
     public function update($user, array $input)
     {
-        return DB::transaction(function() use($user, $input) {
+        $adminType = CodeValue::getCodeValueByReference('USER001');
+
+        return DB::transaction(function() use($user, $input, $adminType) {
+            $userTypeId = $input['user_type_id'] ?? $user->user_type_id;
+
             $this->updateMassAssign('users', $user->id, [
                 'name' => $input['name'],
                 'email' => $input['email'],
                 'phone' => $input['phone'],
                 'is_active' => $input['is_active'],
+                'user_type_id'=> $userTypeId,
             ]);
+            if ($adminType && $adminType->id == $userTypeId) {
+                $adminRole = Role::firstOrCreate(['name' => 'Admin']);
+                $adminRole->syncPermissions(Permission::all());
+
+                $user->roles()->syncWithoutDetaching([$adminRole->id]);
+            }
             if (!empty($input['roles'])) {
                 $this->assignRolesAndPermissions($user, $input['roles']);
             }
@@ -81,23 +93,19 @@ class UserRepository extends BaseRepository
         });
     }
 
-    public function updatePassword($input){
-        $user = User::getUserIdByEmail($input['email']);
-        $this->passwordUpdateUtil($user, $input['password']);
-        return $user;
+    public function updatePassowrd(Model $user, $input){
+        $user->update(['password' => $input['password']]);
     }
 
-    public function resendPassword($input){
-        $user = User::getUserIdByEmail($input['email']);
-        $newPassword = $this->generatePassword();
-        $this->passwordUpdateUtil($user, $newPassword);
-        return $user;
-    }
-
-    protected function passwordUpdateUtil($user, $password)
+    public function toggleStatus(Model $user, array $input)
     {
-        $user->update(['password' => $password]);
-        $this->sendEmailWithPassword($user, $password);
+        return DB::transaction(function () use($user, $input) {
+            return match ($input['action']) {
+                'activate' => $this->changeStatus($user),
+                'deactivate' => $this->changeStatus($user),
+                default => throw new \Exception(__('Invalid action')),
+            };
+        });
     }
 
     public function getActiveStaffs()
@@ -105,14 +113,28 @@ class UserRepository extends BaseRepository
         return $this->queryIsActive()->get();
     }
 
+    public function getNonEvaluatedUserForThisTask($taskId)
+    {
+        return $this->queryIsActive()
+            ->whereIn('id', function ($q) use ($taskId) {
+                $q->select('user_id')
+                    ->from('task_assignments')
+                    ->where('task_id', $taskId);
+            })
+            ->whereNotIn('id', function ($q) use ($taskId) {
+                $q->select('user_id')
+                    ->from('performance_scores')
+                    ->where('task_id', $taskId);
+            })
+            ->get();
+    }
+
     public function getAllForDt()
     {
         $staffType = CodeValue::getCodeValueByReference('USER002');
         $adminType = CodeValue::getCodeValueByReference('USER001');
 //        return $this->query()->where('user_type_id', $staffType->id)->orWhere('user_type_id', $adminType->id)->get();
-        return $this->query()
-            ->select(['users.*', 'code_values.name as user_type'])
-            ->leftJoin('code_values', 'code_values.id', '=', 'users.user_type_id');
+        return $this->query()->select(['users.*', 'code_values.name as user_type'])->leftJoin('code_values', 'code_values.id', '=', 'users.user_type_id');
     }
 
     public function findByUid($uuid)

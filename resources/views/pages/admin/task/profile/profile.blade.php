@@ -220,10 +220,14 @@
                             <strong>{{ __('Performance Scores') }}</strong>
 
                             @can('performance.evaluate')
-                                <button class="btn btn-sm btn-outline-primary" data-bs-toggle="modal" data-bs-target="#addPerformanceModal">
-                                    <i class="material-icons-outlined">add</i>
-                                    {{ __('Evaluate') }}
-                                </button>
+                                @if(empty($userAssigned))
+                                    <button class="btn btn-sm btn-outline-primary" data-bs-toggle="modal" data-bs-target="#addPerformanceModal">
+                                        <i class="material-icons-outlined">add</i>
+                                        {{ __('Evaluate') }}
+                                    </button>
+                                @else
+                                    <div class="alert alert-warning">All user has been evaluated</div>
+                                @endif
                             @endcan
                         </div>
 

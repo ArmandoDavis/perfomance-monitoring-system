@@ -6,18 +6,23 @@ use App\Http\Requests\Admin\User\UserRequest;
 use App\Models\Access\User;
 use App\Repositories\Access\RoleRepository;
 use App\Repositories\Access\UserRepository;
+use App\Repositories\System\CodeRepository;
+use App\Repositories\System\CodeValueRepository;
 use Illuminate\Http\Request;
 use OwenIt\Auditing\Models\Audit;
 use Yajra\DataTables\DataTables;
 
+
 class StaffUserController extends Controller
 {
-    protected $userRepo, $roleRepo;
+    protected $userRepo, $roleRepo, $codeValueRepo, $codeRepository;
 
     public function __construct()
     {
         $this->userRepo = new UserRepository();
         $this->roleRepo = new RoleRepository();
+        $this->codeValueRepo = new CodeValueRepository();
+        $this->codeRepository = new CodeRepository();
     }
 
     public function index()
@@ -33,8 +38,11 @@ class StaffUserController extends Controller
 
     public function edit(User $user)
     {
-        $roles = $this->roleRepo->forSelect();
-        return view('pages.admin.user.staff.edit', compact('user', 'roles'));
+        $data['user'] = $user;
+        $codeId = $this->codeRepository->getOnlyCodeIdByNameForCodeValue("Auth User Type");
+        $data['roles'] = $this->roleRepo->forSelect();
+        $data['userType'] = $this->codeValueRepo->getCodeValuesForSelect($codeId);
+        return view('pages.admin.user.staff.edit', $data);
     }
 
     public function store(UserRequest $request)
@@ -57,43 +65,26 @@ class StaffUserController extends Controller
     public function delete(Request $request, User $user)
     {
         if ($user->id === user_id()) {
-            return redirect()->back()->with('flash_danger', __('You can delete your own account'));
+            return redirect()->back()->with('flash_danger', __('You can not delete your own account'));
         }
 
         $this->userRepo->delete($user);
         return  redirect()->route('admin_panel.users.index')->with('flash_success', __('Staff user deleted successfully'));
     }
 
-    public function resendPassowrd(Request $request)
+    public function updatePassowrd(UserRequest $request, User $user)
     {
-        $this->userRepo->resendPassword($request->all());
-        return redirect()->back()->with('flash_success', __('New password resent'));
+        $this->userRepo->updatePassowrd($user, $request->all());
+        return redirect()->back()->with('flash_success', __('Staff password has been updated successfully'));
     }
 
-    public function toggleStatus(Request $request)
+    public function toggleStatus(UserRequest $request, User $user)
     {
-        $request->validate([
-            'user_id' => 'required|exists:users,id',
-            'is_active' => 'required|boolean'
-        ]);
-
-        if (auth()->id() == $request->user_id && !$request->is_active) {
-            return response()->json([
-                'success' => false,
-                'message' => __('You can not disable your own account')
-            ], 403);
+        if ($user->id === user_id() && $request->action === "deactivate") {
+            return redirect()->back()->with('flash_danger', __('You can not disable your own account'));
         }
-
-        $user = User::findOrFail($request->user_id);
-        $user->is_active = $request->is_active;
-        $user->save();
-
-        return response()->json([
-            'success' => true,
-            'message' => $request->is_active
-                ? __('messages.user_enabled_successfully')
-                : __('messages.user_disabled_successfully')
-        ]);
+        $this->userRepo->toggleStatus($user, $request->all());
+        return redirect()->back()->with('flash_success', "User status have been updated successfully");
     }
 
     public function causedActivity(User $user)

@@ -21,16 +21,6 @@ class CodeValueRepository extends BaseRepository
         $this->code_repo = new CodeRepository();
     }
 
-    /*
-     * Translate CodeValues Entries using lang>code_value
-     */
-    public function mapIdsForLang($query)
-    {
-//        $return = $query->map(function ($item, $key) {
-//            return ['id' => $item['id'], 'name' => __("code_value." . $item['id'])];
-//        });
-        return $query;
-    }
 
     /*Query active only*/
     public function queryActiveOnly()
@@ -57,15 +47,6 @@ class CodeValueRepository extends BaseRepository
     public function reference($cv_id)
     {
         return $this->find($cv_id)->reference ?? null;
-    }
-
-    /*
-     * Get all code values by code_id
-     * For initiating chained selects
-     */
-    public function getAllByCode($code_id)
-    {
-        return $this->query()->select(['id', 'name', 'code_id'])->where("code_id", $code_id)->get();
     }
 
     public function getCodeValuesForSelect($code_id)

@@ -86,7 +86,7 @@
                                            autocomplete="off">
 
                                     @error('username')
-                                    <div class="invalid-feedback">{{ $message }}</div>
+                                        <div class="invalid-feedback">{{ $message }}</div>
                                     @enderror
                                 </div>
                             </div>

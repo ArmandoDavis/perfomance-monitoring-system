@@ -90,8 +90,8 @@ class TaskRepository extends BaseRepository
             $complete = CodeValue::getCodeValueByReference('SCS005');
 
             return match ($input['action']) {
-                'activate'   => $this->changeStatus($task, true),
-                'deactivate' => $this->changeStatus($task, false),
+                'activate'   => $this->changeStatus($task),
+                'deactivate' => $this->changeStatus($task),
                 'complete' => $task->update(['status_cv_id' => $complete->id, 'completed_at' => now()]),
                 default      => throw new \Exception(__('Invalid action')),
             };

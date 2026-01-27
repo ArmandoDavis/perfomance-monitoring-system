@@ -25,17 +25,42 @@
                                         <i class="fas fa-edit me-1"></i> {{ __('Edit') }}
                                     </a>
 
-                                    {{-- Resend password --}}
-                                    <form class="confirm-form-resend-{{ $user->uuid }}" action="{{ route('admin_panel.users.resend_resend_temp_password', $user->uuid) }}" method="POST" style="display: none;">
-                                        @csrf
-                                        @method('POST')
-                                        <input type="hidden" name="email" value="{{ $user->email }}" required>
-                                    </form>
-                                    <a href="javascript:void(0)" class="btn btn-sm btn-warning mb-2 mr-2" onclick="formActionConfirmation('resend-{{ $user->uuid }}', '{{ __('Resend password') }}')">
-                                        <i class="fas fa-plane me-1"></i> <span>{{ __('Resend password') }}</span>
-                                    </a>
+                                    @if($user->is_active)
+                                        {{-- Deactivate form --}}
+                                        <form action="{{ route('admin_panel.users.change_status', $user->uuid) }}" method="POST" class="d-none confirm-form-deactivate-{{ $user->uuid }}">
+                                            @csrf
+                                            @method('PUT')
 
-                                {{-- Delete --}}
+                                            <input type="hidden" name="action_type" value="6">
+                                            <input type="hidden" name="action" value="deactivate">
+                                        </form>
+
+                                        <a href="javascript:void(0)" class="btn btn-sm btn-danger mb-2 me-2" onclick="formActionConfirmation('deactivate-{{ $user->uuid }}', '{{ __('Deactivate') }}' )">
+                                            {{ __('Deactivate') }}
+                                        </a>
+                                    @else
+                                        {{-- Activate form --}}
+                                        <form action="{{ route('admin_panel.users.change_status', $user->uuid) }}" method="POST" class="d-none confirm-form-activate-{{ $user->uuid }}">
+                                            @csrf
+                                            @method('PUT')
+
+                                            <input type="hidden" name="action_type" value="6">
+                                            <input type="hidden" name="action" value="activate">
+                                        </form>
+
+                                        <a href="javascript:void(0)" class="btn btn-sm btn-info mb-2 me-2" onclick="formActionConfirmation('activate-{{ $user->uuid }}', '{{ __('Activate') }}'  )">
+                                            {{ __('Activate') }}
+                                        </a>
+                                    @endif
+
+                                    {{-- Resend password --}}
+                                    @if($user->id != user_id())
+                                        <a href="javascript:void(0)" class="btn btn-sm btn-warning mb-2 mr-2" data-bs-toggle="modal" data-bs-target="#uploadUpdatePasswordModal">
+                                            <i class="fas fa-plane me-1"></i> <span>{{ __('Change password') }}</span>
+                                        </a>
+                                    @endif
+
+                                    {{-- Delete --}}
                                     <form class="confirm-form-delete-{{ $user->uuid }}" action="{{ route('admin_panel.users.delete', $user->uuid) }}" method="POST" style="display: none;">
                                         @csrf
                                         @method('DELETE')
@@ -57,81 +82,6 @@
             </div>
         </div>
     </div>
+
+    @include('pages.admin.user.staff.profile.includes.modal')
 @endsection
-
-@push('scripts')
-    <script>
-        $(document).on('change', '.user-status-toggle', function () {
-            let userId = $(this).data('id');
-            let isChecked = $(this).is(':checked');
-            let switchElem = $(this);
-
-            if (!isChecked) {
-                // Confirm before disabling
-                Swal.fire({
-                    title: 'Are you sure?',
-                    text: "This will disable the user account.",
-                    icon: 'warning',
-                    showCancelButton: true,
-                    confirmButtonColor: '#d33',
-                    cancelButtonColor: '#6c757d',
-                    confirmButtonText: 'Yes, disable it'
-                }).then((result) => {
-                    if (result.isConfirmed) {
-                        updateUserStatus(userId, 0, switchElem);
-                    } else {
-                        switchElem.prop('checked', true); // revert if cancelled
-                    }
-                });
-            } else {
-                // Enable directly
-                updateUserStatus(userId, 1, switchElem);
-            }
-        });
-
-        function updateUserStatus(userId, is_active, switchElem) {
-            $.ajax({
-                url: '/admin_panel/users/staff/toggle_status',
-                method: 'POST',
-                data: {
-                    _token: '{{ csrf_token() }}',
-                    user_id: userId,
-                    is_active: is_active
-                },
-                success: function (res) {
-                    if (res.success) {
-                        toastMessage("success", res.message);
-                    } else {
-                        toastMessage("error", res.message);
-                        switchElem.prop('checked', !is_active); // revert toggle
-                    }
-                },
-                error: function (xhr, status, error) {
-                    let response = xhr.responseJSON;
-
-                    if (response && response.message) {
-                        if(response.success) {
-                            toastMessage("success", response.message);
-                        } else {
-                            toastMessage("error", response.message);
-                        }
-                    } else if (xhr.status === 403) {
-                        toastMessage("error", "{{ __('unauthorized action') }}")
-                    } else {
-                        toastMessage("error", "{{ __('Something went wrong') }}")
-                    }
-                    switchElem.prop('checked', !is_active); // revert if error
-                }
-            });
-        }
-
-        async function toastMessage(type = 'error', message) {
-            toastr[type](message, '', {
-                timeOut: 3000,
-                positionClass: 'toast-top-right',
-                progressBar: true,
-                closeButton: true
-            });
-        }
-    </script>
-@endpush

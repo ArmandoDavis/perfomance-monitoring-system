@@ -141,9 +141,9 @@
                         <label class="form-label">{{ __('Staff') }} <span class="text-danger">*</span></label>
                         <select name="user_id" class="form-select select2" required>
                             <option value="">{{ __('Select Staff') }}</option>
-                            @foreach($task->assignments as $assignment)
-                                <option value="{{ $assignment->user->id }}">
-                                    {{ $assignment->user->name }}
+                            @foreach($userAssigned as $user)
+                                <option value="{{ $user->id }}">
+                                    {{ $user->name }}
                                 </option>
                             @endforeach
                         </select>

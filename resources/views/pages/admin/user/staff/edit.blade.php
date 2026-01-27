@@ -114,6 +114,21 @@
                                 <div class="invalid-feedback">{{ $message }}</div>
                                 @enderror
                             </div>
+
+                            <div class="col-md-6 ">
+                                <label for="user_type_id" class="form-label">User type</label>
+                                <select name="user_type_id" id="user_type_id" class="form-select select2 @error('user_type_id') is-invalid @enderror" required>
+                                    @foreach($userType as $type)
+                                        <option value="{{ $type->id }}"{{ old('user_type_id', $user->userType->id ?? '') ? 'selected' : '' }}>
+                                            {{ $type->name }}
+                                        </option>
+                                    @endforeach
+                                </select>
+
+                                @error('user_type_id')
+                                    <div class="invalid-feedback">{{ $message }}</div>
+                                @enderror
+                            </div>
                         </div>
 
                         <!-- Status -->

@@ -50,7 +50,7 @@ class UserRequest extends Request
                 ];
                 $optional = [
                     'is_active' => 'nullable|boolean',
-                    'is_super_admin' => 'nullable|boolean',
+                    'user_type_id' => 'nullable|exists:code_values,id',
                 ];
                 $array = [
                     'roles'   => 'required|array',
