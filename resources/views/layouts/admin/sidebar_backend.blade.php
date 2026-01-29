@@ -40,7 +40,8 @@
             <li class="menu-label">Pages</li>
             <li>
                 <a href="javascript:void(0)" class="has-arrow">
-                    <div class="parent-icon"><i class="material-icons-outlined">task</i>
+                    <div class="parent-icon">
+                        <i class="material-icons-outlined">task</i>
                     </div>
                     <div class="menu-title">Pages</div>
                 </a>
@@ -57,31 +58,26 @@
 
             <li>
                 <a href="{{ route('admin_panel.departments.index') }}">
-                    <div class="parent-icon"><i class="material-icons-outlined">house</i>
+                    <div class="parent-icon">
+                        <i class="material-icons-outlined">house</i>
                     </div>
                     <div class="menu-title">Departments</div>
                 </a>
             </li>
 
-            <li class="menu-label">Others</li>
+
             <li>
-                <a class="has-arrow" href="javascript:;">
-                    <div class="parent-icon"><i class="material-icons-outlined">face_5</i>
+                <a href="javascript:void(0)" class="has-arrow">
+                    <div class="parent-icon"><i class="material-icons-outlined">task</i>
                     </div>
-                    <div class="menu-title">Menu Levels</div>
+                    <div class="menu-title">Administration</div>
                 </a>
                 <ul>
-                    <li><a class="has-arrow" href="javascript:;"><i class="material-icons-outlined">arrow_right</i>Level
-                            One</a>
-                        <ul>
-                            <li><a class="has-arrow" href="javascript:;"><i class="material-icons-outlined">arrow_right</i>Level
-                                    Two</a>
-                                <ul>
-                                    <li><a href="javascript:;"><i class="material-icons-outlined">arrow_right</i>Level Three</a>
-                                    </li>
-                                </ul>
-                            </li>
-                        </ul>
+                    <li>
+                        <a href="{{ route('admin_panel.role.index') }}"><i class="material-icons-outlined">arrow_right</i>Roles</a>
+                    </li>
+                    <li>
+                        <a href="{{ route('admin_panel.permissions.index') }}"><i class="material-icons-outlined">arrow_right</i>Permissions</a>
                     </li>
                 </ul>
             </li>

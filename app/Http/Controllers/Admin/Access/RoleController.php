@@ -1,9 +1,9 @@
 <?php
 
-namespace App\Http\Controllers\Backend\Access;
+namespace App\Http\Controllers\Admin\Access;
 
 use App\Http\Controllers\Controller;
-use App\Http\Requests\Backend\Access\RoleRequest;
+use App\Http\Requests\Admin\Access\RoleRequest;
 use App\Models\Access\Role;
 use App\Repositories\Access\PermissionRepository;
 use App\Repositories\Access\RoleRepository;
@@ -13,47 +13,46 @@ use Yajra\DataTables\Facades\DataTables;
 
 class RoleController extends  Controller
 {
-    protected $role_repo;
-    protected $permission_repo;
+    protected $role_repo, $permission_repo;
 
     public function __construct() {
         $this->role_repo = new RoleRepository();
         $this->permission_repo = new PermissionRepository();
-        $this->middlewareRole();
     }
 
     public function index()
     {
-        return view('pages.backend.access.role.index');
+        return view('pages.admin.access.role.index');
     }
 
     public function create()
     {
-        $permissions = app(PermissionRepository::class)->getAll();
+        $permissions = $this->permission_repo->getAll()->groupBy(function($permission) {
+            return strpos($permission->name, '.') !== false
+                ? explode('.', $permission->name)[0]
+                : 'general';
+        });
+
         $role = null;
-        return view('pages.backend.access.role.create')->with('permissions', $permissions)->with('role', $role);
+        return view('pages.admin.access.role.create', compact('permissions', 'role'));
     }
+
 
     public function store(RoleRequest $request)
     {
         $input = $request->all();
-        $input['name'] = Str::slug($input['display_name'], '_');
         $role = $this->role_repo->store($input);
         if (isset($input['permissions'])) {
             $role->permissions()->sync($input['permissions']);
         }
-        return redirect()->route('backend.role.profile', ['role' => $role->uid])->with('success', __('label.role_created'));
+        return redirect()->route('admin_panel.role.profile', ['role' => $role->uuid])->with('flash_success', __('Role Created'));
     }
 
     public function edit(Role $role)
     {
-        $permissions = $this->permission_repo->getAll();
+        $permissions = $this->permission_repo->getAllGrouped();
         $rolePermissions = $role->permissions->pluck('id')->toArray();
-
-        return view('pages.backend.access.role.edit')
-            ->with('permissions', $permissions)
-            ->with('rolePermissions', $rolePermissions)
-            ->with('role', $role);
+        return view('pages.admin.access.role.edit', compact('role', 'permissions', 'rolePermissions'));
     }
 
     public function update(RoleRequest $request, Role $role)
@@ -68,12 +67,12 @@ class RoleController extends  Controller
             $role->permissions()->sync([]);
         }
 
-        return redirect()->route('backend.role.profile', ['role' => $role->uid])->with('success', __('label.role_updated'));
+        return redirect()->route('admin_panel.role.profile', ['role' => $role->uuid])->with('flash_success', __('Role Updated'));
     }
 
     public function profile(Role $role) {
-        $permissions = $this->permission_repo->getPermissionsByRole($role);
-        return view('pages.backend.access.role.profile.profile', compact('role', 'permissions'));
+        $permissions = $this->permission_repo->getAllGrouped();
+        return view('pages.admin.access.role.profile.profile', compact('role', 'permissions'));
     }
 
     public function show(Role $role)
@@ -83,14 +82,18 @@ class RoleController extends  Controller
 
     public function delete(Role $role)
     {
+        if (!$role->can_be_deleted) {
+            return redirect()->back()->with('flash_danger', 'This role is protected and cannot be deleted.');
+        }
+
         $this->role_repo->delete($role);
-        return redirect()->route('backend.role.index')->with('success', __('messages.role_deleted'));
+        return redirect()->route('admin_panel.role.index')->with('flash_success', __('Role deleted'));
     }
 
     public function roleUser(Role $role)
     {
         $users = $role->users()->with('roles', 'permissions')->get();
-        return view('pages.backend.access.role.users', [
+        return view('pages.admin.access.role.users', [
             'role' => $role,
             'users' => $users,
         ]);
@@ -100,7 +103,7 @@ class RoleController extends  Controller
     {
         $users = $role->users()->limit(5)->get();
         return response()->json([
-            'html' => view('pages.backend.access.role.users_preview', compact('users'))->render()
+            'html' => view('pages.admin.access.role.users_preview', compact('users'))->render()
         ]);
     }
 
@@ -112,23 +115,8 @@ class RoleController extends  Controller
             ->editColumn('name', function ($result_list) {
                 return $result_list->name;
             })
-            ->editColumn('description', function ($result_list) {
-                return $result_list->description;
-            })
-            ->editColumn('isadmin', function ($result_list) {
-                return getBooleanBadge($result_list->isadmin);
-            })
-
-            ->editColumn('isactive', function ($result_list) {
-                return getStatusBadge($result_list->isactive);
-            })
-            ->rawColumns(['isactive', 'isadmin'])->make(true);
-    }
-
-    protected function middlewareRole()
-    {
-        $this->middleware('access.routeNeedsPermission:manage_roles_permissions,manage_roles_permissions', [
-            'only' => ['index', 'create', 'store', 'edit', 'update', 'delete', 'roleUser', 'roleUsersPreview']
-        ]);
+            ->addColumn('users_count', function ($role) {
+                return $role->users_count;
+            })->make(true);
     }
 }

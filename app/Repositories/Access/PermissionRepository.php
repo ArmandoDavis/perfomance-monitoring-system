@@ -1,8 +1,5 @@
 <?php
-
-
 namespace App\Repositories\Access;
-
 
 
 use App\Models\Access\Permission;
@@ -17,16 +14,19 @@ class PermissionRepository extends BaseRepository
 
     /*Get all permissions*/
     public  function  getAll() {
-        return $this->query()->with('permissionGroup')->orderBy('display_name')->get()->groupBy('permission_group_id');
+        return $this->query()->orderBy('created_at')->get();
     }
 
-    /*Get all permissions which are non-administrative*/
-    public function getAllNonAdministrative() {
-        return $this->query()->whereNull('deleted_at')->where('isadmin', 0)->orderBy('display_name')->get();
+    public function getAllGrouped()
+    {
+        return $this->getAll()->groupBy(function($p) {
+            return strpos($p->name, '.') !== false ? explode('.', $p->name)[0] : 'general';
+        });
     }
 
-    public function getPermissionsByRole($role) {
-        return $role->permissions()->with('permissionGroup')->orderBy('display_name')->get()->groupBy('permission_group_id');
+    public function getPermissionsByRole(Role $role)
+    {
+        return $role->permissions()->select('id', 'name')->orderBy('name')->get();
     }
 
     /*Check if permission is in user roles*/

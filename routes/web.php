@@ -55,6 +55,7 @@ Route::middleware(['auth'])->group(function () {
         });
 
         require __DIR__ . '/task.php';
+        require __DIR__ . '/roles.php';
 
         Route::prefix('user_profile')->name('user_profile.')->group(function () {
             Route::get('/my_profile', [App\Http\Controllers\Admin\ProfileController::class, 'index'])->name('my_profile');

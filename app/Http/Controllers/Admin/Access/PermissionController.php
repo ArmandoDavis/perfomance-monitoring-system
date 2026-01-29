@@ -1,42 +1,34 @@
 <?php
 
-namespace App\Http\Controllers\Backend\Access;
+namespace App\Http\Controllers\Admin\Access;
 use App\Http\Controllers\Controller;
-use App\Models\Access\Permission;
+use App\Repositories\Access\PermissionRepository;
 use Yajra\DataTables\Facades\DataTables;
 
 class PermissionController extends  Controller
 {
+    protected $role_repo, $permission_repo;
+
     public function __construct() {
-        $this->middleware('access.routeNeedsPermission:manage_roles_permissions', [
-            'only' => ['index', 'getAllForDt']
-        ]);
+        $this->permission_repo = new PermissionRepository();
     }
 
     public function index()
     {
-        return view('pages.backend.access.permission.index');
+        return view('pages.admin.access.permission.index');
     }
 
     public function getAllForDt()
     {
-        $result_list = Permission::getAllPermissions();
-
+        $result_list = $this->permission_repo->getAll();
         return DataTables::of($result_list)
             ->addIndexColumn()
-            ->editColumn('display_name', function ($result_list) {
-                return $result_list->display_name;
+            ->editColumn('name', function ($result_list) {
+                return $result_list->name;
             })
-            ->editColumn('description', function ($result_list) {
-                return $result_list->description;
+            ->editColumn('guard_name', function ($result_list) {
+                return $result_list->guard_name;
             })
-            ->editColumn('isadmin', function ($result_list) {
-                return getBooleanBadge($result_list->isadmin);
-            })
-            ->editColumn('isactive', function ($result_list) {
-                return getStatusBadge($result_list->isactive);
-            })
-            ->rawColumns(['isactive', 'isadmin'])
             ->make(true);
     }
 }
