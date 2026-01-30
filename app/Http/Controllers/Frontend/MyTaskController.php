@@ -77,6 +77,7 @@ class MyTaskController extends Controller
         return redirect()->back()->with('flash_success', "Task archived successfully");
     }
 
+
     public function getAllForDt(Request $request)
     {
         $query = $this->taskRepository->getAllForDt();
@@ -87,49 +88,27 @@ class MyTaskController extends Controller
         } elseif ($filter == 'shared') {
             $query->where('tasks.department_id', user()->department_id);
         } elseif ($filter == 'next_actions') {
-            $query->where('tasks.is_active', true)->whereNull('tasks.completed_at')->where('tasks.end_date', '>=', now());
+            $query->where('tasks.is_active', true)
+                ->whereNull('tasks.completed_at')
+                ->where('tasks.end_date', '>=', now());
         } elseif ($filter == 'transferred') {
             $query->where('tasks.is_transferred', true);
         }
 
         return DataTables::of($query)
-            ->addColumn('department_name', function($task) {
-                return $task->department_name;
-            })
-            ->addColumn('created_by', function($task) {
-                return $task->created_by;
-            })
-            ->addColumn('start_date', function($task) {
-                return short_date_format_with_day($task->start_date);
-            })
-            ->addColumn('end_date', function($task) {
-                return short_date_format_with_day($task->end_date);
-            })
-            ->addColumn('completed_at', function($task) {
-                return short_date_format_with_day($task->completed_at);
-            })
-            ->addColumn('allocated_budget', function($task) {
-                return number_2_format($task->allocated_budget);
-            })
-            ->addColumn('spent_amount', function($task) {
-                return number_2_format($task->spent_amount);
-            })
+            ->addColumn('department_name', fn($task) => $task->department_name)
+            ->addColumn('created_by', fn($task) => $task->creator_name)
+            ->addColumn('start_date', fn($task) => short_date_format_with_day($task->start_date))
+            ->addColumn('end_date', fn($task) => short_date_format_with_day($task->end_date))
+            ->addColumn('completed_at', fn($task) => short_date_format_with_day($task->completed_at))
+            ->addColumn('allocated_budget', fn($task) => number_2_format($task->allocated_budget))
+            ->addColumn('spent_amount', fn($task) => number_2_format($task->spent_amount))
             ->addColumn('remaining_budget', function($task) {
-                return number_2_format($task->allocated_budget);
+                return number_2_format($task->allocated_budget - $task->spent_amount);
             })
-            ->addColumn('status_badge', function($task) {
-                return getStatusLabelBadge($task->task_status);
-            })
-            ->rawColumns([
-                'status_badge',
-                'remaining_budget',
-                'allocated_budget',
-                'spent_amount',
-                'completed_at',
-                'start_date',
-                'end_date'
-            ])->make(true);
+            ->addColumn('status_badge', fn($task) => getStatusLabelBadge($task->task_status))
+            ->rawColumns(['status_badge'])
+            ->make(true);
     }
 }
-
 
