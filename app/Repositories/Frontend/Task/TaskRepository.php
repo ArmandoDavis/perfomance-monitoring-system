@@ -16,6 +16,7 @@ class TaskRepository extends BaseRepository
         return $this->query()
             ->where('tasks.is_active', 1)
             ->select([
+                'tasks.id',
                 'tasks.uuid',
                 'tasks.title',
                 'tasks.start_date',
