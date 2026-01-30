@@ -1,12 +1,12 @@
 @extends('layouts.admin.app')
-@section('title', __('Department'))
+@section('title', __('Task List'))
 @include('includes.assets.datatable_assets')
 @include('includes.assets.sweetalert_assets')
 @include('includes.assets.confirm_alert_assets')
 
 @section('content')
     <div class="d-sm-flex align-items-center justify-content-end mb-4">
-        @can('department.manage')
+        @can('task.create')
             <a href="{{ route('admin_panel.tasks.create') }}" class="d-none d-sm-inline-block btn btn-xl btn-primary shadow-sm">
                 <i class="bi bi-plus-circle text-white-50"></i>  Add Task
             </a>
@@ -50,7 +50,10 @@
                 buttons: [ 'copy', 'excel', 'pdf', 'print'],
                 ajax: {
                     url: "{{ route('admin_panel.tasks.get_all_for_dt') }}",
-                    type: 'GET'
+                    type: 'GET',
+                    data: function (d) {
+                        d.filter_type = "{{ $filter_type ?? 'all' }}";
+                    }
                 },
                 columns: [
                     { data: 'title', name: 'title', orderable: true, searchable: true },

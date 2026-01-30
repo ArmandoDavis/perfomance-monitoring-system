@@ -6,6 +6,7 @@ use App\Http\Requests\Admin\User\UserRequest;
 use App\Models\Access\User;
 use App\Repositories\Access\RoleRepository;
 use App\Repositories\Access\UserRepository;
+use App\Repositories\Admin\Department\DepartmentRepository;
 use App\Repositories\System\CodeRepository;
 use App\Repositories\System\CodeValueRepository;
 use Illuminate\Http\Request;
@@ -15,7 +16,7 @@ use Yajra\DataTables\DataTables;
 
 class StaffUserController extends Controller
 {
-    protected $userRepo, $roleRepo, $codeValueRepo, $codeRepository;
+    protected $userRepo, $roleRepo, $codeValueRepo, $codeRepository, $departmentRepository;
 
     public function __construct()
     {
@@ -23,6 +24,12 @@ class StaffUserController extends Controller
         $this->roleRepo = new RoleRepository();
         $this->codeValueRepo = new CodeValueRepository();
         $this->codeRepository = new CodeRepository();
+        $this->departmentRepository = new DepartmentRepository();
+
+        $this->middleware('permission:user.view')->only(['index', 'profile', 'getAllForDt']);
+        $this->middleware('permission:user.create')->only(['create', 'store', 'index']);
+        $this->middleware('permission:user.update')->only(['edit', 'update', 'profile', 'index']);
+        $this->middleware('permission:user.delete')->only('delete', 'profile', 'index');
     }
 
     public function index()
@@ -32,16 +39,20 @@ class StaffUserController extends Controller
 
     public function create()
     {
-        $roles = $this->roleRepo->forSelect();
-        return view('pages.admin.user.staff.create', compact('roles'));
+        $data['roles'] = $this->roleRepo->forSelect();
+        $data['departments'] = $this->departmentRepository->getActiveDepartments();
+        return view('pages.admin.user.staff.create', $data);
     }
 
     public function edit(User $user)
     {
+        $this->authorize('update', $user);
+
         $data['user'] = $user;
         $codeId = $this->codeRepository->getOnlyCodeIdByNameForCodeValue("Auth User Type");
         $data['roles'] = $this->roleRepo->forSelect();
         $data['userType'] = $this->codeValueRepo->getCodeValuesForSelect($codeId);
+        $data['departments'] = $this->departmentRepository->getActiveDepartments();
         return view('pages.admin.user.staff.edit', $data);
     }
 
@@ -80,6 +91,8 @@ class StaffUserController extends Controller
 
     public function toggleStatus(UserRequest $request, User $user)
     {
+        $this->authorize('manageStatus', $user);
+
         if ($user->id === user_id() && $request->action === "deactivate") {
             return redirect()->back()->with('flash_danger', __('You can not disable your own account'));
         }

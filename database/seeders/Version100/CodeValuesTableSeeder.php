@@ -39,8 +39,9 @@ class CodeValuesTableSeeder extends Seeder
                 ['reference' => 'SCS002', 'name' => 'Todo', 'is_system_defined' => 1],
                 ['reference' => 'SCS003', 'name' => 'In progress', 'is_system_defined' => 1],
                 ['reference' => 'SCS004', 'name' => 'Submitted', 'is_system_defined' => 1],
-                ['reference' => 'SCS005', 'name' => 'Done', 'is_system_defined' => 1],
+                ['reference' => 'SCS005', 'name' => 'Done', 'is_system_defined' => 1], // same to complete
                 ['reference' => 'SCS006', 'name' => 'Deployed', 'is_system_defined' => 1],
+                ['reference' => 'SCS007', 'name' => 'Reject', 'is_system_defined' => 1],
             ]
         ];
 

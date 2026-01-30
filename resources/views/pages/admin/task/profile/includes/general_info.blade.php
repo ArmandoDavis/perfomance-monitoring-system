@@ -85,6 +85,36 @@
                             <th>{{ __('Completed At') }}</th>
                             <td>{{ $task->completed_at ? short_date_format_with_day($task->completed_at) . ', ' . time_date_format($task->completed_at) : '-' }}</td>
                         </tr>
+
+                        <tr>
+                            <th>{{ __('Task Context') }}</th>
+                            <td>
+                                @if($userShare)
+                                    {{-- Inayoonekana kwa Staff aliyeshirikishwa (The Peer) --}}
+                                    <div class="d-flex align-items-center">
+                                        <span class="badge bg-warning text-dark me-2">
+                                            <i class="fas fa-handshake me-1"></i> {{ __('Shared with me') }}
+                                        </span>
+                                        <small class="text-muted">
+                                            {{ __('by') }} <strong>{{ $userShare->sharedBy->name ?? __('Unknown') }}</strong>
+                                        </small>
+                                    </div>
+                                @elseif($task->shares->isNotEmpty())
+                                    <div class="d-flex align-items-center">
+                                        <span class="badge bg-info text-dark me-2">
+                                            <i class="fas fa-users me-1"></i> {{ __('Shared Task') }}
+                                        </span>
+                                        <small class="text-muted">
+                                            ({{ __('Distributed to') }} {{ $task->shares->count() }} {{ __('person(s)') }})
+                                        </small>
+                                    </div>
+                                @else
+                                    <span class="badge bg-light text-muted border">
+                                        <i class="fas fa-user-lock me-1"></i> {{ __('Private') }}
+                                    </span>
+                                @endif
+                            </td>
+                        </tr>
                     </tbody>
                 </table>
             </div>

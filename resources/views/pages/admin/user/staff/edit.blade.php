@@ -1,5 +1,4 @@
 @extends('layouts.admin.app')
-
 @section('title', 'Edit Staff')
 
 @include('includes.assets.select2_assets')
@@ -127,6 +126,26 @@
 
                                 @error('user_type_id')
                                     <div class="invalid-feedback">{{ $message }}</div>
+                                @enderror
+                            </div>
+                        </div>
+
+                        <div class="row mb-3">
+                            <div class="col-md-6">
+                                <label for="department_id" class="form-label">
+                                    Department <span class="text-danger">*</span>
+                                </label>
+                                <select name="department_id" id="department_id" class="form-select select2 @error('department_id') is-invalid @enderror" required>
+                                    <option value="">Select Department</option>
+                                    @foreach($departments as $dept)
+                                        <option value="{{ $dept->id }}" {{ old('department_id', $user->department_id) == $dept->id ? 'selected' : '' }}>
+                                            {{ $dept->name }}
+                                        </option>
+                                    @endforeach
+                                </select>
+
+                                @error('department_id')
+                                <div class="invalid-feedback">{{ $message }}</div>
                                 @enderror
                             </div>
                         </div>

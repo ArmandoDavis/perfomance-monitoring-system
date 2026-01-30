@@ -4,14 +4,7 @@
 @include('includes.assets.select2_assets')
 
 @section('content')
-    <form action="{{ route('admin_panel.users.store') }}"
-          method="POST"
-          enctype="multipart/form-data"
-          name="create"
-          class="needs-validation"
-          novalidate
-          autocomplete="off">
-
+    <form action="{{ route('admin_panel.users.store') }}" method="POST" enctype="multipart/form-data" name="create" class="needs-validation" novalidate autocomplete="off">
         @csrf
         <input type="hidden" name="action_type" value="1">
 
@@ -27,12 +20,7 @@
                                     <label for="name" class="form-label required_asterik">
                                         Name
                                     </label>
-                                    <input type="text"
-                                           name="name"
-                                           id="name"
-                                           value="{{ old('name') }}"
-                                           class="form-control form-control-sm @error('name') is-invalid @enderror"
-                                           autocomplete="off">
+                                    <input type="text" name="name" id="name" value="{{ old('name') }}" class="form-control form-control-sm @error('name') is-invalid @enderror" autocomplete="off">
 
                                     @error('name')
                                     <div class="invalid-feedback">{{ $message }}</div>
@@ -43,13 +31,7 @@
                                     <label for="phone" class="form-label required_asterik">
                                         Phone
                                     </label>
-                                    <input type="text"
-                                           name="phone"
-                                           id="phone"
-                                           value="{{ old('phone') }}"
-                                           class="form-control form-control-sm @error('phone') is-invalid @enderror"
-                                           autocomplete="off">
-
+                                    <input type="text" name="phone" id="phone" value="{{ old('phone') }}" class="form-control form-control-sm @error('phone') is-invalid @enderror" autocomplete="off">
                                     @error('phone')
                                     <div class="invalid-feedback">{{ $message }}</div>
                                     @enderror
@@ -62,12 +44,7 @@
                                     <label for="email" class="form-label required_asterik">
                                         Email
                                     </label>
-                                    <input type="email"
-                                           name="email"
-                                           id="email"
-                                           value="{{ old('email') }}"
-                                           class="form-control form-control-sm @error('email') is-invalid @enderror"
-                                           autocomplete="off">
+                                    <input type="email" name="email" id="email" value="{{ old('email') }}" class="form-control form-control-sm @error('email') is-invalid @enderror" autocomplete="off">
 
                                     @error('email')
                                     <div class="invalid-feedback">{{ $message }}</div>
@@ -93,6 +70,28 @@
 
                             <!-- Roles -->
                             <div class="row g-3 mb-3">
+                                <div class="col-xxl-3 col-md-6">
+                                    <label for="department_id" class="form-label required_asterik">
+                                        Department
+                                    </label>
+
+                                    <select name="department_id"
+                                            id="department_id"
+                                            class="select2 form-control @error('department_id') is-invalid @enderror">
+                                        <option value="">Select Department</option>
+                                        @foreach($departments as $department)
+                                            <option value="{{ $department->id }}"
+                                                {{ old('department_id') == $department->id ? 'selected' : '' }}>
+                                                {{ $department->name }}
+                                            </option>
+                                        @endforeach
+                                    </select>
+
+                                    @error('department_id')
+                                    <div class="invalid-feedback d-block">{{ $message }}</div>
+                                    @enderror
+                                </div>
+
                                 <div class="col-xxl-3 col-md-6">
                                     <label for="roles" class="form-label required_asterik">
                                         Role

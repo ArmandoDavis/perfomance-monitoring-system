@@ -3,6 +3,8 @@
 namespace App\Http\Controllers\Frontend;
 
 use App\Http\Controllers\Controller;
+use App\Http\Requests\Admin\Task\TaskRequest;
+use App\Models\Access\User;
 use App\Models\System\Code;
 use App\Models\Task\Task;
 use App\Repositories\Access\UserRepository;
@@ -32,19 +34,34 @@ class MyTaskController extends Controller
     }
 
 
+    public function shared() {
+        return view('pages.frontend.task.index', ['filter_type' => 'shared']);
+    }
+
+    public function nextActions() {
+        return view('pages.frontend.task.index', ['filter_type' => 'next_actions']);
+    }
+
+    public function transferred() {
+        return view('pages.frontend.task.index', ['filter_type' => 'transferred']);
+    }
+
     public function profile(Task $task)
     {
         $codeId = Code::query()->where('name', 'Status')->value('id');
-        $statuses = $this->codeValueRepository->getCodeValuesForSelect($codeId);
-        $statusActions = $this->codeValueRepository->getCodeValuesReferenceForSelect($codeId);
-        $myProgressLogs = $task->progressLogs()->where('user_id', user_id())->get();
-
-        return view('pages.frontend.task.profile.profile', compact('task', 'statuses', 'statusActions', 'myProgressLogs'));
+        $data['task'] = $task;
+        $data['statuses'] = $this->codeValueRepository->getCodeValuesForSelect($codeId);
+        $data['statusActions'] = $this->codeValueRepository->getCodeValuesReferenceForSelect($codeId);
+        $data['myProgressLogs'] = $task->progressLogs()->where('user_id', user_id())->get();
+        $data['departmentPeers'] = $this->userRepository->getActiveUsersPerDepartment();
+        $data['userShare'] = $task->shares->where('shared_with', user_id())->first();
+        return view('pages.frontend.task.profile.profile', $data);
     }
 
-    public function updateStatus(Task $task, $statusRef)
+    public function changeTaskStatus(TaskRequest $request, Task $task)
     {
-        $this->taskRepository->updateStatus($task, $statusRef);
+        $this->authorize('updateStatus', $task);
+        $this->taskRepository->changeTaskStatus($task, $request->all());
         return redirect()->back()->with('flash_success', "Task status updated successfully");
     }
 
@@ -62,7 +79,20 @@ class MyTaskController extends Controller
 
     public function getAllForDt(Request $request)
     {
-        return DataTables::of($this->taskRepository->getAllForDt())
+        $query = $this->taskRepository->getAllForDt();
+        $filter = $request->get('filter_type');
+
+        if ($filter == 'my_tasks') {
+            $query->where('tasks.created_by', user_id());
+        } elseif ($filter == 'shared') {
+            $query->where('tasks.department_id', user()->department_id);
+        } elseif ($filter == 'next_actions') {
+            $query->where('tasks.is_active', true)->whereNull('tasks.completed_at')->where('tasks.end_date', '>=', now());
+        } elseif ($filter == 'transferred') {
+            $query->where('tasks.is_transferred', true);
+        }
+
+        return DataTables::of($query)
             ->addColumn('department_name', function($task) {
                 return $task->department_name;
             })
@@ -101,16 +131,5 @@ class MyTaskController extends Controller
             ])->make(true);
     }
 }
-
-//20,000
-//30,000
-
-//7000
-//5000
-//6000
-//28,000
-//35000
-//5500
-//10000
 
 

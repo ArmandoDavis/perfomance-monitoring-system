@@ -40,7 +40,10 @@
                 buttons: [ 'copy', 'excel', 'pdf', 'print'],
                 ajax: {
                     url: "{{ route('frontend.tasks.get_all_for_dt') }}",
-                    type: 'GET'
+                    type: 'GET',
+                    data: function (d) {
+                        d.filter_type = "{{ $filter_type ?? 'all' }}";
+                    }
                 },
                 columns: [
                     { data: 'title', name: 'title', orderable: true, searchable: true },

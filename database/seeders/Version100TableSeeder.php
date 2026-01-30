@@ -26,7 +26,11 @@ class Version100TableSeeder extends Seeder
         $this->call(\CurrencySeeder::class);
         $this->call(\LabelSeeder::class);
 
-        $this->call(\RolesAndPermissionsSeeder::class);
+        //$this->call(\RolesAndPermissionsSeeder::class);
+        $this->call(\TaskPermissionSeeder::class);
+        $this->call(\UserManagementPermissionSeeder::class);
+        $this->call(\ExpensePermissionSeeder::class);
+        $this->call(\DepartmentPermissionSeeder::class);
         $this->call(\DepartmentSeeder::class);
         $this->call(\UserSeeder::class);
         $this->call(\TaskSeeder::class);

@@ -55,6 +55,10 @@ class DepartmentController extends Controller
 
     public function delete(Request $request, Department $department)
     {
+        if (!$department->can_be_deleted) {
+            return redirect()->back()->with('flash_danger', 'This Department can not be deleted, due to security reasons.');
+        }
+
         $this->depertmentRepository->delete($department);
         return redirect()->route('admin_panel.department.index')->with('flash_success', 'Department Deleted Successfully');
     }

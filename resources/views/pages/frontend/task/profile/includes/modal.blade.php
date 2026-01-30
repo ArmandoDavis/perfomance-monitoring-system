@@ -67,3 +67,59 @@
         </form>
     </div>
 </div>
+
+
+{{--shareModal --}}
+<div class="modal fade" id="shareModal" tabindex="-1" aria-hidden="true">
+    <div class="modal-dialog modal-dialog-centered">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title">{{ __('Share Task with Peer') }}</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+            <form action="{{ route('frontend.tasks.share.store', $task->uuid) }}" method="POST">
+                @csrf
+                <div class="modal-body">
+                    <div class="alert alert-info">
+                        <i class="fas fa-info-circle me-1"></i>
+                        {{ __('You can share this task with a colleague from the ') }}
+                        <strong>{{ auth()->user()->department->name }}</strong>
+                        {{ __(' department.') }}
+                    </div>
+
+                    <div class="mb-3">
+                        <label class="form-label">{{ __('Select Employee') }}</label>
+                        <select name="user_id" class="form-select select2-modal" required data-placeholder="{{ __('Search name...') }}">
+                            <option value=""></option>
+                            @foreach($departmentPeers as $peer)
+                                <option value="{{ $peer->id }}">{{ $peer->full_name }} ({{ $peer->email }})</option>
+                            @endforeach
+                        </select>
+                    </div>
+
+                    <div class="mb-3">
+                        <label class="form-label">{{ __('Message (Optional)') }}</label>
+                        <textarea name="remarks" class="form-control" rows="2" placeholder="{{ __('Write the reason for sharing...') }}"></textarea>
+                    </div>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">{{ __('Cancel') }}</button>
+                    <button type="submit" class="btn btn-dark">
+                        <i class="fas fa-share-nodes me-1"></i> {{ __('Share Now') }}
+                    </button>
+                </div>
+            </form>
+        </div>
+    </div>
+</div>
+
+@push('scripts')
+    <script>
+        $(document).ready(function() {
+            $('.select2-modal').select2({
+                dropdownParent: $('#shareModal'),
+                width: '100%'
+            });
+        });
+    </script>
+@endpush

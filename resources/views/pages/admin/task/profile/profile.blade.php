@@ -54,26 +54,94 @@
                     <div class="row mb-2">
                         <div class="col-md-12">
                             <div class="d-flex justify-content-end flex-wrap gap-2">
-                                @can('task.update')
-                                    {{-- Edit --}}
-                                    @if($task->status->reference == "SCS002")
+                                @can('update', $task)
+                                    @if($task->status->reference != "SCS004" && $task->status->reference != "SCS005")
                                         <a href="{{ route('admin_panel.tasks.edit', $task->uuid) }}" class="btn btn-sm btn-primary mb-2 me-2">
                                             <i class="material-icons-outlined">edit</i> {{ __('Edit') }}
                                         </a>
+                                    @endif
+                                @endcan
 
-                                        <form action="{{ route('admin_panel.tasks.change_status', $task->uuid) }}" method="POST" class="d-none confirm-form-complete-{{ $task->uuid }}">
-                                            @csrf
-                                            @method('PUT')
 
+                                @can('updateStatus', $task)
+                                    {{-- TODO -> IN PROGRESS --}}
+                                    @if($task->status->reference == "SCS002")
+                                        <form action="{{ route('admin_panel.tasks.change_status', $task->uuid) }}" method="POST" class="d-none confirm-form-start-{{ $task->uuid }}">
+                                            @csrf @method('PUT')
                                             <input type="hidden" name="action_type" value="6">
-                                            <input type="hidden" name="action" value="complete">
+                                            <input type="hidden" name="action" value="start_progress">
                                         </form>
-
-                                        <a href="javascript:void(0)" class="btn btn-sm btn-warning text-white mb-2 me-2" onclick="formActionConfirmation('complete-{{ $task->uuid }}', '{{ __('complete') }}' )">
-                                            {{ __('Complete') }}
+                                        <a href="javascript:void(0)" class="btn btn-sm btn-info text-white mb-2 me-2" onclick="formActionConfirmation('start-{{ $task->uuid }}', '{{ __('Start Working') }}' )">
+                                            <i class="material-icons-outlined">play_arrow</i> {{ __('Start Task') }}
                                         </a>
                                     @endif
 
+                                    {{-- IN PROGRESS -> SUBMITTED --}}
+                                    @if($task->status->reference == "SCS003")
+                                        <form action="{{ route('admin_panel.tasks.change_status', $task->uuid) }}" method="POST" class="d-none confirm-form-submit-{{ $task->uuid }}">
+                                            @csrf @method('PUT')
+                                            <input type="hidden" name="action_type" value="6">
+                                            <input type="hidden" name="action" value="submit_task">
+                                        </form>
+                                        <a href="javascript:void(0)" class="btn btn-sm btn-primary mb-2 me-2" onclick="formActionConfirmation('submit-{{ $task->uuid }}', '{{ __('Submit for Review') }}' )">
+                                            <i class="material-icons-outlined">send</i> {{ __('Submit Work') }}
+                                        </a>
+                                    @endif
+                                @endcan
+
+                                @can('manage', $task)
+                                    {{-- 3. SUBMITTED -> DONE --}}
+                                    @if($task->status->reference == "SCS004")
+                                        <form action="{{ route('admin_panel.tasks.change_status', $task->uuid) }}" method="POST" class="d-none confirm-form-complete-{{ $task->uuid }}">
+                                            @csrf @method('PUT')
+                                            <input type="hidden" name="action_type" value="6">
+                                            <input type="hidden" name="action" value="complete">
+                                        </form>
+                                        <a href="javascript:void(0)" class="btn btn-sm btn-success mb-2 me-2" onclick="formActionConfirmation('complete-{{ $task->uuid }}', '{{ __('Mark as Done') }}' )">
+                                            <i class="material-icons-outlined">check_circle</i> {{ __('Approve & Complete') }}
+                                        </a>
+
+                                        <form action="{{ route('admin_panel.tasks.change_status', $task->uuid) }}" method="POST" class="d-none confirm-form-rejection-{{ $task->uuid }}">
+                                            @csrf @method('PUT')
+                                            <input type="hidden" name="action_type" value="6">
+                                            <input type="hidden" name="action" value="reject">
+                                        </form>
+                                        <a href="javascript:void(0)" class="btn btn-sm btn-outline-danger mb-2 me-2" onclick="formActionConfirmation('rejection-{{ $task->uuid }}', '{{ __('Reject & Redo') }}' )">
+                                            {{ __('Needs Revision') }}
+                                        </a>
+                                    @endif
+                                @endcan
+
+                                @can('rollback', $task)
+                                    {{-- UNDO COMPLETION within 48 hours --}}
+                                    @if($task->status->reference == "SCS005" && $task->completed_at)
+                                        @if($hoursSinceCompletion <= 48)
+                                            <form action="{{ route('admin_panel.tasks.change_status', $task->uuid) }}" method="POST" class="d-none confirm-form-undo-{{ $task->uuid }}">
+                                                @csrf @method('PUT')
+                                                <input type="hidden" name="action_type" value="6">
+                                                <input type="hidden" name="action" value="undo_complete">
+                                            </form>
+                                            <a href="javascript:void(0)" class="btn btn-sm btn-outline-warning mb-2 me-2" onclick="formActionConfirmation('undo-{{ $task->uuid }}', '{{ __('Undo Completion') }}' )">
+                                                <i class="material-icons-outlined">undo</i> {{ __('Undo Done') }}
+                                            </a>
+                                        @endif
+                                    @endif
+                                @endcan
+
+                                {{-- TRANSFER & SHARE --}}
+                                @can('transfer', $task)
+                                    <button class="btn btn-sm btn-outline-secondary mb-2" data-bs-toggle="modal" data-bs-target="#transferModal">
+                                        <i class="material-icons-outlined">swap_horiz</i> {{ __('Transfer') }}
+                                    </button>
+                                @endcan
+
+                                @can('share', $task)
+                                    <button class="btn btn-sm btn-outline-dark mb-2" data-bs-toggle="modal" data-bs-target="#shareModal">
+                                        <i class="material-icons-outlined">share</i> {{ __('Share') }}
+                                    </button>
+                                @endcan
+
+                                @can('updateStatus', $task)
                                     {{-- Change status --}}
                                     @if($task->status->reference == "SCS005" && $task->status->reference == "SCS006" || $task->status->reference == "SCS002")
                                         @if($task->is_active)
@@ -106,25 +174,11 @@
                                             </a>
                                         @endif
                                     @endif
-
-                                    @if($task->status->reference == "SCS004")
-                                        <form action="{{ route('admin_panel.tasks.change_status', $task->uuid) }}" method="POST" class="d-none confirm-form-complete-{{ $task->uuid }}">
-                                            @csrf
-                                            @method('PUT')
-
-                                            <input type="hidden" name="action_type" value="6">
-                                            <input type="hidden" name="action" value="complete">
-                                        </form>
-
-                                        <a href="javascript:void(0)" class="btn btn-sm btn-warning text-white mb-2 me-2" onclick="formActionConfirmation('complete-{{ $task->uuid }}', '{{ __('complete') }}' )">
-                                            {{ __('Complete') }}
-                                        </a>
-                                    @endif
                                 @endcan
 
 
                                 {{-- delete task --}}
-                                @can('task.delete')
+                                @can('delete', $task)
                                     @if($task->can_be_deleted)
                                         <form class="confirm-form-delete-{{ $task->uuid }}" action="{{ route('admin_panel.tasks.delete', $task->uuid) }}" method="POST" style="display: none;">
                                             @csrf
@@ -221,16 +275,15 @@
 
                             @can('performance.evaluate')
                                 @if($userAssigned->isNotEmpty())
-                            <button class="btn btn-sm btn-outline-primary" data-bs-toggle="modal" data-bs-target="#addPerformanceModal">
-                                <i class="material-icons-outlined">add</i>
-                                Evaluate
-                            </button>
-                        @else
-                            <div class="alert alert-warning mb-0">
-                                All users have been evaluated
-                            </div>
-                        @endif
-
+                                    <button class="btn btn-sm btn-outline-primary" data-bs-toggle="modal" data-bs-target="#addPerformanceModal">
+                                        <i class="material-icons-outlined">add</i>
+                                        Evaluate
+                                    </button>
+                                @else
+                                    <div class="alert alert-warning mb-0">
+                                        All users have been evaluated
+                                    </div>
+                                @endif
                             @endcan
                         </div>
 

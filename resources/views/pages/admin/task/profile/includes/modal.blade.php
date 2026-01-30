@@ -262,6 +262,37 @@
     </div>
 </div>
 
+
+{{--transferModal--}}
+<div class="modal fade" id="transferModal" tabindex="-1" aria-hidden="true">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header bg-light">
+                <h5 class="modal-title">{{ __('Transfer Task to Another Dept') }}</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+            </div>
+            <form action="{{ route('admin_panel.tasks.transfer', $task->uuid) }}" method="POST">
+                @csrf
+                <div class="modal-body">
+                    <div class="mb-3">
+                        <label class="form-label text-danger"><strong>{{ __('Target Department') }}</strong></label>
+                        <select name="department_id" class="form-select select2-transfer" required>
+
+                        </select>
+                    </div>
+                    <div class="mb-3">
+                        <label class="form-label">{{ __('Reason for Transfer') }}</label>
+                        <textarea name="remarks" class="form-control" rows="3" required placeholder="{{ __('Reasons...') }}"></textarea>
+                    </div>
+                </div>
+                <div class="modal-footer">
+                    <button type="submit" class="btn btn-secondary">{{ __('Confirm Transfer') }}</button>
+                </div>
+            </form>
+        </div>
+    </div>
+</div>
+
 @push('scripts')
     <script>
         $('#addAssignmentModal').on('shown.bs.modal', function () {

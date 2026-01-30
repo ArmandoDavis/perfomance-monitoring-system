@@ -12,77 +12,116 @@
     </div>
 
     <div class="sidebar-nav" data-simplebar="true">
-        <!--navigation-->
         <ul class="metismenu" id="sidenav">
             <li>
                 <a href="{{ route('admin_panel.dashboard') }}">
                     <div class="parent-icon">
-                        <i class="material-icons-outlined">house</i>
+                        <i class="fas fa-house"></i>
                     </div>
                     <div class="menu-title">Dashboard</div>
                 </a>
             </li>
 
-            <li class="menu-label">Task</li>
-            <li>
-                <a href="javascript:void(0)" class="has-arrow">
-                    <div class="parent-icon"><i class="material-icons-outlined">task</i>
-                    </div>
-                    <div class="menu-title">Task Management</div>
-                </a>
-                <ul>
-                    <li>
-                        <a href="{{ route('admin_panel.tasks.index') }}"><i class="material-icons-outlined">arrow_right</i>Task</a>
-                    </li>
-                </ul>
-            </li>
+            @can('task.view')
+                <li class="menu-label">Task</li>
+                <li>
+                    <a href="javascript:void(0)" class="has-arrow">
+                        <div class="parent-icon">
+                            <i class="fas fa-tasks"></i>
+                        </div>
+                        <div class="menu-title">Task Management</div>
+                    </a>
+                    <ul>
+                        @can('task.manage')
+                            <li>
+                                <a href="{{ route('admin_panel.tasks.index') }}">
+                                    <i class="fas fa-list-check"></i> All Tasks
+                                </a>
+                            </li>
+                        @endcan
 
-            <li class="menu-label">Pages</li>
-            <li>
-                <a href="javascript:void(0)" class="has-arrow">
-                    <div class="parent-icon">
-                        <i class="material-icons-outlined">task</i>
-                    </div>
-                    <div class="menu-title">Pages</div>
-                </a>
-                <ul>
-                    <li>
-                        <a href="{{ route('admin_panel.tasks.index') }}"><i class="material-icons-outlined">arrow_right</i>Expenses</a>
-                    </li>
-                    <li>
-                        <a href="{{ route('admin_panel.users.index') }}"><i class="material-icons-outlined">arrow_right</i>Users</a>
-                    </li>
-                </ul>
-            </li>
+                        <li>
+                            <a href="{{ route('admin_panel.tasks.my_tasks') }}">
+                                <i class="fas fa-user-gear"></i> My Tasks
+                            </a>
+                        </li>
+                        <li>
+                            <a href="{{ route('admin_panel.tasks.shared') }}">
+                                <i class="fas fa-users-viewfinder"></i> Shared Tasks
+                            </a>
+                        </li>
+                        <li>
+                            <a href="{{ route('admin_panel.tasks.next_actions') }}">
+                                <i class="fas fa-calendar-check"></i> Next Actions
+                            </a>
+                        </li>
+                        <li>
+                            <a href="{{ route('admin_panel.tasks.transferred') }}">
+                                <i class="fas fa-share-from-square"></i> Transferred Tasks
+                            </a>
+                        </li>
+                    </ul>
+                </li>
+            @endcan
 
+            @canany(['user.view', 'expense.view'])
+                <li class="menu-label">Hr</li>
+                <li>
+                    <a href="javascript:void(0)" class="has-arrow">
+                        <div class="parent-icon">
+                            <i class="fas fa-users-cog"></i>
+                        </div>
+                        <div class="menu-title">Hr</div>
+                    </a>
+                    <ul>
+                        @can('expense.view')
+                            <li>
+                                <a href="#">
+                                    <i class="fas fa-money-bill-transfer"></i> Expenses
+                                </a>
+                            </li>
+                        @endcan
 
-            <li>
-                <a href="{{ route('admin_panel.departments.index') }}">
-                    <div class="parent-icon">
-                        <i class="material-icons-outlined">house</i>
-                    </div>
-                    <div class="menu-title">Departments</div>
-                </a>
-            </li>
+                        @can('user.view')
+                            <li>
+                                <a href="{{ route('admin_panel.users.index') }}">
+                                    <i class="fas fa-user-group"></i> Users
+                                </a>
+                            </li>
+                        @endcan
+                    </ul>
+                </li>
+            @endcanany
 
-
-            <li>
-                <a href="javascript:void(0)" class="has-arrow">
-                    <div class="parent-icon"><i class="material-icons-outlined">task</i>
-                    </div>
-                    <div class="menu-title">Administration</div>
-                </a>
-                <ul>
-                    <li>
-                        <a href="{{ route('admin_panel.role.index') }}"><i class="material-icons-outlined">arrow_right</i>Roles</a>
-                    </li>
-                    <li>
-                        <a href="{{ route('admin_panel.permissions.index') }}"><i class="material-icons-outlined">arrow_right</i>Permissions</a>
-                    </li>
-                </ul>
-            </li>
+            @if(auth()->user()->hasRole('Admin'))
+                <li class="menu-label">Administration</li>
+                <li>
+                    <a href="javascript:void(0)" class="has-arrow">
+                        <div class="parent-icon">
+                            <i class="fas fa-shield-halved"></i>
+                        </div>
+                        <div class="menu-title">Administration</div>
+                    </a>
+                    <ul>
+                        <li>
+                            <a href="{{ route('admin_panel.role.index') }}">
+                                <i class="fas fa-user-shield"></i> Roles
+                            </a>
+                        </li>
+                        <li>
+                            <a href="{{ route('admin_panel.permissions.index') }}">
+                                <i class="fas fa-key"></i> Permissions
+                            </a>
+                        </li>
+                        <li>
+                            <a href="{{ route('admin_panel.departments.index') }}">
+                                <i class="fas fa-sitemap"></i> Departments
+                            </a>
+                        </li>
+                    </ul>
+                </li>
+            @endif
         </ul>
-        <!--end navigation-->
     </div>
 
 

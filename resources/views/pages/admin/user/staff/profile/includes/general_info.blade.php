@@ -27,6 +27,11 @@
                             <th>@lang('User type')</th>
                             <td>{{ $user->userType->name ?? '' }}</td>
                         </tr>
+
+                        <tr>
+                            <th>@lang('Working Department')</th>
+                            <td>{{ $user->department->name ?? '' }}</td>
+                        </tr>
                         <tr>
                             <th>@lang('Status')</th>
                             <td>{!! getStatusBadge($user->is_active) !!}</td>

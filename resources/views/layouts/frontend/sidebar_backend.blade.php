@@ -12,27 +12,72 @@
     </div>
 
     <div class="sidebar-nav" data-simplebar="true">
-        <!--navigation-->
         <ul class="metismenu" id="sidenav">
             <li>
-                <a href="{{ route('admin_panel.dashboard') }}">
+                <a href="{{ route('frontend.dashboard') }}">
                     <div class="parent-icon">
-                        <i class="material-icons-outlined">house</i>
+                        <i class="fas fa-chart-line"></i>
                     </div>
-                    <div class="menu-title">Dashboard</div>
+                    <div class="menu-title">{{ __('Dashboard') }}</div>
                 </a>
             </li>
 
+            @can('task.view')
+                <li class="menu-label">{{ __('My Work') }}</li>
+
+                {{-- All My Tasks --}}
+                <li>
+                    <a href="{{ route('frontend.tasks.index') }}">
+                        <div class="parent-icon">
+                            <i class="fas fa-clipboard-list"></i>
+                        </div>
+                        <div class="menu-title">{{ __('All My Tasks') }}</div>
+                    </a>
+                </li>
+
+                {{-- Shared with Me --}}
+                <li>
+                    <a href="{{ route('frontend.tasks.shared') }}">
+                        <div class="parent-icon">
+                            <i class="fas fa-user-group"></i>
+                        </div>
+                        <div class="menu-title">{{ __('Shared with Me') }}</div>
+                    </a>
+                </li>
+
+                {{-- Transferred to Me --}}
+                <li>
+                    <a href="{{ route('frontend.tasks.transferred') }}">
+                        <div class="parent-icon">
+                            <i class="fas fa-file-import"></i>
+                        </div>
+                        <div class="menu-title">{{ __('Transferred to Me') }}</div>
+                    </a>
+                </li>
+
+                <li>
+                    <a href="{{ route('frontend.tasks.next_actions') }}">
+                        <div class="parent-icon">
+                            <i class="fas fa-clock-rotate-left"></i>
+                        </div>
+                        <div class="menu-title">{{ __('Next Actions') }}</div>
+                    </a>
+                </li>
+            @endcan
+
+            {{-- Support Section --}}
+            <li class="menu-label">{{ __('Support') }}</li>
             <li>
-                <a href="{{ route('frontend.tasks.index') }}">
+                <a href="javascript:void(0)">
                     <div class="parent-icon">
-                        <i class="material-icons-outlined">task</i>
+                        <i class="fas fa-circle-question"></i>
                     </div>
-                    <div class="menu-title">My Tasks</div>
+                    <div class="menu-title">{{ __('Help Center') }}</div>
                 </a>
             </li>
         </ul>
     </div>
+
 
     <div class="sidebar-bottom gap-4">
         <div class="dark-mode">

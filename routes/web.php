@@ -8,6 +8,7 @@ use App\Http\Controllers\Admin\Task\TaskAssignmentController;
 use App\Http\Controllers\Admin\Task\TaskController;
 use App\Http\Controllers\Admin\Task\TaskExpenseController;
 use App\Http\Controllers\Admin\Task\TaskPerformanceController;
+use App\Http\Controllers\Admin\Task\TaskShareController;
 use App\Http\Controllers\Frontend\MyTaskController;
 use App\Http\Controllers\HomeController;
 use App\Http\Controllers\ManagerController;
@@ -97,12 +98,17 @@ Route::middleware(['auth'])->group(function () {
             Route::post('/store', [MyTaskController::class, 'store'])->name('store');
             Route::get('/get_all_for_dt', [MyTaskController::class, 'getAllForDt'])->name('get_all_for_dt');
 
-            Route::get('/edit/{task}', [MyTaskController::class, 'edit'])->name('edit');
-            Route::put('/update/{task}', [MyTaskController::class, 'update'])->name('update');
-            Route::put('/update_status/{task}/{status}', [MyTaskController::class, 'updateStatus'])->name('update_status');
             Route::get('/profile/{task}', [MyTaskController::class, 'profile'])->name('profile');
-            Route::delete('/delete/{task}', [MyTaskController::class, 'delete'])->name('delete');
+            Route::put('/change_status/{task}', [MyTaskController::class, 'changeTaskStatus'])->name('change_status');
 
+            Route::get('/shared', [MyTaskController::class, 'shared'])->name('shared');
+            Route::get('/transferred', [MyTaskController::class, 'transferred'])->name('transferred');
+            Route::get('/next_actions', [MyTaskController::class, 'nextActions'])->name('next_actions');
+
+             Route::prefix('share')->name('share.')->group(function () {
+                 Route::post('/store/{task}', [TaskShareController::class, 'shareTask'])->name('store');
+                 Route::delete('/delete/{share}', [TaskShareController::class, 'removeSharedStaff'])->name('delete');
+             });
 
             Route::prefix('comment')->name('comment.')->group(function () {
                 Route::post('/store/{task}', [CommentController::class, 'store'])->name('store');

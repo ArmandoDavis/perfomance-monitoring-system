@@ -50,6 +50,7 @@ class TaskSeeder extends Seeder
                     'status_cv_id' => $statusBacklog->id,
                     'start_date' => now(),
                     'end_date' => now()->addMonths(2),
+                    'progress_percent' => 0,
                 ]
             );
         }

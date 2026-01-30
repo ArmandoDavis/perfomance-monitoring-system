@@ -34,7 +34,9 @@
 
 @push('scripts')
     <script>
-        $(document).ready(function() {
+        const url = "{{ url('/') }}";
+
+        $(document).ready(function () {
             $('#departmentTable').DataTable({
                 processing: true,
                 serverSide: true,
@@ -51,10 +53,35 @@
                     { data: 'created_at', name: 'created_at' },
                     { data: 'actions', name: 'actions', orderable: false, searchable: false },
                 ],
-                order: [[3, 'desc']],
                 language: {
-                    search: "_INPUT_",
-                    searchPlaceholder: "Search...",
+                    dom:
+                        "<'dt--top-section row mb-2'<'col-12 col-md-6 d-flex justify-content-center justify-content-md-start'l>" +
+                        "<'col-12 col-md-6 d-flex justify-content-center justify-content-md-end mt-2 mt-md-0'f>>" +
+                        "<'table-responsive'tr>" +
+                        "<'dt--bottom-section row mt-2'<'col-12 col-md-6 d-flex justify-content-center justify-content-md-start'i>" +
+                        "<'col-12 col-md-6 d-flex justify-content-center justify-content-md-end'p>>",
+
+                    paginate: {
+                        previous: '&laquo;',
+                        next: '&raquo;'
+                    },
+
+                    info: "{{ trans('Showing pages') }}",
+                    searchPlaceholder: "{{ trans('Search') }}",
+                    lengthMenu: "{{ trans('Result') }} : _MENU_"
+                },
+                lengthMenu: [10, 20, 50, 100],
+                pageLength: 10,
+
+                fnRowCallback: function (nRow, aData) {
+                    $(nRow).off('click').on('click', function (e) {
+                        if (!$(e.target).closest('button, a, input').length) {
+                            window.location.href = url + "/admin_panel/departments/profile/" + aData['uuid'];
+                        }
+                    }).hover(
+                        function () { $(this).css('cursor', 'pointer'); },
+                        function () { $(this).css('cursor', 'auto'); }
+                    );
                 }
             });
         });

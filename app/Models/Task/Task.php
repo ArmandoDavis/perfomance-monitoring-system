@@ -16,6 +16,11 @@ class Task extends BaseModel
 {
     use Archivable;
 
+    protected $casts = [
+        'completed_at' => 'datetime',
+    ];
+
+
     public function getCanBeDeletedAttribute(): bool
     {
         $todo = CodeValue::getCodeValueByReference('SCS002');
@@ -58,6 +63,11 @@ class Task extends BaseModel
         return $this->hasMany(PerformanceScore::class);
     }
 
+    public function assignees()
+    {
+        return $this->belongsToMany(User::class, 'task_assignments', 'task_id', 'user_id')->withTimestamps();
+    }
+
     public function assignedTo(User $user): bool
     {
         return $this->assignees()->where('user_id', $user->id)->exists();
@@ -76,6 +86,16 @@ class Task extends BaseModel
     public function attachments()
     {
         return $this->morphMany(Attachment::class, 'attachable')->where('is_active', true);
+    }
+
+    public function shares()
+    {
+        return $this->hasMany(TaskShare::class);
+    }
+
+    public function sharedWith($userId)
+    {
+        return $this->shares()->where('shared_with', $userId)->exists();
     }
 
     public function documents()

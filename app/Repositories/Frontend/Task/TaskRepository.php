@@ -62,20 +62,31 @@ class TaskRepository extends BaseRepository
         });
     }
 
-    public function updateStatus(Model $task, $reference)
+    public function changeTaskStatus(Model $task, array $input)
     {
-        return DB::transaction(function () use($task, $reference) {
-            $status = CodeValue::getCodeValueByReference($reference);
-            if ($reference == "SCS005") {
-                return $task->update([
-                    'status_cv_id' => $status->id,
-                    'completed_at' => now()
-                ]);
+        return DB::transaction(function () use ($task, $input) {
+            $newStatusRef = match ($input['action']) {
+                'start_progress' => 'SCS003',
+                'submit_task' => 'SCS004',
+                default          => throw new \Exception(__('Invalid action')),
+            };
+
+            $status = CodeValue::getCodeValueByReference($newStatusRef);
+
+            if (!$status) {
+                throw new \Exception("Invalid Status reference.");
             }
 
-            return $task->update([
-                'status_cv_id' => $status->id
-            ]);
+            $updateData = ['status_cv_id' => $status->id];
+            if ($newStatusRef == "SCS003") {
+                $updateData['progress_percent'] = $task->progress_percent > 0 ? $task->progress_percent : 10;
+            }
+            if ($newStatusRef == "SCS004") {
+                $updateData['progress_percent'] = 90;
+            }
+
+            $task->update($updateData);
+            return $task;
         });
     }
 

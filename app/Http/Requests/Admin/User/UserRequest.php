@@ -27,7 +27,7 @@ class UserRequest extends Request
                     'name' => 'required|string|max:255',
                     'email' => 'required|email|unique:users,email',
                     'phone' => 'required|string|max:20|unique:users,phone',
-
+                    'department_id' => 'required|exists:departments,id',
                 ];
                 $optional = [
                     'is_active' => 'nullable|boolean',
@@ -47,6 +47,7 @@ class UserRequest extends Request
                         ->where(function ($query) use($resource_id) { $query->where('id','<>',$resource_id); })],
                     'phone' =>  ['required','max:20', Rule::unique('users')
                         ->where(function ($query) use($resource_id) { $query->where('id','<>',$resource_id); })],
+                    'department_id' => 'required|exists:departments,id',
                 ];
                 $optional = [
                     'is_active' => 'nullable|boolean',

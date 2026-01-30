@@ -4,6 +4,7 @@ use App\Http\Controllers\Admin\Task\TaskAssignmentController;
 use App\Http\Controllers\Admin\Task\TaskController;
 use App\Http\Controllers\Admin\Task\TaskExpenseController;
 use App\Http\Controllers\Admin\Task\TaskPerformanceController;
+use App\Http\Controllers\Admin\Task\TaskShareController;
 use Illuminate\Support\Facades\Route;
 
 Route::prefix('tasks')->name('tasks.')->group(function () {
@@ -17,6 +18,18 @@ Route::prefix('tasks')->name('tasks.')->group(function () {
     Route::put('/change_status/{task}', [TaskController::class, 'changeTaskStatus'])->name('change_status');
     Route::get('/profile/{task}', [TaskController::class, 'profile'])->name('profile');
     Route::delete('/delete/{task}', [TaskController::class, 'delete'])->name('delete');
+
+
+    Route::get('/my_tasks', [TaskController::class, 'myTasks'])->name('my_tasks');
+    Route::get('/shared', [TaskController::class, 'shared'])->name('shared');
+    Route::get('/next_actions', [TaskController::class, 'nextActions'])->name('next_actions');
+    Route::get('/transferred', [TaskController::class, 'transferred'])->name('transferred');
+    Route::post('/transfer', [TaskShareController::class, 'transferTask'])->name('transfer');
+
+    Route::prefix('share')->name('share.')->group(function () {
+        Route::post('/store/{task}', [TaskShareController::class, 'store'])->name('store');
+        Route::delete('/delete/{task}', [TaskShareController::class, 'delete'])->name('delete');
+    });
 
 
     Route::prefix('comment')->name('comment.')->group(function () {

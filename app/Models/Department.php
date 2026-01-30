@@ -17,4 +17,17 @@ class Department extends BaseModel
     {
         return $this->hasMany(Task::class);
     }
+
+    public function getCanBeDeletedAttribute(): bool
+    {
+        if ($this->users()->exists()) {
+            return false;
+        }
+
+        $protected = ['Management', 'ICT'];
+        if (in_array($this->name, $protected)) {
+            return false;
+        }
+        return true;
+    }
 }

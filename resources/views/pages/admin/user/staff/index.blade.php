@@ -4,9 +4,11 @@
 
 @section('content')
     <div class="d-sm-flex align-items-center justify-content-end mb-4">
-        <a href="{{ route('admin_panel.users.create') }}" class="d-none d-sm-inline-block btn btn-xl btn-primary shadow-sm">
-            <i class="bi bi-plus-circle text-white-50"></i>  Add Staff
-        </a>
+        @canany(['user.create'])
+            <a href="{{ route('admin_panel.users.create') }}" class="d-none d-sm-inline-block btn btn-xl btn-primary shadow-sm">
+                <i class="bi bi-plus-circle text-white-50"></i>  Add Staff
+            </a>
+        @endcan
     </div>
 
     <div class="card">
