@@ -37,22 +37,7 @@ class TaskRepository extends BaseRepository
             ->leftJoin('code_values', 'code_values.id', '=', 'tasks.status_cv_id')
             ->where('task_assignments.user_id', user_id())
             ->whereNull('tasks.deleted_at')
-            ->whereNull('tasks.archived_at')
-            ->groupBy([
-                'tasks.id',
-                'tasks.title',
-                'tasks.start_date',
-                'tasks.end_date',
-                'tasks.completed_at',
-                'tasks.allocated_budget',
-                'tasks.spent_amount',
-                'tasks.status_cv_id',
-                'tasks.created_by',
-                'departments.name',
-                'users.name',
-                'code_values.name',
-                'code_values.reference',
-            ]);
+            ->whereNull('tasks.archived_at');
     }
 
 
