@@ -190,7 +190,7 @@
                                     @endif
                                 @endcan
 
-                                <a href="{{ route('admin_panel.tasks.index') }}" class="btn btn-sm btn-dark mr-2 mb-2">
+                                <a href="javascript:history.back()" class="btn btn-sm btn-dark mr-2 mb-2">
                                     <i class="fas fa-close me-1"></i> {{ __('Close') }}
                                 </a>
                             </div>

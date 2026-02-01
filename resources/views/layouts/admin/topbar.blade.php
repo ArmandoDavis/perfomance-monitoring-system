@@ -137,6 +137,10 @@
                     <a class="dropdown-item d-flex align-items-center gap-2 py-2" href="{{ route('admin_panel.user_profile.my_profile') }}">
                         <i class="material-icons-outlined">person_outline</i>Profile
                     </a>
+                    <hr class="dropdown-divider">
+                    <a class="dropdown-item d-flex align-items-center gap-2 py-2" href="{{ route('admin_panel.audits.my_logs') }}">
+                        <i class="material-icons-outlined">person_outline</i>{{ __('My logs') }}
+                    </a>
 
                     <hr class="dropdown-divider">
                     <a class="dropdown-item d-flex align-items-center gap-2 py-2" href="{{ route('logout') }}" onclick="event.preventDefault();document.getElementById('logout-form').submit();">

@@ -38,6 +38,18 @@ class TaskRepository extends BaseRepository
         return $this->queryIsActive();
     }
 
+    public function getTasksToBeAddedExpense()
+    {
+        $status = CodeValue::getCodeValueByReference('SCS005');
+        return $this->queryIsActive()->where('status_cv_id', $status->id)->get();
+    }
+
+    public function getHodTasksToBeAddedExpense()
+    {
+        $status = CodeValue::getCodeValueByReference('SCS005');
+        return $this->queryIsActive()->where('status_cv_id', $status->id)->where('department_id', user()->department_id)->get();
+    }
+
     public function getQueryUserTasks()
     {
         return $this->query()->whereHas('assignments', function ($q) {

@@ -21,9 +21,11 @@
                             <div class="row mb-2">
                                 <div class="col-md-12">
                                     <div class="float-end">
-                                        <a href="{{ route('admin_panel.role.edit', $role->uuid) }}" class="btn btn-sm btn-primary">
-                                            <i class="ri-pencil-fill me-2 text-white-50"></i> {{ __('Edit') }}
-                                        </a>
+                                        @if($role->is_system_defined)
+                                            <a href="{{ route('admin_panel.role.edit', $role->uuid) }}" class="btn btn-sm btn-primary">
+                                                <i class="ri-pencil-fill me-2 text-white-50"></i> {{ __('Edit') }}
+                                            </a>
+                                        @endif
 
                                         @if($role->can_be_deleted)
                                             <form class="confirm-form-delete-{{ $role->uuid }}" action="{{ route('admin_panel.role.delete', $role->uuid) }}" method="POST" style="display: none;">

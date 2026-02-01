@@ -22,6 +22,11 @@ class DepartmentRepository extends BaseRepository
         return $this->queryIsActive()->get();
     }
 
+    public function getMyActiveDepartments()
+    {
+        return $this->queryIsActive()->where('id', user()->department_id)->get();
+    }
+
     public function getDepartmentToShareTask(Task $task)
     {
         $sharedDepartmentIds = TaskShare::where('task_id', $task->id)

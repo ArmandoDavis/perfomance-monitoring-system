@@ -1,14 +1,17 @@
 <?php
 
+use App\Http\Controllers\Admin\Access\ProfileController;
 use App\Http\Controllers\Admin\Access\StaffUserController;
 use App\Http\Controllers\Admin\Task\CommentController;
 use App\Http\Controllers\Admin\Task\TaskAssignmentController;
-use App\Http\Controllers\Hod\Task\TaskController;
 use App\Http\Controllers\Admin\Task\TaskExpenseController;
-use App\Http\Controllers\Hod\Task\TaskPerformanceController;
 use App\Http\Controllers\Admin\Task\TaskShareController;
-use App\Http\Controllers\NotificationController;
+use App\Http\Controllers\Hod\audits\AuditController;
+use App\Http\Controllers\Hod\Expense\ExpenseController;
+use App\Http\Controllers\Hod\Task\TaskController;
+use App\Http\Controllers\Hod\Task\TaskPerformanceController;
 use App\Http\Controllers\System\DashboardController;
+use App\Http\Controllers\System\NotificationController;
 use Illuminate\Support\Facades\Route;
 
 Route::get('/dashboard', [DashboardController::class, 'hodDashboard'])->name('dashboard');
@@ -84,7 +87,8 @@ Route::prefix('subtasks')->name('subtasks.')->group(function () {
     Route::delete('{subtask}', [SubtaskController::class, 'destroy'])->name('destroy');
 });
 
-//Task Budgets
+
+/** Task Budgets */
 Route::prefix('tasks/{task}/budget')->name('tasks.budget.')->group(function () {
     Route::get('/create', [TaskController::class, 'createBudget'])->name('create');
     Route::post('/', [TaskController::class, 'storeBudget'])->name('store');
@@ -92,6 +96,19 @@ Route::prefix('tasks/{task}/budget')->name('tasks.budget.')->group(function () {
     Route::put('{budget}', [TaskController::class, 'updateBudget'])->name('update');
     Route::delete('{budget}', [TaskController::class, 'destroyBudget'])->name('destroy');
 });
+
+/** expenses ROUTES */
+Route::prefix('expenses')->name('expenses.')->group(function () {
+    Route::get('/', [ExpenseController::class, 'index'])->name('index');
+    Route::get('/get_all_for_dt', [ExpenseController::class, 'getAllForDt'])->name('get_all_for_dt');
+
+    Route::get('/create', [ExpenseController::class, 'create'])->name('create');
+    Route::post('/store', [ExpenseController::class, 'store'])->name('store');
+    Route::put('/approve/{expense}', [TaskExpenseController::class, 'approve'])->name('approve');
+
+    Route::get('/profile/{expense}', [ExpenseController::class, 'profile'])->name('profile');
+});
+
 
 Route::prefix('users')->name('users.')->group(function () {
     Route::get('/', [StaffUserController::class, 'index'])->name('index');
@@ -111,4 +128,14 @@ Route::prefix('users')->name('users.')->group(function () {
 
 Route::prefix('notifications')->name('notifications.')->group(function () {
     Route::get('/', [NotificationController::class, 'hodNotifications'])->name('index');
+});
+
+Route::prefix('user_profile')->name('user_profile.')->group(function () {
+    Route::get('/my_profile', [ProfileController::class, 'index'])->name('my_profile');
+});
+
+
+Route::prefix('audits')->name('audits.')->group(function () {
+    Route::get('/get_all_for_dt', [AuditController::class, 'getAllForDt'])->name('get_all_for_dt');
+    Route::get('/my_logs', [AuditController::class, 'myLogs'])->name('my_logs');
 });

@@ -98,6 +98,15 @@ if (!function_exists('formatBytes')) {
     }
 }
 
+if (!function_exists('getExpenseBadge')) {
+    function getExpenseBadge($status)
+    {
+        if ($status) {
+            return '<span class="badge bg-light-success text-success px-3">'.__('Approved').'</span>';
+        }
+        return '<span class="badge bg-light-warning text-warning px-3">'.__('Pending').'</span>';
+    }
+}
 
 if (!function_exists('getStatusBadge')) {
     function getStatusBadge(bool $isActive): string

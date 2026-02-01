@@ -1,10 +1,10 @@
 <?php
 
-namespace App\Http\Controllers\Admin;
+namespace App\Http\Controllers\Admin\Access;
 
 use App\Http\Controllers\Controller;
 use App\Repositories\Access\MyProfileRepository;
-use App\Repositories\Admin\Task\TaskExpenseRepository;
+use App\Repositories\Admin\Expense\ExpenseRepository;
 use App\Repositories\Admin\Task\TaskPerformanceRepository;
 use App\Repositories\Admin\Task\TaskRepository;
 use App\Repositories\System\CodeValueRepository;
@@ -18,7 +18,7 @@ class ProfileController extends Controller
     {
         $this->taskRepository = new TaskRepository();
         $this->codeValueRepository = new CodeValueRepository();
-        $this->expenseRepository = new TaskExpenseRepository();
+        $this->expenseRepository = new ExpenseRepository();
         $this->permissionRepository = new TaskPerformanceRepository();
         $this->myRepository = new MyProfileRepository();
     }
@@ -55,6 +55,13 @@ class ProfileController extends Controller
             ->sortByDesc('date')
             ->take(5)
             ->values();
+
+        if ($user->hasRole('Head of Department')) {
+            return view('pages.hod.user_profile.index', [
+                'user'             => $user,
+                'recentActivities' => $recentActivities,
+            ]);
+        }
 
         return view('pages.admin.user_profile.index', [
             'user' => $user,

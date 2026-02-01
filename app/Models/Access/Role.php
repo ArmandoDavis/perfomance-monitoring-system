@@ -37,16 +37,15 @@ use Spatie\Permission\Models\Role as SpatieRole;
         return 'uuid';
     }
 
-    public function getCanBeDeletedAttribute(): bool
-    {
-        $protectedRoles = ['super-admin', 'admin'];
-        if (in_array($this->name, $protectedRoles)) {
-            return false;
-        }
+     public function getCanBeDeletedAttribute(): bool
+     {
+         if ($this->is_system_defined) {
+             return false;
+         }
 
-        if ($this->users()->count() > 0) {
-            return false;
-        }
-        return true;
-    }
+         if ($this->users()->exists()) {
+             return false;
+         }
+         return true;
+     }
 }

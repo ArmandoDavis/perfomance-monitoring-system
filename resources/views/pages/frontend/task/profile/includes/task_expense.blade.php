@@ -19,7 +19,7 @@
                         <td>{!! Str::limit($expense->description, 40) !!}</td>
                         <td>
                             @if($expense->receipt)
-                                <a href="{{ route('attachments.download', $expense->receipt->uuid) }}" class="text-primary">
+                                <a href="{{ route('admin_panel.attachments.download', $expense->receipt->uuid) }}" class="text-primary">
                                     <i class="material-icons-outlined">download</i>
                                 </a>
                             @else

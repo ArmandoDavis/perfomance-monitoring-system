@@ -41,6 +41,8 @@ class DashboardController extends Controller
         }
         return redirect()->route('frontend.dashboard.index');
     }
+
+
     public function adminDashboard(Request $request)
     {
         $selectedYear = $request->get('year', now()->year);

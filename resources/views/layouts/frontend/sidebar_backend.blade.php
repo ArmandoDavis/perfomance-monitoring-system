@@ -14,7 +14,7 @@
     <div class="sidebar-nav" data-simplebar="true">
         <ul class="metismenu" id="sidenav">
             <li>
-                <a href="{{ route('frontend.dashboard') }}">
+                <a href="{{ route('home') }}">
                     <div class="parent-icon">
                         <i class="fas fa-chart-line"></i>
                     </div>

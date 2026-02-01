@@ -18,7 +18,6 @@
         "joelbutcher/laravel-archivable": "*",
         "diglactic/laravel-breadcrumbs": "^9.0.0",
         "mews/purifier": "^3.4",
-        "propaganistas/laravel-phone": "^6.0",
         "yajra/laravel-datatables-buttons": "^11.2.1",
         "yajra/laravel-datatables-oracle": "^11.1.5"
     },

@@ -14,7 +14,7 @@
     <div class="sidebar-nav" data-simplebar="true">
         <ul class="metismenu" id="sidenav">
             <li>
-                <a href="{{ route('hod_panel.dashboard') }}">
+                <a href="{{ route('home') }}">
                     <div class="parent-icon">
                         <i class="fas fa-house"></i>
                     </div>
@@ -75,9 +75,12 @@
                     </a>
                     <ul>
                         @can('expense.view')
-                            <li>
-                                <a href="#">
-                                    <i class="fas fa-money-bill-transfer"></i> Expenses
+                            <li class="{{ request()->routeIs('hod_panel.expenses.*') ? 'mm-active' : '' }}">
+                                <a href="{{ route('hod_panel.expenses.index') }}">
+                                    <div class="parent-icon">
+                                        <i class="material-icons-outlined">payments</i>
+                                    </div>
+                                    <div class="menu-title">{{ __('Expenses') }}</div>
                                 </a>
                             </li>
                         @endcan

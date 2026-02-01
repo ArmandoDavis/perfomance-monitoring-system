@@ -40,6 +40,29 @@ class ExpenseRequest extends Request
                     'receipt' => 'nullable|file|max:5120'
                 ];
                 break;
+            case 3:
+                /*record from expense module*/
+                $basic = [
+                    'amount' => 'required',
+                    'task_id' => 'required|exists:tasks,id',
+                ];
+                $optional = [
+                    'description' => 'nullable|string',
+                    'receipt' => 'nullable|file|max:5120'
+                ];
+                break;
+            case 4:
+                /*record from expense module*/
+                $resource_id = $input['resource_id'];
+                $basic = [
+                    'amount' => 'required',
+                    'task_id' => 'required|exists:tasks,id',
+                ];
+                $optional = [
+                    'description' => 'nullable|string',
+                    'receipt' => 'nullable|file|max:5120'
+                ];
+                break;
         }
         return array_merge($basic, $optional);
     }

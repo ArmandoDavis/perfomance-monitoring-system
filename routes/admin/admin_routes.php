@@ -1,14 +1,17 @@
 <?php
 
+use App\Http\Controllers\Admin\Access\ProfileController;
 use App\Http\Controllers\Admin\Access\StaffUserController;
 use App\Http\Controllers\Admin\Department\DepartmentController;
 use App\Http\Controllers\Admin\Documents\DocumentController;
+use App\Http\Controllers\Admin\Expense\ExpenseController;
+use App\Http\Controllers\Admin\Task\TaskExpenseController;
 use App\Http\Controllers\ManagerController;
 use App\Http\Controllers\StaffController;
+use App\Http\Controllers\System\AuditController;
 use App\Http\Controllers\System\DashboardController;
+use App\Http\Controllers\System\GlobalSearchController;
 use Illuminate\Support\Facades\Route;
-use App\Http\Controllers\Admin\ProfileController;
-use App\Http\Controllers\Admin\GlobalSearchController;
 
 Route::get('/dashboard', [DashboardController::class, 'adminDashboard'])->name('dashboard');
 /** departments */
@@ -31,15 +34,6 @@ Route::prefix('departments')->name('departments.')->middleware('permission:depar
 require __DIR__ . '/../admin/task.php';
 require __DIR__ . '/../admin/roles.php';
 
-Route::prefix('user_profile')->name('user_profile.')->group(function () {
-    Route::get('/my_profile', [ProfileController::class, 'index'])->name('my_profile');
-});
-
-
-Route::prefix('global')->name('global.')->group(function () {
-    Route::get('/search', [GlobalSearchController::class, 'search'])->name('search');
-});
-
 
 Route::prefix('users')->name('users.')->group(function () {
     Route::get('/', [StaffUserController::class, 'index'])->name('index');
@@ -58,7 +52,20 @@ Route::prefix('users')->name('users.')->group(function () {
 });
 
 
+/** expenses ROUTES */
+Route::prefix('expenses')->name('expenses.')->group(function () {
+    Route::get('/', [ExpenseController::class, 'index'])->name('index');
+    Route::get('/get_all_for_dt', [ExpenseController::class, 'getAllForDt'])->name('get_all_for_dt');
 
+    Route::get('/create', [ExpenseController::class, 'create'])->name('create');
+    Route::post('/store', [ExpenseController::class, 'store'])->name('store');
+    Route::get('/edit/{expense}', [ExpenseController::class, 'edit'])->name('edit');
+    Route::put('/update/{expense}', [ExpenseController::class, 'update'])->name('update');
+    Route::put('/approve/{expense}', [TaskExpenseController::class, 'approve'])->name('approve');
+
+    Route::get('/profile/{expense}', [ExpenseController::class, 'profile'])->name('profile');
+    Route::get('/report', [ExpenseController::class, 'report'])->name('report');
+});
 
 /** MANAGER ROUTES */
 Route::middleware(['role:manager'])->prefix('manager')->name('manager.')->group(function () {
@@ -75,5 +82,24 @@ Route::prefix('attachments')->name('attachments.')->group(function () {
     Route::get('/download/{attachment}', [DocumentController::class, 'download'])->name('download');
     Route::patch('/profile/{attachment}', [DocumentController::class, 'profile'])->name('profile');
     Route::patch('/update/{attachment}', [DocumentController::class, 'update'])->name('update');
+    Route::get('/view_file/{attachment}', [DocumentController::class, 'viewFile'])->name('view_file');
     Route::delete('/delete', [DocumentController::class, 'delete'])->name('delete');
+});
+
+
+Route::prefix('user_profile')->name('user_profile.')->group(function () {
+    Route::get('/my_profile', [ProfileController::class, 'index'])->name('my_profile');
+});
+
+
+Route::prefix('global')->name('global.')->group(function () {
+    Route::get('/search', [GlobalSearchController::class, 'search'])->name('search');
+});
+
+
+Route::prefix('audits')->name('audits.')->group(function () {
+    Route::get('/', [AuditController::class, 'index'])->name('index');
+    Route::get('/get_all_for_dt', [AuditController::class, 'getAllForDt'])->name('get_all_for_dt');
+    Route::get('/my_logs', [AuditController::class, 'myLogs'])->name('my_logs');
+    Route::get('/my_logs/data', [AuditController::class, 'getMyLogsForDt'])->name('get_my_logs_for_dt');
 });

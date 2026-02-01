@@ -14,7 +14,7 @@
     <div class="sidebar-nav" data-simplebar="true">
         <ul class="metismenu" id="sidenav">
             <li>
-                <a href="{{ route('admin_panel.dashboard') }}">
+                <a href="{{ route('home') }}">
                     <div class="parent-icon">
                         <i class="fas fa-house"></i>
                     </div>
@@ -75,9 +75,12 @@
                     </a>
                     <ul>
                         @can('expense.view')
-                            <li>
-                                <a href="#">
-                                    <i class="fas fa-money-bill-transfer"></i> Expenses
+                            <li class="{{ request()->routeIs('admin_panel.expenses.*') ? 'mm-active' : '' }}">
+                                <a href="{{ route('admin_panel.expenses.index') }}">
+                                    <div class="parent-icon">
+                                        <i class="material-icons-outlined">payments</i>
+                                    </div>
+                                    <div class="menu-title">{{ __('Expenses') }}</div>
                                 </a>
                             </li>
                         @endcan
@@ -113,6 +116,13 @@
                                 <i class="fas fa-key"></i> Permissions
                             </a>
                         </li>
+                        <li class="{{ request()->routeIs('audits.*') ? 'mm-active' : '' }}">
+                            <a href="{{ route('admin_panel.audits.index') }}">
+                                <div class="parent-icon"><i class="material-icons-outlined">history_toggle_off</i></div>
+                                <div class="menu-title">{{ __('System Audits') }}</div>
+                            </a>
+                        </li>
+
                         <li>
                             <a href="{{ route('admin_panel.departments.index') }}">
                                 <i class="fas fa-sitemap"></i> Departments

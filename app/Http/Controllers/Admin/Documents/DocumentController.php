@@ -19,7 +19,6 @@ class DocumentController extends Controller
 
     public function download(Attachment $attachment): StreamedResponse
     {
-        logger($attachment);
         if (!Storage::exists($attachment->path)) {
             abort(404, __('File not found'));
         }
@@ -37,6 +36,16 @@ class DocumentController extends Controller
                 'Content-Type' => $attachment->mime_type,
             ]
         );
+    }
+
+    public function viewFile(Attachment $attachment)
+    {
+        if (!Storage::disk('private')->exists($attachment->path)) {
+            abort(404);
+        }
+        $file = Storage::disk('private')->get($attachment->path);
+        $type = $attachment->mime_type;
+        return response($file, 200)->header('Content-Type', $type);
     }
 
     public function delete(Attachment $attachment)

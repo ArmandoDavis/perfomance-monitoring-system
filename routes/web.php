@@ -1,21 +1,9 @@
 <?php
 
-use App\Http\Controllers\Admin\Access\StaffUserController;
-use App\Http\Controllers\Admin\Department\DepartmentController;
-use App\Http\Controllers\Admin\Documents\DocumentController;
-use App\Http\Controllers\Admin\Task\CommentController;
-use App\Http\Controllers\Admin\Task\TaskAssignmentController;
-use App\Http\Controllers\Admin\Task\TaskController;
-use App\Http\Controllers\Admin\Task\TaskExpenseController;
-use App\Http\Controllers\Admin\Task\TaskPerformanceController;
-use App\Http\Controllers\Admin\Task\TaskShareController;
-use App\Http\Controllers\Frontend\MyTaskController;
 use App\Http\Controllers\HomeController;
-use App\Http\Controllers\ManagerController;
-use App\Http\Controllers\NotificationController;
 use App\Http\Controllers\ProfileController;
-use App\Http\Controllers\StaffController;
 use App\Http\Controllers\System\DashboardController;
+use App\Http\Controllers\System\NotificationController;
 use Illuminate\Support\Facades\Route;
 
 /**
@@ -38,7 +26,6 @@ Route::middleware(['auth'])->group(function () {
         require __DIR__ . '/hod/hod_routes.php';
     });
 
-    /** ADMIN ROUTES  */
     Route::prefix('admin_panel')->name('admin_panel.')->group(function () {
         require __DIR__ . '/admin/admin_routes.php';
     });

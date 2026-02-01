@@ -6,6 +6,7 @@ use App\Http\Controllers\Controller;
 use App\Http\Requests\Admin\Task\TaskRequest;
 use App\Models\Access\User;
 use App\Models\System\Code;
+use App\Models\System\CodeValue;
 use App\Models\Task\Task;
 use App\Repositories\Access\UserRepository;
 use App\Repositories\Admin\Department\DepartmentRepository;
@@ -82,15 +83,19 @@ class MyTaskController extends Controller
     {
         $query = $this->taskRepository->getAllForDt();
         $filter = $request->get('filter_type');
+        $inprogress = CodeValue::getCodeValueByReference('SCS003');
+        $todo = CodeValue::getCodeValueByReference('SCS002');
+        $rejected = CodeValue::getCodeValueByReference('SCS007');
 
         if ($filter == 'my_tasks') {
             $query->where('tasks.created_by', user_id());
         } elseif ($filter == 'shared') {
             $query->where('tasks.department_id', user()->department_id);
         } elseif ($filter == 'next_actions') {
+            $statusIds = [$todo->id, $inprogress->id, $rejected->id];
             $query->where('tasks.is_active', true)
-                ->whereNull('tasks.completed_at')
-                ->where('tasks.end_date', '>=', now());
+                ->whereIn('tasks.status_cv_id', $statusIds)
+                ->whereDate('tasks.end_date', '>=', now());
         } elseif ($filter == 'transferred') {
             $query->where('tasks.is_transferred', true);
         }

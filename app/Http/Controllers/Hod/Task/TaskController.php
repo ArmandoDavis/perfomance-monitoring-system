@@ -58,9 +58,9 @@ class TaskController extends Controller
     public function create()
     {
          $codeId = $this->codeRepository->codeByName("Status")->id;
-         $data['departments'] = $this->depertmentRepository->getActiveDepartments();
+         $data['departments'] = $this->depertmentRepository->getMyActiveDepartments();
         $data['statuses'] = $this->codeValueRepository->getCodeValuesForSelect($codeId);
-        $data['users'] = $this->userRepository->getActiveStaffs();
+        $data['users'] = $this->userRepository->getActiveUsersPerDepartment();
          return view('pages.hod.task.create', $data);
     }
 
@@ -77,7 +77,7 @@ class TaskController extends Controller
         $data['task'] = $task;
         $data['departments'] = $this->depertmentRepository->getDepartmentToShareTask($task);
         $data['statuses'] = $this->codeValueRepository->getCodeValuesForSelect($codeId);
-        $data['users'] = $this->userRepository->getActiveStaffs();
+        $data['users'] = $this->userRepository->getActiveUsersPerDepartment();
         return view('pages.hod.task.edit', $data);
     }
 

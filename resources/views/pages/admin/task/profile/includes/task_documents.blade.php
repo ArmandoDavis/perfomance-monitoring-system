@@ -20,7 +20,7 @@
                         <td>{{ optional($doc->uploadedBy)->name }}</td>
                         <td>{{ short_date_format_with_day($doc->created_at) }}</td>
                         <td class="text-end">
-                            <a href="{{ route('attachments.download', $doc->uuid) }}" class="btn btn-sm btn-outline-success">
+                            <a href="{{ route('admin_panel.attachments.download', $doc->uuid) }}" class="btn btn-sm btn-outline-success">
                                 <i class="material-icons-outlined">download</i>
                             </a>
                         </td>

@@ -5,7 +5,7 @@ use App\Http\Controllers\Controller;
 use App\Http\Requests\Admin\Task\ExpenseRequest;
 use App\Models\Expense;
 use App\Models\Task\Task;
-use App\Repositories\Admin\Task\TaskExpenseRepository;
+use App\Repositories\Admin\Expense\ExpenseRepository;
 
 class TaskExpenseController extends Controller
 {
@@ -13,7 +13,7 @@ class TaskExpenseController extends Controller
 
     public function __construct()
     {
-        $this->expenseRepo = new TaskExpenseRepository();
+        $this->expenseRepo = new ExpenseRepository();
     }
 
     public function store(ExpenseRequest $request, Task $task)
@@ -25,10 +25,10 @@ class TaskExpenseController extends Controller
     public function approve(Expense $expense)
     {
         if ($expense->approved_at) {
-            return redirect()->redirect()->back()->with('flash_warning', __('Expense already approved.'));
+            return redirect()->back()->with('flash_warning', __('Expense already approved.'));
         }
 
         $this->expenseRepo->approve($expense);
-        return redirect()->redirect()->back()->with('flash_success', __('Expense approved successfully.'));
+        return redirect()->back()->with('flash_success', __('Expense approved successfully.'));
     }
 }

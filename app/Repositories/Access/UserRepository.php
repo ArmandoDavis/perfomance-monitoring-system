@@ -115,7 +115,7 @@ class UserRepository extends BaseRepository
 
     public function getActiveUsersPerDepartment()
     {
-        return $this->queryIsActive()->where('department_id', auth()->user()->department_id)->where('id', '!=', auth()->id())->get();
+        return $this->queryIsActive()->where('department_id', user()->department_id)->where('id', '!=', user_id())->get();
     }
 
     public function getNonEvaluatedUserForThisTask($taskId)

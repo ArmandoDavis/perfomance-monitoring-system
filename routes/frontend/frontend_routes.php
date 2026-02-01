@@ -3,10 +3,11 @@
 use App\Http\Controllers\Admin\Task\CommentController;
 use App\Http\Controllers\Admin\Task\TaskExpenseController;
 use App\Http\Controllers\Admin\Task\TaskShareController;
+use App\Http\Controllers\Frontend\audits\AuditController;
 use App\Http\Controllers\Frontend\MyTaskController;
-use App\Http\Controllers\NotificationController;
 use App\Http\Controllers\ProfileController;
 use App\Http\Controllers\System\DashboardController;
+use App\Http\Controllers\System\NotificationController;
 use Illuminate\Support\Facades\Route;
 
 
@@ -51,4 +52,9 @@ Route::prefix('user_profile')->name('user_profile.')->group(function () {
 
 Route::prefix('notifications')->name('notifications.')->group(function () {
     Route::get('/', [NotificationController::class, 'staffNotifications'])->name('index');
+});
+
+Route::prefix('audits')->name('audits.')->group(function () {
+    Route::get('/get_all_for_dt', [AuditController::class, 'getAllForDt'])->name('get_all_for_dt');
+    Route::get('/my_logs', [AuditController::class, 'myLogs'])->name('my_logs');
 });
