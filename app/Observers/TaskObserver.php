@@ -1,7 +1,7 @@
 <?php
-
 namespace App\Observers;
 
+use App\Models\System\CodeValue;
 use App\Models\Task\Task;
 use App\Models\Task\TaskProgressLog;
 
@@ -9,6 +9,10 @@ class TaskObserver
 {
     public function saving(Task $task)
     {
+        if (app()->runningInConsole()) {
+            return;
+        }
+
         // Budget Calculation
         if ($task->isDirty('allocated_budget') || $task->isDirty('spent_amount')) {
             if ($task->allocated_budget < $task->spent_amount) {
@@ -18,8 +22,8 @@ class TaskObserver
         }
 
         // Automated Progress Logic (Real-world mapping)
-        if ($task->isDirty('status_cv_id')) {
-            $statusName = strtolower(optional($task->status)->name);
+        if ($task->isDirty('status_cv_id') && !$task->isDirty('progress_percent')) {
+            $statusName = strtolower(CodeValue::where('id', $task->status_cv_id)->value('name'));
 
             $task->progress_percent = match($statusName) {
                 'pending', 'created' => 0,

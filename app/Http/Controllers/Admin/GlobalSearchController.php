@@ -17,46 +17,66 @@ class GlobalSearchController extends Controller
         if (!$q || strlen($q) < 2) {
             return response()->json([]);
         }
-
+        $user = user();
         $results = collect();
 
+        $panel = 'frontend';
+        if ($user->hasRole('Admin')) {
+            $panel = 'admin_panel';
+        } elseif ($user->hasRole('Head of Department')) {
+            $panel = 'hod_panel';
+        }
+
         // TASKS
-        Task::where('title', 'LIKE', "%$q%")
-            ->orWhere('uuid', 'LIKE', "%$q%")
-            ->limit(5)
-            ->get()
-            ->each(function ($task) use ($results) {
+        Task::query()
+            ->where(function($query) use ($q) {
+                $query->where('title', 'LIKE', "%$q%")
+                    ->orWhere('uuid', 'LIKE', "%$q%");
+            })
+            ->when(!$user->hasRole('Admin'), function($query) use ($user) {
+                return $query->where('department_id', $user->department_id)
+                    ->orWhereHas('shares', function($s) use ($user) {
+                        $s->where('shared_with_user_id', $user->id);
+                    });
+            })
+            ->limit(5)->get()
+            ->each(function ($task) use ($results, $panel) {
                 $results->push([
-                    'type'  => 'task',
-                    'title'=> $task->title,
-                    'url'  => route('admin_panel.tasks.profile', $task->uuid),
+                    'type'  => __('Task'),
+                    'title' => $task->title,
+                    'url'   => route("{$panel}.tasks.profile", $task->uuid),
+                    'icon'  => 'assignment'
                 ]);
             });
 
-        // USERS
-        User::where('name', 'LIKE', "%$q%")
-            ->orWhere('email', 'LIKE', "%$q%")
-            ->limit(5)
-            ->get()
-            ->each(function ($user) use ($results) {
-                $results->push([
-                    'type'  => 'user',
-                    'title'=> $user->name,
-                    'url'  => route('admin_panel.users.profile', $user->uuid),
-                ]);
-            });
+        // USERS SEARCH (Typically for Admin/HOD)
+        if ($user->can('user.view')) {
+            User::where('name', 'LIKE', "%$q%")
+                ->orWhere('email', 'LIKE', "%$q%")
+                ->limit(5)->get()
+                ->each(function ($u) use ($results, $panel) {
+                    $results->push([
+                        'type'  => __('Staff'),
+                        'title' => $u->name,
+                        'url'   => route("{$panel}.users.profile", $u->uuid),
+                        'icon'  => 'person'
+                    ]);
+                });
+        }
 
-        // DEPARTMENTS
-        Department::where('name', 'LIKE', "%$q%")
-            ->limit(5)
-            ->get()
-            ->each(function ($dept) use ($results) {
-                $results->push([
-                    'type'  => 'department',
-                    'title'=> $dept->name,
-                    'url'  => route('admin_panel.departments.profile', $dept->uuid),
-                ]);
-            });
+        // DEPARTMENTS SEARCH (Admin Only)
+        if ($user->hasRole('Admin')) {
+            Department::where('name', 'LIKE', "%$q%")
+                ->limit(5)->get()
+                ->each(function ($dept) use ($results, $panel) {
+                    $results->push([
+                        'type'  => __('Department'),
+                        'title' => $dept->name,
+                        'url'   => route("{$panel}.departments.profile", $dept->uuid),
+                        'icon'  => 'corporate_fare'
+                    ]);
+                });
+        }
 
         return response()->json($results);
     }

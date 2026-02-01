@@ -1,6 +1,6 @@
 <?php
 
-namespace App\Policies;
+namespace App\Policies\Expense;
 
 use App\Models\Access\User;
 use App\Models\Task\Task;

@@ -16,11 +16,12 @@ class TaskAssignmentSeeder extends Seeder
         $this->disableForeignKeys('task_assignments');
         $staff = User::role('Staff')->get();
         $tasks = Task::all();
+        $count = $staff->count();
         $statusTodo = \App\Models\System\CodeValue::getCodeValueByReference('SCS002');
 
         foreach ($tasks as $task) {
             $assignedBudget = 1_000_000;
-            foreach ($staff->take(2) as $user) {
+            foreach ($staff->take($count) as $user) {
                 TaskAssignment::updateOrCreate(
                     [
                         'task_id' => $task->id,
@@ -35,7 +36,7 @@ class TaskAssignmentSeeder extends Seeder
                 );
             }
 
-            $task->update(['status_cv_id' => $statusTodo->id]);
+            $task->update(['status_cv_id' => $task->status_cv_id]);
         }
 
         $this->enableForeignKeys('task_assignments');

@@ -42,7 +42,14 @@ class AuthenticatedSessionController extends Controller
                 ]);
         }
 
-        return redirect()->intended($user->isAdmin() ? route('admin_panel.dashboard') : route('frontend.dashboard'));
+
+        if ($user->isHod()) {
+            return redirect()->intended(route('hod_panel.dashboard'));
+        } else if ($user->isAdmin()) {
+            return redirect()->intended(route('admin_panel.dashboard'));
+        } else {
+            return redirect()->intended(route('frontend.dashboard'));
+        }
 
 //        if ($user->hasRole('Admin') || $user->hasRole('Head Of Department')) {
 //            return redirect()->intended(route('dashboard', absolute: false));

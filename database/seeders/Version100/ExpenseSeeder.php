@@ -18,34 +18,32 @@ class ExpenseSeeder extends Seeder
         $tasks = Task::with('assignments')->get();
 
         foreach ($tasks as $task) {
-            foreach ($task->assignments as $staff) {
-                if (!$staff->pivot) {
-                    continue;
-                }
+            // 2 expense per task
+            $numberOfExpenses = rand(2, 4);
+            $totalSpent = 0;
 
-                // Get assignment pivot
-                $assignment = $staff->pivot;
+            for ($i = 0; $i < $numberOfExpenses; $i++) {
+                $amount = rand(200000, 500000);
+                $expenseDate = $task->created_at->copy()->addDays(rand(5, 20));
 
-                // Skip if no remaining budget
-                if (empty($assignment->remaining_budget) || $assignment->remaining_budget  <= 0) {
-                    continue;
-                }
+                Expense::create([
+                    'task_id' => $task->id,
+                    'user_id' => $hod->id,
+                    'amount' => $amount,
+                    'description' => 'Procurement of materials for ' . $task->title,
+                    'receipt_path' => 'receipts/sample.pdf',
+                    'approved_by' => $hod->id,
+                    'approved_at' => $expenseDate,
+                    'created_at' => $expenseDate,
+                ]);
 
-                $amount = min(200000, $assignment->remaining_budget);
-                Expense::updateOrCreate(
-                    [
-                        'task_id' => $task->id,
-                        'user_id' => $staff->id,
-                        'amount' => $amount,
-                    ],
-                    [
-                        'description' => 'Operational expense',
-                        'receipt_path' => 'receipts/sample.pdf',
-                        'approved_by' => $hod->id,
-                        'approved_at' => now(),
-                    ]
-                );
+                $totalSpent += $amount;
             }
+
+            $task->update([
+                'spent_amount' => $totalSpent,
+                'remaining_budget' => $task->allocated_budget - $totalSpent
+            ]);
         }
 
         $this->enableForeignKeys('expenses');

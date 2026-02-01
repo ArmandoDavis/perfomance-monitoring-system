@@ -2,7 +2,7 @@
     <table class="table table-sm table-borderless align-middle">
         <thead class="table-light">
         <tr>
-            <th>{{ __('User') }}</th>
+            <th>{{ __('Recipient') }}</th>
             <th>{{ __('Shared By') }}</th>
             <th>{{ __('Date') }}</th>
             <th class="text-end">{{ __('Action') }}</th>
@@ -12,17 +12,31 @@
         @forelse($task->shares as $share)
             <tr>
                 <td>
-                    <div class="d-flex align-items-center">
-                        <div class="avatar-xs me-2">
+                    @if($share->shared_with_user_id)
+                        <div class="d-flex align-items-center">
+                            <div class="avatar-xs me-2">
                                 <span class="avatar-title rounded-circle bg-soft-primary text-primary">
-                                    {{ substr($share->sharedWith->name, 0, 1) }}
+                                    {{ substr($share->sharedWithUser->name, 0, 1) }}
                                 </span>
+                            </div>
+                            <div>
+                                <h6 class="mb-0 fs-13">{{ $share->sharedWithUser->name }}</h6>
+                                <small class="text-muted">{{ $share->sharedWith->email ?? ''}}</small>
+                            </div>
                         </div>
-                        <div>
-                            <h6 class="mb-0 fs-13">{{ $share->sharedWith->name }}</h6>
-                            <small class="text-muted">{{ $share->sharedWith->email }}</small>
+                    @else
+                        <div class="d-flex align-items-center">
+                            <div class="avatar-xs me-2">
+                                <span class="avatar-title rounded-circle bg-soft-primary text-primary">
+                                    {{ substr($share->sharedWithDepartment->name, 0, 1) }}
+                                </span>
+                            </div>
+                            <div>
+                                <h6 class="mb-0 fs-13">{{ $share->sharedWithDepartment->name }}</h6>
+                                <small class="text-muted">{{ $share->sharedWithDepartment->email }}</small>
+                            </div>
                         </div>
-                    </div>
+                    @endif
                 </td>
                 <td>{{ $share->sharedBy->name ?? 'System' }}</td>
                 <td>{{ short_date_format($share->created_at) }}</td>

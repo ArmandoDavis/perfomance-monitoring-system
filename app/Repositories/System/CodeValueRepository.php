@@ -28,19 +28,9 @@ class CodeValueRepository extends BaseRepository
         return $this->query()->where('isactive', 1);
     }
 
-    /**
-     * Get code value name for translation
-     * @param $id
-     * @return array|null|string
-     */
     public function name($id)
     {
         return $this->find($id)->name;
-    }
-
-    public function nameByReference($reference)
-    {
-        return  $this->query()->where('reference',$reference)->first()->name;
     }
 
     /*Get reference*/
@@ -66,7 +56,7 @@ class CodeValueRepository extends BaseRepository
      * @param $reference
      * @return mixed
      */
-    public function getCodeValueByReference($reference){
+    public function getCodeValueByReference($reference) {
         return $this->query()->where("reference", $reference)->first();
     }
 

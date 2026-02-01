@@ -88,6 +88,7 @@
                     </div>
 
                     <div class="mb-3">
+                        <input type="hidden" name="action_type" value="1">
                         <label class="form-label">{{ __('Select Employee') }}</label>
                         <select name="user_id" class="form-select select2-modal" required data-placeholder="{{ __('Search name...') }}">
                             <option value=""></option>

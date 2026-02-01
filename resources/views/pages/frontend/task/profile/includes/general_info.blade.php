@@ -27,9 +27,18 @@
                         </tr>
 
                         {{-- Status --}}
+                        {{-- Status --}}
                         <tr>
                             <th>{{ __('Status') }}</th>
                             <td>{!! getStatusLabelBadge($task->status->name) ?? '-' !!} </td>
+                        </tr>
+                        <tr>
+                            <th>{{ __('Is Active?') }}</th>
+                            <td>{!! getBooleanBadge($task->is_active) !!} </td>
+                        </tr>
+                        <tr>
+                            <th>{{ __('Is Transferred') }}</th>
+                            <td>{!! getBooleanBadge($task->is_transferred) !!} </td>
                         </tr>
 
                         {{-- Budget --}}
@@ -48,11 +57,6 @@
                             <td>{{ number_2_format($task->remaining_budget) }}</td>
                         </tr>
 
-                        {{-- Active --}}
-                        <tr>
-                            <th>{{ __('Is Active?') }}</th>
-                            <td>{!! getBooleanBadge($task->is_active) !!} </td>
-                        </tr>
 
                         {{-- Dates --}}
                         <tr>

@@ -22,14 +22,14 @@ class TaskRepository extends BaseRepository
     {
         $user = auth()->user();
         $query = $this->query()
-            ->select(['tasks.*', 'departments.name as department_name', 'users.name as creator_name'])
+            ->select(['tasks.*', 'departments.name as department_name', 'users.name as creator_name', 'code_values.name as task_status'])
             ->leftJoin('departments', 'departments.id', '=', 'tasks.department_id')
+            ->leftJoin('code_values', 'code_values.id', '=', 'tasks.status_cv_id')
             ->leftJoin('users', 'users.id', '=', 'tasks.created_by');
 
         if (!$user->hasRole('Admin')) {
             $query->where('tasks.department_id', $user->department_id);
         }
-
         return $query;
     }
 
@@ -83,6 +83,7 @@ class TaskRepository extends BaseRepository
                 'status_cv_id' => $input['status_cv_id'] ?? $status->id,
                 'start_date' => $input['start_date'],
                 'end_date' => $input['end_date'],
+                'progress_percent' => 0,
                 'is_active' => isset($input['is_active']),
             ]);
 

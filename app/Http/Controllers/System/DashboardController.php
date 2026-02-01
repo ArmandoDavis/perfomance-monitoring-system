@@ -11,6 +11,7 @@ use App\Models\Task\Task;
 use App\Repositories\Admin\Task\TaskRepository;
 use Carbon\Carbon;
 use Illuminate\Foundation\Auth\Access\AuthorizesRequests;
+use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Cache;
 use Illuminate\Support\Facades\DB;
 
@@ -34,75 +35,104 @@ class DashboardController extends Controller
         if ($user->isAdmin()) {
             return redirect()->route('admin_panel.dashboard');
         }
+        if ($user->isHod()) {
+            return redirect()->route('hod_panel.dashboard');
+        }
         return redirect()->route('frontend.dashboard.index');
     }
-
     public function adminDashboard()
     {
-        $todo = CodeValue::getCodeValueByReference('SCS002');
-        $done = CodeValue::getCodeValueByReference('SCS002');
-        $deployed = CodeValue::getCodeValueByReference('SCS002');
-        $submitted = CodeValue::getCodeValueByReference('SCS002');
+        // 1. Fetch References kwa usahihi
+        $statuses = CodeValue::whereIn('reference', ['SCS001', 'SCS002', 'SCS003', 'SCS004'])->get();
+        $todoId = $statuses->where('reference', 'SCS001')->first()?->id;
+        $doneId = $statuses->where('reference', 'SCS002')->first()?->id;
+        $deployedId = $statuses->where('reference', 'SCS003')->first()?->id;
+        $submittedId = $statuses->where('reference', 'SCS004')->first()?->id;
 
-        $todoTasks = Task::where('status_cv_id', $todo->id)->count();
-        $completedTasks = Task::whereIn('status_cv_id', [$done->id, $deployed->id])->count();
+        // 2. Summary Cards
+        $todoTasks = Task::where('status_cv_id', $todoId)->count();
+        $completedTasks = Task::whereIn('status_cv_id', [$doneId, $deployedId])->count();
         $totalExpenses = Expense::sum('amount');
-        $pendingNotifications = Task::where('status_cv_id', $submitted)->count();
+        $pendingApprovals = Task::where('status_cv_id', $submittedId)->count();
 
-        $avgWeeklyScore = PerformanceScore::whereBetween(
-            'created_at',
-            [now()->subDays(7), now()]
-        )->avg('total_score');
+        // 3. Performance & Budget
+        $avgWeeklyScore = PerformanceScore::whereBetween('created_at', [now()->subDays(7), now()])->avg('total_score') ?? 0;
 
+        // 4. Chart Data: Monthly Budget vs Expense
+        $budgetExpense = Task::selectRaw('MONTH(created_at) as month, SUM(allocated_budget) as allocated, SUM(spent_amount) as spent')
+            ->whereYear('created_at', now()->year)
+            ->groupBy('month')->orderBy('month')->get();
 
-        // Weekly task completion trend
-        $weeklyTasks = Task::select(
-            DB::raw('DATE(created_at) as date'),
-            DB::raw('COUNT(*) as total')
-        )
-            ->whereIn('status_cv_id', [$done->id, $deployed->id])
-            ->whereBetween('created_at', [now()->subDays(30), now()])
-            ->groupBy('date')
-            ->orderBy('date')
-            ->get();
+        // 5. Chart Data: Task Distribution (Join na CodeValue kupata majina)
+        $taskStatus = Task::join('code_values', 'tasks.status_cv_id', '=', 'code_values.id')
+            ->select('code_values.name', DB::raw('COUNT(*) as total'))
+            ->groupBy('code_values.name')->get();
 
-        $monthlyStats = DB::table('reports')
-            ->selectRaw('
-                MONTH(submitted_at) as month,
-                COUNT(*) as reports_count
-            ')->whereYear('submitted_at', now()->year)
-            ->whereNull('deleted_at')->groupBy('month')
-            ->orderBy('month')->get();
+        return view('dashboard.admin.dashboard', compact(
+            'todoTasks', 'completedTasks', 'totalExpenses', 'pendingApprovals',
+            'avgWeeklyScore', 'budgetExpense', 'taskStatus'
+        ));
+    }
 
 
-        // Task status distribution
-        $taskStatus = Task::select('status_cv_id', DB::raw('COUNT(*) as total'))->groupBy('status_cv_id')->get();
+    public function hodDashboard(Request $request)
+    {
+        $user = auth()->user();
+        $hodDeptId = $user->department_id;
 
-        // Active vs inactive staff
-        $staffStatus = User::role('Staff')->selectRaw('SUM(is_active = 1) as active, SUM(is_active = 0) as inactive')->first();
+        $year = $request->get('year', now()->year);
 
-        // Monthly budget vs expense
-        $budgetExpense = Task::selectRaw('MONTH(created_at) as month, SUM(allocated_budget) as allocated, SUM(spent_amount) as spent')->groupBy('month')->orderBy('month')->get();
+        // Fetch Statuses once
+        $statusRefs = CodeValue::whereIn('reference', ['SCS001', 'SCS005', 'SCS006', 'SCS004'])->get();
+        $todoId = $statusRefs->where('reference', 'SCS001')->first()->id;
+        $doneIds = $statusRefs->whereIn('reference', ['SCS005', 'SCS006'])->pluck('id');
+        $submittedId = $statusRefs->where('reference', 'SCS004')->first()->id;
 
-         return view('dashboard.admin.dashboard', [
-             'todoTasks' => $todoTasks,
-             'completedTasks' => $completedTasks,
-             'totalExpenses' => $totalExpenses,
-             'pendingNotifications' => $pendingNotifications,
-             'avgWeeklyScore' => round($avgWeeklyScore, 2),
+        // Global Year Scoping
+        $taskQuery = Task::where('department_id', $hodDeptId)->whereYear('created_at', $year);
 
-             'weeklyTasks' => $weeklyTasks,
+        $todoTasks = (clone $taskQuery)->where('status_cv_id', $todoId)->count();
+        $completedTasks = (clone $taskQuery)->whereIn('status_cv_id', $doneIds)->count();
 
-             'salesData' => $monthlyStats->pluck('sales'),
-             'viewsData' => $monthlyStats->pluck('views'),
-             'months' => $monthlyStats->pluck('month')->map(
-                 fn ($m) => Carbon::create()->month($m)->format('M')
-             ),
+        $totalExpenses = Expense::whereYear('created_at', $year)
+            ->whereHas('task', fn($q) => $q->where('department_id', $hodDeptId))
+            ->sum('amount');
 
-             'taskStatus' => $taskStatus,
-             'staffStatus' => $staffStatus,
-             'budgetExpense' => $budgetExpense,
-         ]);
+        $avgWeeklyScore = PerformanceScore::whereYear('created_at', $year)
+            ->whereHas('user', fn($q) => $q->where('department_id', $hodDeptId))
+            ->avg('total_score');
+
+        // Budget vs Spent (Mapping all 12 months)
+        $rawBudgetData = (clone $taskQuery)
+            ->selectRaw('MONTH(created_at) as month, SUM(allocated_budget) as allocated, SUM(spent_amount) as spent')
+            ->groupBy('month')
+            ->get()
+            ->keyBy('month');
+
+        // Generate full 12 months dataset
+        $budgetExpense = collect(range(1, 12))->map(function ($month) use ($rawBudgetData) {
+            return [
+                'month' => Carbon::create()->month($month)->format('M'),
+                'allocated' => $rawBudgetData->has($month) ? $rawBudgetData[$month]->allocated : 0,
+                'spent' => $rawBudgetData->has($month) ? $rawBudgetData[$month]->spent : 0,
+            ];
+        });
+
+        $staffStatus = User::role('Staff')
+            ->where('department_id', $hodDeptId)
+            ->selectRaw('COUNT(CASE WHEN is_active = 1 THEN 1 END) as active, COUNT(CASE WHEN is_active = 0 THEN 1 END) as inactive')
+            ->first();
+
+        return view('dashboard.hod.dashboard', [
+            'year' => $year,
+            'todoTasks' => $todoTasks,
+            'completedTasks' => $completedTasks,
+            'totalExpenses' => $totalExpenses,
+            'avgWeeklyScore' => round($avgWeeklyScore, 2),
+            'staffStatus' => $staffStatus,
+            'budgetChartData' => $budgetExpense,
+            'availableYears' => Task::selectRaw('YEAR(created_at) as year')->distinct()->orderBy('year', 'desc')->pluck('year')
+        ]);
     }
 
 

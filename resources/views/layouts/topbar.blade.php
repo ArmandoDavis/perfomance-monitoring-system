@@ -116,40 +116,75 @@
             <li class="nav-item dropdown">
                 <a class="nav-link dropdown-toggle dropdown-toggle-nocaret position-relative" data-bs-auto-close="outside" data-bs-toggle="dropdown" href="javascript:void(0)">
                     <i class="material-icons-outlined">notifications</i>
-                    <span class="badge-notify">5</span>
+                    @if(auth()->user()->unreadNotifications->count() > 0)
+                        <span class="badge-notify">{{ auth()->user()->unreadNotifications->count() }}</span>
+                    @endif
                 </a>
                 <div class="dropdown-menu dropdown-notify dropdown-menu-end shadow">
                     <div class="px-3 py-1 d-flex align-items-center justify-content-between border-bottom">
-                        <h5 class="notiy-title mb-0">Notifications</h5>
+                        <h5 class="notiy-title mb-0">{{ __('Notifications') }}</h5>
                         <div class="dropdown">
                             <button class="btn btn-secondary dropdown-toggle dropdown-toggle-nocaret option" type="button" data-bs-toggle="dropdown" aria-expanded="false">
-                              <span class="material-icons-outlined">
-                                more_vert
-                              </span>
+                                <span class="material-icons-outlined">more_vert</span>
                             </button>
                             <div class="dropdown-menu dropdown-option dropdown-menu-end shadow">
-                                <div><a class="dropdown-item d-flex align-items-center gap-2 py-2" href="javascript:;"><i
-                                            class="material-icons-outlined fs-6">inventory_2</i>Archive All</a></div>
-                                <div><a class="dropdown-item d-flex align-items-center gap-2 py-2" href="javascript:;"><i
-                                            class="material-icons-outlined fs-6">done_all</i>Mark all as read</a></div>
-                                <div><a class="dropdown-item d-flex align-items-center gap-2 py-2" href="javascript:;"><i
-                                            class="material-icons-outlined fs-6">mic_off</i>Disable Notifications</a></div>
-                                <div><a class="dropdown-item d-flex align-items-center gap-2 py-2" href="javascript:;"><i
-                                            class="material-icons-outlined fs-6">grade</i>What's new ?</a></div>
+                                {{-- Senior Move: Route to mark all as read --}}
                                 <div>
-                                    <hr class="dropdown-divider">
-                                </div>
-                                <div>
-                                    <a class="dropdown-item d-flex align-items-center gap-2 py-2" href="javascript:;">
-                                        <i class="material-icons-outlined fs-6">leaderboard</i>Reports
-                                    </a>
+                                    <form action="{{ route('notifications.mark_all_read') }}" method="POST" id="mark-all-read-form">
+                                        @csrf
+                                        <a class="dropdown-item d-flex align-items-center gap-2 py-2" href="javascript:;" onclick="document.getElementById('mark-all-read-form').submit();">
+                                            <i class="material-icons-outlined fs-6">done_all</i>{{ __('Mark all as read') }}
+                                        </a>
+                                    </form>
                                 </div>
                             </div>
                         </div>
                     </div>
                     <div class="notify-list">
-                        {{-- notification list goes here --}}
+                        @forelse(auth()->user()->unreadNotifications as $notification)
+                            @php
+                                // Tunapata icon kulingana na data uliyoseti kwenye Notification Class
+                                $icon = 'notifications';
+                                $bgClass = 'bg-light-primary text-primary';
+
+                                if(str_contains($notification->data['message'], 'revoked')) {
+                                    $icon = 'person_remove';
+                                    $bgClass = 'bg-light-danger text-danger';
+                                } elseif(str_contains($notification->data['message'], 'updated')) {
+                                    $icon = 'edit_note';
+                                    $bgClass = 'bg-light-warning text-warning';
+                                }
+                            @endphp
+
+                            <a class="dropdown-item border-bottom py-2" href="{{ $notification->data['action_url'] ?? '#' }}">
+                                <div class="d-flex align-items-center gap-3">
+                                    <div class="notify {{ $bgClass }} rounded-circle">
+                                        <span class="material-icons-outlined fs-6">{{ $icon }}</span>
+                                    </div>
+                                    <div class="flex-grow-1">
+                                        <h6 class="msg-name mb-0 small fw-bold">
+                                            {{ $notification->data['title'] ?? __('Task Update') }}
+                                            <span class="msg-time float-end text-muted small">{{ $notification->created_at->diffForHumans(null, true) }}</span>
+                                        </h6>
+                                        <p class="msg-info mb-0 small text-truncate" style="max-width: 220px;">
+                                            {{ $notification->data['message'] }}
+                                        </p>
+                                    </div>
+                                </div>
+                            </a>
+                        @empty
+                            <div class="text-center py-4">
+                                <i class="material-icons-outlined fs-1 text-muted">notifications_none</i>
+                                <p class="mb-0 text-muted small">{{ __('No new notifications') }}</p>
+                            </div>
+                        @endforelse
                     </div>
+
+                    @if(auth()->user()->notifications->count() > 0)
+                        <div class="text-center py-2 border-top">
+                            <a href="{{ route('notifications.index') }}" class="text-primary small fw-bold">{{ __('View All Notifications') }}</a>
+                        </div>
+                    @endif
                 </div>
             </li>
 

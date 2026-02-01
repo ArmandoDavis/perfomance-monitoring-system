@@ -85,11 +85,15 @@ class TaskController extends Controller
     {
         $this->authorize('view', $task);
         $codeId = Code::query()->where('name', 'Status')->value('id');
+        $codeAccessId = $this->codeRepository->getOnlyCodeIdByNameForCodeValue('Access Level');
+
         $data['task'] = $task;
         $data['users'] = $this->userRepository->getActiveStaffs();
         $data['userAssigned'] = $this->userRepository->getNonEvaluatedUserForThisTask($task->id);
         $data['statuses'] = $this->codeValueRepository->getCodeValuesForSelect($codeId);
         $data['hoursSinceCompletion'] = Carbon::parse($task->completed_at)->diffInHours(now());
+        $data['departments'] = $this->depertmentRepository->getDepartmentToShareTask($task);
+        $data['access'] = $this->codeValueRepository->getCodeValuesForSelect($codeAccessId);
         $data['userShare'] = $task->shares->where('shared_with', user_id())->first();
         return view('pages.admin.task.profile.profile', $data);
     }

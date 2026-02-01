@@ -263,6 +263,8 @@
 </div>
 
 
+
+
 {{--transferModal--}}
 <div class="modal fade" id="transferModal" tabindex="-1" aria-hidden="true">
     <div class="modal-dialog">
@@ -271,13 +273,17 @@
                 <h5 class="modal-title">{{ __('Transfer Task to Another Dept') }}</h5>
                 <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
             </div>
-            <form action="{{ route('admin_panel.tasks.transfer', $task->uuid) }}" method="POST">
+            <form action="{{ route('hod_panel.tasks.share.transfer', $task->uuid) }}" method="POST">
                 @csrf
                 <div class="modal-body">
                     <div class="mb-3">
+                        <input type="hidden" name="action_type" value="1">
                         <label class="form-label text-danger"><strong>{{ __('Target Department') }}</strong></label>
                         <select name="department_id" class="form-select select2-transfer" required>
-
+                            <option selected disabled hidden>{{__('Choose Department')}}</option>
+                            @foreach($departments as $dept)
+                                <option value="{{ $dept->id }}">{{ $dept->name }}</option>
+                            @endforeach
                         </select>
                     </div>
                     <div class="mb-3">
@@ -287,6 +293,47 @@
                 </div>
                 <div class="modal-footer">
                     <button type="submit" class="btn btn-secondary">{{ __('Confirm Transfer') }}</button>
+                </div>
+            </form>
+        </div>
+    </div>
+</div>
+
+{{-- Share Modal --}}
+<div class="modal fade" id="shareModal" tabindex="-1" aria-hidden="true">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header bg-light text-white">
+                <h5 class="modal-title">{{ __('Share Access with Another Dept') }}</h5>
+                <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal"></button>
+            </div>
+            <form action="{{ route('hod_panel.tasks.share.store', $task->uuid) }}" method="POST">
+                @csrf
+                <div class="modal-body">
+                    <div class="mb-3">
+                        <input type="hidden" name="action_type" value="1">
+                        <label class="form-label">{{ __('Target Department') }}</label>
+                        <select name="department_id" class="form-select select2-share" required>
+                            <option selected disabled hidden>{{__('Choose Department')}}</option>
+                            @foreach($departments as $dept)
+                                <option value="{{ $dept->id }}">{{ $dept->name }}</option>
+                            @endforeach
+                        </select>
+                    </div>
+                    <div class="mb-3">
+                        <label class="form-label">{{ __('Access Level') }}</label>
+                        <div class="d-flex gap-3">
+                            @foreach($access as $level)
+                                <div class="form-check">
+                                    <input class="form-check-input" type="radio" name="access_level_cv_id" value="{{ $level->id }}" checked>
+                                    <label class="form-check-label">{{ $level->name }}</label>
+                                </div>
+                            @endforeach
+                        </div>
+                    </div>
+                </div>
+                <div class="modal-footer">
+                    <button type="submit" class="btn btn-dark w-100">{{ __('Share Task') }}</button>
                 </div>
             </form>
         </div>

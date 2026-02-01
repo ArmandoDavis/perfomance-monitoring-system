@@ -2,10 +2,14 @@
 
 use App\Models\Access\User;
 use App\Models\Department;
+use App\Models\System\CodeValue;
 use App\Models\Task\Task;
+use Carbon\Carbon;
 use Database\DisableForeignKeys;
 use Database\TruncateTable;
+use Faker\Factory;
 use Illuminate\Database\Seeder;
+use Illuminate\Support\Facades\DB;
 
 class TaskSeeder extends Seeder
 {
@@ -14,46 +18,69 @@ class TaskSeeder extends Seeder
     public function run(): void
     {
         $this->disableForeignKeys('tasks');
+        $faker = Factory::create();
+
         $hod = User::role('Head of Department')->first();
         $department = Department::where('name', 'Human Resources')->first();
-        $statusBacklog = \App\Models\System\CodeValue::getCodeValueByReference('SCS001');
+        $statuses = CodeValue::whereIn('reference', ['SCS001', 'SCS002', 'SCS003', 'SCS004', 'SCS005', 'SCS006', 'SCS007'])->get();
 
-        $tasks = [
-            [
-                'title' => 'Recruitment Process Review',
-                'description' => 'Review and improve recruitment workflow',
-                'allocated_budget' => 5000000,
-            ],
-            [
-                'title' => 'Staff Performance Appraisal',
-                'description' => 'Conduct mid-year staff evaluations',
-                'allocated_budget' => 3000000,
-            ],
-            [
-                'title' => 'HR Policy Update',
-                'description' => 'Update HR policies to align with new regulations',
-                'allocated_budget' => 2000000,
-            ],
-        ];
+        $completedRefs = ['SCS005', 'SCS006']; // Done, Deployed
+        $ongoingRefs = ['SCS003', 'SCS004'];   // In Progress, Submitted
+        $backlogRefs = ['SCS001', 'SCS002'];   // Backlog, Todo
 
-        foreach ($tasks as $task) {
-            Task::updateOrCreate(
-                [
-                    'title' => $task['title'],
-                    'department_id' => $department->id,
-                ],
-                [
-                    'description' => $task['description'],
-                    'created_by' => $hod->id,
-                    'allocated_budget' => $task['allocated_budget'],
-                    'remaining_budget' => $task['allocated_budget'],
-                    'status_cv_id' => $statusBacklog->id,
-                    'start_date' => now(),
-                    'end_date' => now()->addMonths(2),
-                    'progress_percent' => 0,
-                ]
-            );
+        $years = [2024, 2025, 2026];
+
+        foreach ($years as $year) {
+            for ($i = 0; $i < 15; $i++) {
+
+                $month = rand(1, 12);
+                $createdAt = Carbon::create($year, $month, rand(1, 28), rand(8, 16), 0, 0);
+
+                if ($year < now()->year) {
+                    $ref = $faker->randomElement([...$completedRefs, 'SCS007']);
+                    $progress = ($ref == 'SCS007') ? rand(10, 50) : 100;
+
+                } elseif ($year == now()->year) {
+                    $ref = $faker->randomElement([
+                        'SCS001', 'SCS002', 'SCS003', 'SCS004', 'SCS005'
+                    ]);
+
+                    $progress = match($ref) {
+                        'SCS005' => 100,
+                        'SCS004' => 90,
+                        'SCS003' => rand(30, 80),
+                        default => rand(0, 20)
+                    };
+
+                } else {
+                    $ref = $faker->randomElement($backlogRefs);
+                    $progress = rand(0, 10);
+                }
+
+                $status = $statuses->firstWhere('reference', $ref);
+                $budget = $faker->randomElement([2000000, 3500000, 5000000, 7500000, 10000000]);
+                //dump("Year: $year | Ref: $ref | Status ID: " . $status->id);
+
+                DB::table('tasks')->insert([
+                    'title'            => $faker->catchPhrase . " ($year)",
+                    'uuid'             => str_unique(),
+                    'department_id'    => $department->id,
+                    'description'      => $faker->paragraph,
+                    'created_by'       => $hod->id,
+                    'allocated_budget' => $budget,
+                    'spent_amount'     => 0,
+                    'remaining_budget' => $budget,
+                    'status_cv_id'     => $status->id,
+                    'start_date'       => $createdAt,
+                    'end_date'         => $createdAt->copy()->addMonths(rand(1, 4)),
+                    'progress_percent' => $progress,
+                    'is_active'        => true,
+                    'created_at'       => $createdAt,
+                    'updated_at'       => $createdAt,
+                ]);
+            }
         }
+
         $this->enableForeignKeys('tasks');
     }
 }

@@ -21,6 +21,7 @@ trait CodeValueAttribute
     {
         return self::query()->where('code_id', $codeId)->get();
     }
+
     public static function getCodeValueByReference($reference)
     {
         return self::query()->where('reference', $reference)->first();

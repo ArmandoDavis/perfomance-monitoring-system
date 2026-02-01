@@ -14,14 +14,17 @@ return new class extends Migration
         Schema::create('task_shares', function (Blueprint $table) {
             $table->id();
             $table->foreignId('task_id')->constrained('tasks')->onDelete('cascade');
-            $table->foreignId('shared_with')->constrained('users')->onDelete('cascade');
             $table->foreignId('shared_by')->constrained('users')->onDelete('cascade');
+
+            $table->foreignId('shared_with_user_id')->nullable()->constrained('users');
+            $table->foreignId('shared_with_department_id')->nullable()->constrained('departments');
+            $table->foreignId('access_level_cv_id')->nullable()->constrained('code_values');
+
             $table->text('remarks')->nullable();
+            $table->string('uuid');
             $table->timestamps();
             $table->softDeletes();
 
-            $table->string('uuid');
-            $table->unique(['task_id', 'shared_with']);
         });
     }
 

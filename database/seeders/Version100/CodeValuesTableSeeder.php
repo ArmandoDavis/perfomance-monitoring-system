@@ -42,6 +42,10 @@ class CodeValuesTableSeeder extends Seeder
                 ['reference' => 'SCS005', 'name' => 'Done', 'is_system_defined' => 1], // same to complete
                 ['reference' => 'SCS006', 'name' => 'Deployed', 'is_system_defined' => 1],
                 ['reference' => 'SCS007', 'name' => 'Reject', 'is_system_defined' => 1],
+            ],
+            'Access Level' => [
+                ['reference' => 'ACL001', 'name' => 'view', 'is_system_defined' => 1],
+                ['reference' => 'ACL002', 'name' => 'edit', 'is_system_defined' => 1],
             ]
         ];
 

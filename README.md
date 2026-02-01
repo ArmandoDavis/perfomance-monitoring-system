@@ -4,6 +4,8 @@ composer install;
 
 php artisan migrate:fresh --path=database/migrations/version100;
 
+php artisan optimize:clear;
+
 composer dump-autoload;
 
 php artisan db:seed;
@@ -70,8 +72,15 @@ if anything found miss add here
 15. On performance evaluation the member of staff should be evaluated once, One user shouldnt be evaluated twice.s => Done
 16. HOD CAN NOT SEE TASK OF OTHER DEPARTMENTS  => Done
 17. user have ability to share task with department  => Done
-
+18. When the head of department logs in, in creating the task the form should return his/her department automatically
+19. Same for the assigning of users, he should assign users in that specific department only.
+20. When the task is created by the HOD , it returns SQLSTATE ERROR, But when the super admin creates a task is ok, so HOD should be able to create the task. Kumbe hadi main admin anapata same error(SQLSTATE[23000]: Integrity constraint violation: 1048 Column 'progress_percent' cannot be null  => Done
+21. The Expenses section is not connected yet.
+22. On Task Management, kuna repetition sijajua mfano Next actions itaonyesha nini.
 
 ## Important
 1. if task status is equal to done or complete admin user can not add expense, document or assign new user, can not delete or update task
 2. 
+
+
+NOTIFICATIONS

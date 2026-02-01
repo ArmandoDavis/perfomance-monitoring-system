@@ -1,0 +1,361 @@
+{{-- Add Comment Modal --}}
+<div class="modal fade" id="addCommentModal-{{ $task->uuid }}" tabindex="-1" aria-labelledby="addCommentModalLabel" aria-hidden="true">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <form action="{{ route('hod_panel.tasks.comment.store', $task->uuid) }}" method="POST" name="submit_comment">
+                @csrf
+                <input type="hidden" name="action_type" value="1">
+                <div class="modal-header">
+                    <h5 class="modal-title" id="addCommentModalLabel">{{ __('Add Comment') }}</h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="{{ __('Close') }}"></button>
+                </div>
+                <div class="modal-body">
+                    <div class="mb-3">
+                        <label for="comment_content" class="form-label">{{ __('Comment') }} <span class="text-danger">*</span></label>
+                        <textarea name="content" id="comment_content" rows="4" class="form-control ckeditor @error('content') is-invalid @enderror">{{ old('content') }}</textarea>
+                        @error('content')
+                            <div class="invalid-feedback">{{ $message }}</div>
+                        @enderror
+                    </div>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-light" data-bs-dismiss="modal">{{ __('Cancel') }}</button>
+                    <button type="submit" class="btn btn-primary" id="submit_btn">
+                        <span id="submit_label">{{ __('Submit') }}</span>
+                    </button>
+                </div>
+            </form>
+        </div>
+    </div>
+</div>
+
+
+{{--addAssignmentModal--}}
+<div class="modal fade" id="addAssignmentModal" tabindex="-1" aria-labelledby="addAssignmentModalLabel" aria-hidden="true">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <form action="{{ route('hod_panel.tasks.assignment.store', $task->uuid) }}" method="POST" name="submit_assignment">
+                @csrf
+                <input type="hidden" name="action_type" value="1">
+
+                <div class="modal-header">
+                    <h5 class="modal-title" id="addAssignmentModalLabel">{{ __('Assign User') }}</h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="{{ __('Close') }}"></button>
+                </div>
+                <div class="modal-body">
+                    <div class="mb-3">
+                        <label for="user_ids" class="form-label">{{ __('User') }} <span class="text-danger">*</span></label>
+                        <select name="user_ids[]" id="user_ids" multiple class="form-select select2" required>
+                            <option value="">{{ __('Select User') }}</option>
+                            @foreach($users as $user)
+                                <option value="{{ $user->id }}">{{ $user->name }}</option>
+                            @endforeach
+                        </select>
+                    </div>
+
+                    <div class="mb-3">
+                        <label for="assigned_budget" class="form-label">{{ __('Assigned Budget') }} <span class="text-danger">*</span></label>
+                        <input type="text" name="assigned_budget" id="assigned_budget" class="form-control money" required>
+                    </div>
+
+                    <div class="mb-3">
+                        <label for="is_active" class="form-label">{{ __('Active?') }}</label>
+                        <select name="is_active" id="is_active" class="form-select">
+                            <option value="1" selected>{{ __('Yes') }}</option>
+                            <option value="0">{{ __('No') }}</option>
+                        </select>
+                    </div>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-light" data-bs-dismiss="modal">{{ __('Cancel') }}</button>
+
+                    <button type="submit" class="btn btn-primary" id="submit_btn">
+                        <span id="submit_label">{{ __('Assign') }}</span>
+                    </button>
+                </div>
+            </form>
+        </div>
+    </div>
+</div>
+
+
+{{-- Add Progress Modal --}}
+<div class="modal fade" id="addProgressModal" tabindex="-1">
+    <div class="modal-dialog modal-lg">
+        <div class="modal-content">
+            <form action="{{ route('hod_panel.tasks.progress.store', $task->uuid) }}"
+                  method="POST">
+                @csrf
+
+                <div class="modal-header">
+                    <h5 class="modal-title">{{ __('Add Task Progress') }}</h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+                </div>
+
+                <div class="modal-body">
+                    {{-- Status --}}
+                    <div class="mb-3">
+                        <label class="form-label">{{ __('Status') }}</label>
+                        <select name="status" class="form-select select2" required>
+                            @foreach($statuses as $status)
+                                <option value="{{ $status->id }}">{{ $status->name }}</option>
+                            @endforeach
+                        </select>
+                    </div>
+
+                    {{-- Comment --}}
+                    <div class="mb-3">
+                        <label class="form-label">{{ __('Comment') }}</label>
+                        <textarea name="comment" id="comment" rows="4" class="form-control ckeditor_basic @error('comment') is-invalid @enderror">{{ old('comment') }}</textarea>
+                    </div>
+                </div>
+
+                <div class="modal-footer">
+                    <button class="btn btn-light" data-bs-dismiss="modal">
+                        {{ __('Cancel') }}
+                    </button>
+                    <button class="btn btn-primary">
+                        {{ __('Save') }}
+                    </button>
+                </div>
+            </form>
+        </div>
+    </div>
+</div>
+
+
+<div class="modal fade" id="addPerformanceModal" tabindex="-1">
+    <div class="modal-dialog modal-lg">
+        <form method="POST" action="{{ route('hod_panel.tasks.performance.store', $task->uuid) }}">
+            @csrf
+            <input type="hidden" name="action_type" value="1">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5>{{ __('Evaluate Performance') }}</h5>
+                    <button class="btn-close" data-bs-dismiss="modal"></button>
+                </div>
+
+                <div class="modal-body">
+                    {{-- User --}}
+                    <div class="mb-3">
+                        <label class="form-label">{{ __('Staff') }} <span class="text-danger">*</span></label>
+                        <select name="user_id" class="form-select select2" required>
+                            <option value="">{{ __('Select Staff') }}</option>
+                            @foreach($userAssigned as $user)
+                                <option value="{{ $user->id }}">
+                                    {{ $user->name }}
+                                </option>
+                            @endforeach
+                        </select>
+                    </div>
+
+                    <div class="row">
+                        @foreach([
+                            'timeliness_score' => [
+                                'label' => 'Timeliness',
+                                'desc'  => 'Was the task completed on time?',
+                                'options' => [
+                                    10 => 'Yes, on time',
+                                    6  => 'Slightly late',
+                                    2  => 'No, late',
+                                ]
+                            ],
+                            'quality_score' => [
+                                'label' => 'Work Quality',
+                                'desc'  => 'How good is the quality of the work delivered?',
+                                'options' => [
+                                    10 => 'Excellent quality',
+                                    6  => 'Acceptable quality',
+                                    2  => 'Poor quality',
+                                ]
+                            ],
+                            'budget_score' => [
+                                'label' => 'Budget Control',
+                                'desc'  => 'Was the task completed within the assigned budget?',
+                                'options' => [
+                                    10 => 'Within budget',
+                                    6  => 'Slightly over budget',
+                                    2  => 'Over budget',
+                                ]
+                            ],
+                            'kpi_score' => [
+                                'label' => 'Goal Achievement',
+                                'desc'  => 'Did the task meet its intended goals?',
+                                'options' => [
+                                    10 => 'Fully achieved',
+                                    6  => 'Partially achieved',
+                                    2  => 'Not achieved',
+                                ]
+                            ],
+                        ] as $field => $data)
+                            <div class="col-md-3 mb-3">
+                                <label class="form-label fw-semibold">{{ __($data['label']) }} <span class="text-danger">*</span></label>
+                                <small class="text-muted d-block mb-1">
+                                    {{ __($data['desc']) }}
+                                </small>
+
+                                <select name="{{ $field }}" class="form-select" required>
+                                    <option value="">-- Select --</option>
+                                    @foreach($data['options'] as $value => $text)
+                                        <option value="{{ $value }}">{{ __($text) }}</option>
+                                    @endforeach
+                                </select>
+                            </div>
+                        @endforeach
+                    </div>
+
+
+                    <div class="mb-3">
+                        <label class="form-label">{{ __('Remarks') }}</label>
+                        <textarea name="remarks" id="remarks" rows="4" class="form-control ckeditor_basic @error('remarks') is-invalid @enderror">{{ old('remarks') }}</textarea>
+                    </div>
+                </div>
+
+                <div class="modal-footer">
+                    <button class="btn btn-light" data-bs-dismiss="modal">
+                        {{ __('Cancel') }}
+                    </button>
+                    <button class="btn btn-primary">
+                        {{ __('Save') }}
+                    </button>
+                </div>
+            </div>
+        </form>
+    </div>
+</div>
+
+{{-- addExpenseModal --}}
+<div class="modal fade" id="addExpenseModal" tabindex="-1">
+    <div class="modal-dialog">
+        <form action="{{ route('hod_panel.tasks.expenses.store', $task->uuid) }}" method="POST" enctype="multipart/form-data">
+            @csrf
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5>{{ __('Add Expense') }}</h5>
+                    <button class="btn-close" data-bs-dismiss="modal"></button>
+                </div>
+
+                <div class="modal-body">
+                    <div class="mb-3">
+                        <label>{{ __('Amount') }} <span class="text-danger">*</span></label>
+                        <input type="hidden" name="action_type" value="1">
+                        <input type="text" name="amount" class="form-control money" required>
+                    </div>
+
+                    <div class="mb-3">
+                        <label>{{ __('Description') }}</label>
+                        <textarea name="description" class="form-control ckeditor_basic" required></textarea>
+                    </div>
+
+                    <div class="mb-3">
+                        <label>{{ __('Receipt') }}</label>
+                        <input type="file" name="receipt" class="form-control">
+                    </div>
+                </div>
+
+                <div class="modal-footer">
+                    <button class="btn btn-light" data-bs-dismiss="modal">{{ __('Cancel') }}</button>
+                    <button class="btn btn-primary">{{ __('Save') }}</button>
+                </div>
+            </div>
+        </form>
+    </div>
+</div>
+
+
+{{--transferModal--}}
+<div class="modal fade" id="transferModal" tabindex="-1" aria-hidden="true">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header bg-light">
+                <h5 class="modal-title">{{ __('Transfer Task to Another Dept') }}</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+            </div>
+            <form action="{{ route('hod_panel.tasks.share.transfer', $task->uuid) }}" method="POST">
+                @csrf
+                <div class="modal-body">
+                    <div class="mb-3">
+                        <input type="hidden" name="action_type" value="1">
+                        <label class="form-label text-danger"><strong>{{ __('Target Department') }}</strong></label>
+                        <select name="department_id" class="form-select select2-transfer" required>
+                            <option selected disabled hidden>{{__('Choose Department')}}</option>
+                            @foreach($departments as $dept)
+                                <option value="{{ $dept->id }}">{{ $dept->name }}</option>
+                            @endforeach
+                        </select>
+                    </div>
+                    <div class="mb-3">
+                        <label class="form-label">{{ __('Reason for Transfer') }}</label>
+                        <textarea name="remarks" class="form-control" rows="3" required placeholder="{{ __('Reasons...') }}"></textarea>
+                    </div>
+                </div>
+                <div class="modal-footer">
+                    <button type="submit" class="btn btn-secondary">{{ __('Confirm Transfer') }}</button>
+                </div>
+            </form>
+        </div>
+    </div>
+</div>
+
+{{-- Share Modal --}}
+<div class="modal fade" id="shareModal" tabindex="-1" aria-hidden="true">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header bg-light text-white">
+                <h5 class="modal-title">{{ __('Share Access with Another Dept') }}</h5>
+                <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal"></button>
+            </div>
+            <form action="{{ route('hod_panel.tasks.share.store', $task->uuid) }}" method="POST">
+                @csrf
+                <div class="modal-body">
+                    <div class="mb-3">
+                        <input type="hidden" name="action_type" value="1">
+                        <label class="form-label">{{ __('Target Department') }}</label>
+                        <select name="department_id" class="form-select select2-share" required>
+                            <option selected disabled hidden>{{__('Choose Department')}}</option>
+                            @foreach($departments as $dept)
+                                <option value="{{ $dept->id }}">{{ $dept->name }}</option>
+                            @endforeach
+                        </select>
+                    </div>
+                    <div class="mb-3">
+                        <label class="form-label">{{ __('Access Level') }}</label>
+                        <div class="d-flex gap-3">
+                            @foreach($access as $level)
+                                <div class="form-check">
+                                    <input class="form-check-input" type="radio" name="access_level_cv_id" value="{{ $level->id }}" checked>
+                                    <label class="form-check-label">{{ $level->name }}</label>
+                                </div>
+                            @endforeach
+                        </div>
+                    </div>
+                </div>
+                <div class="modal-footer">
+                    <button type="submit" class="btn btn-dark w-100">{{ __('Share Task') }}</button>
+                </div>
+            </form>
+        </div>
+    </div>
+</div>
+
+@push('scripts')
+    <script>
+        $('#addAssignmentModal').on('shown.bs.modal', function () {
+            $('#user_ids').select2({
+                placeholder: "{{ __('Select users') }}",
+                dropdownParent: $('#addAssignmentModal'),
+                allowClear: true,
+                width: '100%'
+            });
+        });
+
+
+        pleaseWaitSubmitButton("submit_btn", "submit_label", "{{ trans('Please wait') }}", 2);
+        $('body').on('submit', 'form[name=submit_comment]', function(e) {
+            pleaseWaitSubmitButton("submit_btn","submit_label","{{ trans('Please wait') }}",1);
+        });
+        $('body').on('submit', 'form[name=submit_assignment]', function(e) {
+            pleaseWaitSubmitButton("submit_btn","submit_label","{{ trans('Please wait') }}",1);
+        });
+    </script>
+@endpush

@@ -6,8 +6,8 @@ use App\Models\Access\User;
 use App\Models\Department;
 use App\Models\Task\Task;
 use App\Policies\System\DepartmentPolicy;
+use App\Policies\System\UserPolicy;
 use App\Policies\Task\TaskPolicy;
-use App\Policies\UserPolicy;
 use Illuminate\Foundation\Support\Providers\AuthServiceProvider as ServiceProvider;
 
 class AuthServiceProvider extends ServiceProvider

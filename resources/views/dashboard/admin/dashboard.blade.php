@@ -1,67 +1,63 @@
 @extends('layouts.admin.app')
-@section('title', 'Dashboard')
+@section('title', 'Admin Dashboard')
 
 @section('content')
-    <div class="row">
-        {{-- Average Weekly Performance --}}
-        <div class="col-12 col-xl-3 d-flex">
-            <div class="card rounded-4 w-100">
+    <div class="row row-cols-1 row-cols-sm-2 row-cols-md-2 row-cols-xl-4">
+        <div class="col">
+            <div class="card radius-10 border-start border-0 border-3 border-success">
                 <div class="card-body">
-                    <div class="d-flex align-items-center gap-3 mb-2">
-                        <h2 class="mb-0">{{ number_format($avgWeeklyScore ?? 0, 1) }}%</h2>
+                    <div class="d-flex align-items-center">
+                        <div>
+                            <p class="mb-0 text-secondary">{{ __('Completed Tasks') }}</p>
+                            <h4 class="my-1 text-success">{{ number_format($completedTasks) }}</h4>
+                        </div>
+                        <div class="widgets-icons-2 rounded-circle bg-light-success text-success ms-auto">
+                            <i class="material-icons-outlined">task_alt</i>
+                        </div>
                     </div>
-                    <p class="mb-0">Average Weekly Performance Score</p>
-                    <div id="chart1"></div>
                 </div>
             </div>
         </div>
-
-        {{-- Task / Finance Summary --}}
-        <div class="col-12 col-xl-9 d-flex">
-            <div class="card rounded-4 w-100">
+        <div class="col">
+            <div class="card radius-10 border-start border-0 border-3 border-danger">
                 <div class="card-body">
-                    <div class="d-flex align-items-center justify-content-around flex-wrap gap-4 p-4">
-
-                        {{-- Todo Tasks --}}
-                        <div class="text-center">
-                            <div class="mb-2 wh-48 bg-primary bg-opacity-10 text-primary rounded-circle d-flex align-items-center justify-content-center">
-                                <i class="material-icons-outlined">assignment</i>
-                            </div>
-                            <h3 class="mb-0">{{ $todoTasks }}</h3>
-                            <p class="mb-0">Todo Tasks</p>
+                    <div class="d-flex align-items-center">
+                        <div>
+                            <p class="mb-0 text-secondary">{{ __('Total Expenses') }}</p>
+                            <h4 class="my-1 text-danger">TZS {{ number_2_format($totalExpenses) }}</h4>
                         </div>
-
-                        <div class="vr"></div>
-
-                        {{-- Completed Tasks --}}
-                        <div class="text-center">
-                            <div class="mb-2 wh-48 bg-success bg-opacity-10 text-success rounded-circle d-flex align-items-center justify-content-center">
-                                <i class="material-icons-outlined">check_circle</i>
-                            </div>
-                            <h3 class="mb-0">{{ $completedTasks }}</h3>
-                            <p class="mb-0">Completed Tasks</p>
+                        <div class="widgets-icons-2 rounded-circle bg-light-danger text-danger ms-auto">
+                            <i class="material-icons-outlined">payments</i>
                         </div>
-
-                        <div class="vr"></div>
-
-                        {{-- Pending Reviews --}}
-                        <div class="text-center">
-                            <div class="mb-2 wh-48 bg-warning bg-opacity-10 text-warning rounded-circle d-flex align-items-center justify-content-center">
-                                <i class="material-icons-outlined">info</i>
-                            </div>
-                            <h3 class="mb-0">{{ $pendingNotifications }}</h3>
-                            <p class="mb-0">Pending Reviews</p>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <div class="col">
+            <div class="card radius-10 border-start border-0 border-3 border-info">
+                <div class="card-body">
+                    <div class="d-flex align-items-center">
+                        <div>
+                            <p class="mb-0 text-secondary">{{ __('Weekly Performance') }}</p>
+                            <h4 class="my-1 text-info">{{ $avgWeeklyScore }}%</h4>
                         </div>
-
-                        <div class="vr"></div>
-
-                        {{-- Total Expenses --}}
-                        <div class="text-center">
-                            <div class="mb-2 wh-48 bg-info bg-opacity-10 text-info rounded-circle d-flex align-items-center justify-content-center">
-                                <i class="material-icons-outlined">payments</i>
-                            </div>
-                            <h3 class="mb-0">{{ number_format($totalExpenses) }} TZS</h3>
-                            <p class="mb-0">Total Expenses</p>
+                        <div class="widgets-icons-2 rounded-circle bg-light-info text-info ms-auto">
+                            <i class="material-icons-outlined">trending_up</i>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <div class="col">
+            <div class="card radius-10 border-start border-0 border-3 border-warning">
+                <div class="card-body">
+                    <div class="d-flex align-items-center">
+                        <div>
+                            <p class="mb-0 text-secondary">{{ __('Pending Review') }}</p>
+                            <h4 class="my-1 text-warning">{{ $pendingApprovals }}</h4>
+                        </div>
+                        <div class="widgets-icons-2 rounded-circle bg-light-warning text-warning ms-auto">
+                            <i class="material-icons-outlined">pending_actions</i>
                         </div>
                     </div>
                 </div>
@@ -70,151 +66,105 @@
     </div>
 
     <div class="row">
-        {{-- Left Side --}}
-        <div class="col-12 col-xl-5 col-xxl-4 d-flex">
-            <div class="card rounded-4 w-100 shadow-none bg-transparent border-0">
-                <div class="card-body p-0">
-                    <div class="row g-4">
+        <div class="col-12 col-lg-8">
+            <div class="card radius-10">
+                <div class="card-header bg-transparent">
+                    <div class="d-flex align-items-center">
+                        <div><h6 class="mb-0">{{ __('Financial Overview (Budget vs Spent)') }}</h6></div>
+                    </div>
+                </div>
+                <div class="card-body">
+                    <div id="financial-chart"></div>
+                </div>
+            </div>
+        </div>
+        <div class="col-12 col-lg-4">
+            <div class="card radius-10">
+                <div class="card-header bg-transparent">
+                    <h6 class="mb-0">{{ __('Task Distribution by Status') }}</h6>
+                </div>
+                <div class="card-body">
+                    @php
+                        $totalTasks = $taskStatus->sum('total');
+                        $colors = ['bg-primary', 'bg-success', 'bg-warning', 'bg-danger', 'bg-info', 'bg-secondary'];
+                    @endphp
 
-                        {{-- Task Status --}}
-                        <div class="col-12 col-xl-6">
-                            <div class="card rounded-4">
-                                <div class="card-body">
-                                    <h4 class="mb-0">{{ $taskStatus->sum('total') }}</h4>
-                                    <p class="mb-2">Total Tasks</p>
-                                    <div id="chart3"></div>
+                    <div class="task-status-list">
+                        @forelse($taskStatus as $index => $status)
+                            @php
+                                $percentage = $totalTasks > 0 ? round(($status->total / $totalTasks) * 100) : 0;
+                                $currentColor = $colors[$index % count($colors)];
+                            @endphp
+                            <div class="mb-4">
+                                <div class="d-flex align-items-center justify-content-between mb-1">
+                                    <span class="fw-bold">{{ $status->name }}</span>
+                                    <span class="text-muted small">{{ $status->total }} Tasks ({{ $percentage }}%)</span>
+                                </div>
+                                <div class="progress" style="height: 7px;">
+                                    <div class="progress-bar {{ $currentColor }}" role="progressbar"
+                                         style="width: {{ $percentage }}%"
+                                         aria-valuenow="{{ $percentage }}" aria-valuemin="0" aria-valuemax="100">
+                                    </div>
                                 </div>
                             </div>
-                        </div>
+                        @empty
+                            <p class="text-center text-muted py-5">{{ __('No data available') }}</p>
+                        @endforelse
+                    </div>
 
-                        {{-- Staff Activity --}}
-                        <div class="col-12 col-xl-6">
-                            <div class="card rounded-4">
-                                <div class="card-body">
-                                    <h4 class="mb-0">{{ $staffStatus->active }}</h4>
-                                    <p class="mb-2">Active Staff</p>
-                                    <div id="chart2"></div>
-                                </div>
-                            </div>
+                    {{-- Summary footer ndogo --}}
+                    <div class="mt-4 pt-3 border-top">
+                        <div class="d-flex align-items-center justify-content-between">
+                            <span class="text-secondary">{{ __('Total Volume') }}</span>
+                            <h5 class="mb-0">{{ number_format($totalTasks) }}</h5>
                         </div>
-
-                        {{-- Budget Summary --}}
-                        <div class="col-12">
-                            <div class="card rounded-4">
-                                <div class="card-body">
-                                    <h2 class="mb-0">{{ number_format($budgetExpense->sum('allocated')) }} TZS</h2>
-                                    <p class="mb-0">Total Allocated Budget</p>
-                                </div>
-                            </div>
-                        </div>
-
                     </div>
                 </div>
             </div>
         </div>
-
-        {{-- Right Side --}}
-        <div class="col-12 col-xl-7 col-xxl-8 d-flex">
-            <div class="card w-100 rounded-4">
-                <div class="card-body">
-                    <h5 class="fw-bold mb-3">Budget vs Expense Analysis</h5>
-                    <div id="chart4"></div>
-                </div>
-            </div>
-        </div>
     </div>
+
 @endsection
+
 
 @push('scripts')
     <script src="{{ asset('/assets/plugins/apexchart/apexcharts.min.js') }}"></script>
-
     <script>
         $(function () {
-            "use strict";
-
-            /* ============================
-               Chart 1: Weekly Completed Tasks
-            ============================ */
-            new ApexCharts(document.querySelector('#chart1'), {
+            // Financial Overview Chart
+            var options = {
+                series: [{
+                    name: 'Allocated Budget',
+                    data: @json($budgetExpense->pluck('allocated'))
+                }, {
+                    name: 'Spent Amount',
+                    data: @json($budgetExpense->pluck('spent'))
+                }],
                 chart: {
                     type: 'area',
-                    height: 105,
-                    sparkline: { enabled: true }
-                },
-                series: [{
-                    name: 'Completed Tasks',
-                    data: @json($weeklyTasks->pluck('total'))
-                }],
-                xaxis: {
-                    categories: @json($weeklyTasks->pluck('date'))
-                },
-                stroke: { curve: 'smooth', width: 1.7 },
-                colors: ['#02c27a'],
-                fill: {
-                    type: 'gradient',
-                    gradient: {
-                        opacityFrom: 0.5,
-                        opacityTo: 0
-                    }
-                },
-                tooltip: { theme: 'dark' }
-            }).render();
-
-            /* ============================
-               Chart 2: Staff Activity
-            ============================ */
-            new ApexCharts(document.querySelector('#chart2'), {
-                chart: { type: 'radialBar', height: 180 },
-                series: [
-                    {{ $staffStatus->active }},
-                    {{ $staffStatus->inactive }}
-                ],
-                labels: ['Active', 'Inactive'],
-                colors: ['#0866ff', '#fc185a'],
-                stroke: { lineCap: 'round' }
-            }).render();
-
-            /* ============================
-               Chart 3: Task Status Distribution
-            ============================ */
-            new ApexCharts(document.querySelector('#chart3'), {
-                chart: {
-                    type: 'donut',
-                    height: 180,
-                },
-                series: @json($taskStatus->pluck('total')),
-                labels: @json($taskStatus->pluck('status_cv_id')),
-                colors: ['#0d6efd', '#fc6718', '#02c27a']
-            }).render();
-
-            /* ============================
-               Chart 4: Sales vs Views
-            ============================ */
-            new ApexCharts(document.querySelector('#chart4'), {
-                chart: {
-                    type: 'bar',
-                    height: 235,
-                    foreColor: '#9ba7b2',
+                    height: 350,
                     toolbar: { show: false }
                 },
-                series: [
-                    { name: 'Sales', data: @json($salesData) },
-                    { name: 'Views', data: @json($viewsData) }
-                ],
+                colors: ["#0dcaf0", "#f41127"],
+                dataLabels: { enabled: false },
                 xaxis: {
-                    categories: @json($months)
-                },
-                colors: ['#0d6efd', '#6f42c1'],
-                plotOptions: {
-                    bar: {
-                        borderRadius: 4,
-                        columnWidth: '55%'
-                    }
-                },
-                tooltip: { theme: 'dark' }
-            }).render();
+                    categories: @json($budgetExpense->map(fn($m) => Carbon\Carbon::create()->month($m->month)->format('M'))),
+                }
+            };
+            new ApexCharts(document.querySelector("#financial-chart"), options).render();
 
+            // Task Status Pie Chart
+            var statusOptions = {
+                series: @json($taskStatus->pluck('total')),
+                chart: { type: 'donut', height: 350 },
+                labels: @json($taskStatus->pluck('name')),
+                colors: ["#0d6efd", "#212529", "#198754", "#ffc107"],
+                responsive: [{
+                    breakpoint: 480,
+                    options: { chart: { width: 200 }, legend: { position: 'bottom' } }
+                }]
+            };
+            new ApexCharts(document.querySelector("#status-chart"), statusOptions).render();
         });
     </script>
 @endpush
-
