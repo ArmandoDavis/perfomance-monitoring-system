@@ -40,9 +40,16 @@ class DashboardController extends Controller
         }
         return redirect()->route('frontend.dashboard.index');
     }
-    public function adminDashboard()
+    public function adminDashboard(Request $request)
     {
-        // 1. Fetch References kwa usahihi
+        $selectedYear = $request->get('year', now()->year);
+
+        $availableYears = Task::selectRaw('YEAR(created_at) as year')
+            ->distinct()
+            ->orderBy('year', 'desc')
+            ->pluck('year');
+
+
         $statuses = CodeValue::whereIn('reference', ['SCS001', 'SCS002', 'SCS003', 'SCS004'])->get();
         $todoId = $statuses->where('reference', 'SCS001')->first()?->id;
         $doneId = $statuses->where('reference', 'SCS002')->first()?->id;
@@ -51,28 +58,32 @@ class DashboardController extends Controller
 
         // 2. Summary Cards
         $todoTasks = Task::where('status_cv_id', $todoId)->count();
-        $completedTasks = Task::whereIn('status_cv_id', [$doneId, $deployedId])->count();
-        $totalExpenses = Expense::sum('amount');
-        $pendingApprovals = Task::where('status_cv_id', $submittedId)->count();
+
+        $completedTasks = Task::whereIn('status_cv_id', [$doneId])->whereYear('created_at', $selectedYear)->count();
+        $totalExpenses = Expense::whereYear('created_at', $selectedYear)->sum('amount');
+        $pendingApprovals = Task::where('status_cv_id', $submittedId)->whereYear('created_at', $selectedYear)->count();
+
 
         // 3. Performance & Budget
         $avgWeeklyScore = PerformanceScore::whereBetween('created_at', [now()->subDays(7), now()])->avg('total_score') ?? 0;
+        $avgWeeklyScore = round($avgWeeklyScore, 1);
 
-        // 4. Chart Data: Monthly Budget vs Expense
         $budgetExpense = Task::selectRaw('MONTH(created_at) as month, SUM(allocated_budget) as allocated, SUM(spent_amount) as spent')
-            ->whereYear('created_at', now()->year)
+            ->whereYear('created_at', $selectedYear)
             ->groupBy('month')->orderBy('month')->get();
 
-        // 5. Chart Data: Task Distribution (Join na CodeValue kupata majina)
         $taskStatus = Task::join('code_values', 'tasks.status_cv_id', '=', 'code_values.id')
+            ->whereYear('tasks.created_at', $selectedYear)
             ->select('code_values.name', DB::raw('COUNT(*) as total'))
             ->groupBy('code_values.name')->get();
 
         return view('dashboard.admin.dashboard', compact(
-            'todoTasks', 'completedTasks', 'totalExpenses', 'pendingApprovals',
-            'avgWeeklyScore', 'budgetExpense', 'taskStatus'
+            'completedTasks', 'totalExpenses', 'pendingApprovals', 'todoTasks',
+            'budgetExpense', 'taskStatus', 'availableYears', 'selectedYear', 'avgWeeklyScore'
         ));
+
     }
+
 
 
     public function hodDashboard(Request $request)

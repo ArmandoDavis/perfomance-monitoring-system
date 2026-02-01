@@ -2,6 +2,27 @@
 @section('title', 'Admin Dashboard')
 
 @section('content')
+    <div class="row mb-3">
+        <div class="col-12">
+            <div class="card radius-10 shadow-none border">
+                <div class="card-body d-flex align-items-center justify-content-between py-2">
+                    <h5 class="mb-0 text-dark fw-bold">{{ __('Dashboard Overview') }} - {{ $selectedYear }}</h5>
+                    <form action="" method="GET" id="yearFilterForm" class="d-flex align-items-center">
+                        <label class="me-2 text-muted small fw-bold text-nowrap">{{ __('Select Year') }}:</label>
+                        <select name="year" class="form-select form-select-sm border-primary" onchange="this.form.submit()">
+                            @foreach($availableYears as $year)
+                                <option value="{{ $year }}" {{ $selectedYear == $year ? 'selected' : '' }}>{{ $year }}</option>
+                            @endforeach
+                            @if(!$availableYears->contains(now()->year))
+                                <option value="{{ now()->year }}" {{ $selectedYear == now()->year ? 'selected' : '' }}>{{ now()->year }}</option>
+                            @endif
+                        </select>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </div>
+
     <div class="row row-cols-1 row-cols-sm-2 row-cols-md-2 row-cols-xl-4">
         <div class="col">
             <div class="card radius-10 border-start border-0 border-3 border-success">
@@ -132,7 +153,7 @@
     <script>
         $(function () {
             // Financial Overview Chart
-            var options = {
+            const options = {
                 series: [{
                     name: 'Allocated Budget',
                     data: @json($budgetExpense->pluck('allocated'))
@@ -143,10 +164,10 @@
                 chart: {
                     type: 'area',
                     height: 350,
-                    toolbar: { show: false }
+                    toolbar: {show: false}
                 },
                 colors: ["#0dcaf0", "#f41127"],
-                dataLabels: { enabled: false },
+                dataLabels: {enabled: false},
                 xaxis: {
                     categories: @json($budgetExpense->map(fn($m) => Carbon\Carbon::create()->month($m->month)->format('M'))),
                 }
@@ -154,14 +175,14 @@
             new ApexCharts(document.querySelector("#financial-chart"), options).render();
 
             // Task Status Pie Chart
-            var statusOptions = {
+            const statusOptions = {
                 series: @json($taskStatus->pluck('total')),
-                chart: { type: 'donut', height: 350 },
+                chart: {type: 'donut', height: 350},
                 labels: @json($taskStatus->pluck('name')),
                 colors: ["#0d6efd", "#212529", "#198754", "#ffc107"],
                 responsive: [{
                     breakpoint: 480,
-                    options: { chart: { width: 200 }, legend: { position: 'bottom' } }
+                    options: {chart: {width: 200}, legend: {position: 'bottom'}}
                 }]
             };
             new ApexCharts(document.querySelector("#status-chart"), statusOptions).render();
