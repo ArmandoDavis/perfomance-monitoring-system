@@ -145,6 +145,20 @@
         </div>
     </div>
 
+    <div class="row">
+        <div class="col-12">
+            <div class="card radius-10">
+                <div class="card-header bg-transparent">
+                    <div class="d-flex align-items-center">
+                        <div><h6 class="mb-0">{{ __('Departmental Budget Performance') }} ({{ $selectedYear }})</h6></div>
+                    </div>
+                </div>
+                <div class="card-body">
+                    <div id="dept-budget-chart"></div>
+                </div>
+            </div>
+        </div>
+    </div>
 @endsection
 
 
@@ -186,6 +200,45 @@
                 }]
             };
             new ApexCharts(document.querySelector("#status-chart"), statusOptions).render();
+
+
+            // Department Budget Performance Chart
+            const deptOptions = {
+                series: [{
+                    name: 'Allocated Budget',
+                    data: @json($deptBudgetSpent->pluck('allocated'))
+                }, {
+                    name: 'Spent Amount',
+                    data: @json($deptBudgetSpent->pluck('spent'))
+                }],
+                chart: {
+                    type: 'bar',
+                    height: 400,
+                    toolbar: { show: true }
+                },
+                plotOptions: {
+                    bar: {
+                        horizontal: false,
+                        columnWidth: '55%',
+                        endingShape: 'rounded'
+                    },
+                },
+                dataLabels: { enabled: false },
+                stroke: { show: true, width: 2, colors: ['transparent'] },
+                colors: ["#0d6efd", "#e91e63"],
+                xaxis: {
+                    categories: @json($deptBudgetSpent->pluck('name')),
+                },
+                fill: { opacity: 1 },
+                tooltip: {
+                    y: {
+                        formatter: function (val) {
+                            return "TZS " + val.toLocaleString()
+                        }
+                    }
+                }
+            };
+            new ApexCharts(document.querySelector("#dept-budget-chart"), deptOptions).render();
         });
     </script>
 @endpush

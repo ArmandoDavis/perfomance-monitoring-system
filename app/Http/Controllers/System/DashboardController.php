@@ -4,6 +4,7 @@ namespace App\Http\Controllers\System;
 
 use App\Http\Controllers\Controller;
 use App\Models\Access\User;
+use App\Models\Department;
 use App\Models\Expense;
 use App\Models\System\CodeValue;
 use App\Models\Task\PerformanceScore;
@@ -77,9 +78,21 @@ class DashboardController extends Controller
             ->select('code_values.name', DB::raw('COUNT(*) as total'))
             ->groupBy('code_values.name')->get();
 
+        $deptBudgetSpent = Department::with(['tasks' => function($query) use ($selectedYear) {
+            $query->whereYear('created_at', $selectedYear);
+        }])
+            ->get()
+            ->map(function ($dept) {
+                return [
+                    'name' => $dept->name,
+                    'allocated' => $dept->tasks->sum('allocated_budget'),
+                    'spent' => $dept->tasks->sum('spent_amount'),
+                ];
+            })->filter(fn($item) => $item['allocated'] > 0);
+
         return view('dashboard.admin.dashboard', compact(
             'completedTasks', 'totalExpenses', 'pendingApprovals', 'todoTasks',
-            'budgetExpense', 'taskStatus', 'availableYears', 'selectedYear', 'avgWeeklyScore'
+            'budgetExpense', 'taskStatus', 'availableYears', 'selectedYear', 'avgWeeklyScore', 'deptBudgetSpent'
         ));
 
     }
