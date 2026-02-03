@@ -45,7 +45,6 @@ class TaskRequest extends Request
                 $basic = [
                     'title' => 'required|string|max:255',
                     'description' => 'required|string',
-                    'department_id' => 'required|exists:departments,id',
                 ];
                 $optional = [
                     'allocated_budget' => 'nullable',
@@ -54,6 +53,7 @@ class TaskRequest extends Request
                     'start_date' => 'nullable',
                     'end_date' => 'nullable',
                     'status_cv_id' => 'nullable|exists:code_values,id',
+                    'department_id' => 'nullable|exists:departments,id',
                     'is_active' => 'nullable|boolean'
                 ];
                 break;

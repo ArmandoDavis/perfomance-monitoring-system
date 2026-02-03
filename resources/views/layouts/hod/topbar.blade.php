@@ -55,7 +55,6 @@
                                 <span class="material-icons-outlined">more_vert</span>
                             </button>
                             <div class="dropdown-menu dropdown-option dropdown-menu-end shadow">
-                                {{-- Senior Move: Route to mark all as read --}}
                                 <div>
                                     <form action="{{ route('notifications.mark_all_read') }}" method="POST" id="mark-all-read-form">
                                         @csrf
@@ -70,7 +69,6 @@
                     <div class="notify-list">
                         @forelse(auth()->user()->unreadNotifications as $notification)
                             @php
-                                // Tunapata icon kulingana na data uliyoseti kwenye Notification Class
                                 $icon = 'notifications';
                                 $bgClass = 'bg-light-primary text-primary';
 

@@ -45,13 +45,12 @@
                         <div class="col-md-6 mb-3">
                             <div class="mb-3">
                                 <label for="department_id" class="form-label">
-                                    {{ __('Department') }} <span class="text-danger">*</span>
+                                    {{ __('Department') }}
                                 </label>
-                                <select name="department_id" id="department_id" class="form-select @error('department_id') is-invalid @enderror" required>
-                                    <option value="">{{ __('Select Department') }}</option>
+                                <select name="department_id" id="department_id" class="form-select select2 @error('department_id') is-invalid @enderror">
+                                    <option selected disabled hidden>{{ __('Select Department') }}</option>
                                     @foreach($departments as $department)
-                                        <option value="{{ $department->id }}"
-                                            {{ old('department_id', $task->department_id) == $department->id ? 'selected' : '' }}>
+                                        <option value="{{ $department->id }}" @if(old('department_id', $task->department_id ?? user()->department_id) == $department->id) selected @endif>
                                             {{ $department->name }}
                                         </option>
                                     @endforeach

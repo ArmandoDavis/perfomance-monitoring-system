@@ -13,8 +13,17 @@ class TaskRepository extends BaseRepository
 
     public function getAllForDt()
     {
-        return $this->query()
-            ->where('tasks.is_active', 1)
+        $statusRefs = ['SCS002', 'SCS003', 'SCS007', 'SCS001'];
+        $statusIds = array_map(function($ref) {
+            $cv = CodeValue::getCodeValueByReference($ref);
+            return is_object($cv) ? $cv->id : $cv;
+        }, $statusRefs);
+
+        $statusIds = array_filter($statusIds);
+        $statusOrder = implode(',', $statusIds);
+
+        $query = $this->query()
+            ->where('tasks.is_active', true)
             ->select([
                 'tasks.id',
                 'tasks.uuid',
@@ -26,6 +35,7 @@ class TaskRepository extends BaseRepository
                 'tasks.spent_amount',
                 'tasks.status_cv_id',
                 'tasks.created_by',
+                'tasks.created_at',
                 'departments.name as department_name',
                 'users.name as creator_name',
                 'code_values.name as task_status',
@@ -35,9 +45,14 @@ class TaskRepository extends BaseRepository
             ->leftJoin('departments', 'departments.id', '=', 'tasks.department_id')
             ->leftJoin('users', 'users.id', '=', 'tasks.created_by')
             ->leftJoin('code_values', 'code_values.id', '=', 'tasks.status_cv_id')
-            ->where('task_assignments.user_id', user_id())
-            ->whereNull('tasks.deleted_at')
-            ->whereNull('tasks.archived_at');
+            ->where('task_assignments.user_id', user_id());
+
+        if (!empty($statusIds)) {
+            $query->orderByRaw("FIELD(tasks.status_cv_id, $statusOrder) = 0")
+            ->orderByRaw("FIELD(tasks.status_cv_id, $statusOrder)");
+        }
+        $query->orderBy('tasks.created_at', 'DESC');
+        return $query;
     }
 
 

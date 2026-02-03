@@ -120,12 +120,10 @@
                 <span class="material-icons-outlined">info</span>
             </a>
             <div class="dropdown-menu dropdown-option dropdown-menu-end shadow border-0">
-                {{-- Header ya Dropup --}}
                 <div class="dropdown-header border-bottom mb-1">
                     <h6 class="mb-0 text-dark fw-bold small">{{ __('System Help') }}</h6>
                 </div>
 
-                {{-- Quick Notification Action --}}
                 <div>
                     <form action="{{ route('notifications.mark_all_read') }}" method="POST" id="footer-mark-read">
                         @csrf
@@ -135,7 +133,6 @@
                     </form>
                 </div>
 
-                {{-- Help Links --}}
                 <div>
                     <a class="dropdown-item d-flex align-items-center gap-2 py-2" href="{{ route('hod_panel.notifications.index') }}">
                         <i class="material-icons-outlined fs-6 text-primary">history</i>{{ __('Whats new') }}
@@ -144,7 +141,6 @@
 
                 <div class="dropdown-divider"></div>
 
-                {{-- Support / Documentation --}}
                 <div>
                     <a class="dropdown-item d-flex align-items-center gap-2 py-2" href="#" target="_blank">
                         <i class="material-icons-outlined fs-6 text-info">menu_book</i>{{ __('User Manual') }}
@@ -157,7 +153,6 @@
                     </a>
                 </div>
 
-                {{-- System Version (Senior Move) --}}
                 <div class="dropdown-header border-top mt-1 pt-2">
                     <small class="text-muted">{{ __('Version') }} 2.1.0-stable</small>
                 </div>

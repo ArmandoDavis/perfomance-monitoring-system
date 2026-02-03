@@ -96,7 +96,7 @@ class TaskRepository extends BaseRepository
                 'start_date' => $input['start_date'],
                 'end_date' => $input['end_date'],
                 'progress_percent' => 0,
-                'is_active' => isset($input['is_active']),
+                'is_active' => $input['is_active'] ?? true,
             ]);
 
             /** assign task to users */
@@ -113,7 +113,7 @@ class TaskRepository extends BaseRepository
             $task->update([
                 'title' => $input['title'],
                 'description' => $input['description'],
-                'department_id' => $input['department_id'],
+                'department_id' => $input['department_id'] ?? $task->department_id,
                 'allocated_budget' => $input['allocated_budget'],
                 'spent_amount' => $input['spent_amount'] ?? $task->spent_amount,
                 'remaining_budget' => $input['remaining_budget'] ?? $task->remaining_budget,
